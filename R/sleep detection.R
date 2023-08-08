@@ -1,0 +1,84 @@
+#' Title
+#'
+#' @param angle
+#' @param k
+#' @param perc
+#' @param inbedthreshold
+#' @param bedblocksize
+#' @param outofbedsize
+#' @param ws3
+#'
+#' @return
+#' @export
+#'
+#' @examples
+inbed = function(angle, k = 60, perc = 0.1, inbedthreshold = 15,
+                 bedblocksize = 30, outofbedsize = 60, ws3 = 5) {
+  medabsdi = function(angle) {
+    angvar = stats::median(abs(diff(angle)))
+    return(angvar)
+  }
+  x = slide(angle, width = k, FUN=medabsdi,by=1)
+  nomov = rep(0, length(x))
+  inbedtime = rep(NA, length(x))
+  pp = quantile(x, probs = c(perc)) * inbedthreshold
+  if (pp == 0)
+    pp = .2
+  nomov[which(x < pp)] = 1
+  nomov = c(0, nomov, 0)
+  s1 = which(diff(nomov) == 1)
+  e1 = which(diff(nomov) == -1)
+  bedblock = which((e1 - s1) > ((60/ws3) * bedblocksize *
+                                  1))
+  if (length(bedblock) > 0) {
+    s2 = s1[bedblock]
+    e2 = e1[bedblock]
+    for (j in 1:length(s2)) {
+      inbedtime[s2[j]:e2[j]] = 1
+    }
+    outofbed = rep(0, length(inbedtime))
+    outofbed[which(is.na(inbedtime) == TRUE)] = 1
+    outofbed = c(0, outofbed, 0)
+    s3 = which(diff(outofbed) == 1)
+    e3 = which(diff(outofbed) == -1)
+    outofbedblock = which((e3 - s3) < ((60/ws3) * outofbedsize *
+                                         1))
+    if (length(outofbedblock) > 0) {
+      s4 = s3[outofbedblock]
+      e4 = e3[outofbedblock]
+      if (length(s4) > 0) {
+        for (j in 1:length(s4)) {
+          inbedtime[s4[j]:e4[j]] = 1
+        }
+      }
+    }
+    if (length(inbedtime) == (length(x) + 1))
+      inbedtime = inbedtime[1:(length(inbedtime) -
+                                 1)]
+    inbedtime2 = rep(1, length(inbedtime))
+    inbedtime2[which(is.na(inbedtime) == TRUE)] = 0
+    s5 = which(diff(c(0, inbedtime2, 0)) == 1)
+    e5 = which(diff(c(0, inbedtime2, 0)) == -1)
+    inbeddurations = e5 - s5
+    longestinbed = which(inbeddurations == max(inbeddurations))
+    lightsout = s5[longestinbed] - 1
+    lightson = e5[longestinbed] - 1
+    if(length(s5)>1){
+    naplightsout<-s5[-longestinbed] - 1
+    naplightson<-e5[-longestinbed] -1
+    }else{
+      naplightsout<-NA
+      naplightson<-NA
+    }
+  }
+  else {
+    lightson = c()
+    lightsout = c()
+    tib.threshold = c()
+  }
+  tib.threshold = pp
+  invisible(list(lightsout = lightsout, lightson = lightson,
+                 tib.threshold = tib.threshold,naplightsout = naplightsout,
+                 naplightson = naplightson))
+}
+
