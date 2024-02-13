@@ -15,7 +15,7 @@ classify(
   do.actilifecounts = FALSE,
   do.actilifecountsLFE = FALSE,
   classifier = NULL,
-  boutdur = c(1, 10, 30),
+  boutdur = c(10),
   boutcriter = 0.8,
   overwrite = FALSE,
   verbose = TRUE

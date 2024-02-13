@@ -39,7 +39,7 @@
 #' counts using the low-frequency extension filter should be calculated.
 #' @param overwrite Logical (default = FALSE) indicating whether the existing milestone
 #' data should be overwritten.
-#' @param boutdur Numeric vector (default = c(1, 10, 30)) indicating the bout durations over which calculate bouts of behaviors
+#' @param boutdur Numeric vector (default = c(10)) indicating the bout durations over which calculate bouts of behaviors
 #' @param boutcriter Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout
 #'
 #' @return Function does not return anything, it only generates the reports and
@@ -136,6 +136,17 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
                                 ID = ID)
         feats = cbind(feats, nw)
         if (prevChunk == 1) ts = feats else ts = rbind(ts, feats)
+      }
+      # Now add lag-lead features if needed
+      if (grepl("lag-lead", classifier, ignore.case = TRUE)) {
+        browser()
+        lagsd1 = c(0, ts$vm.sd[1:c(nrow(ts) - 1)])
+        lagsd2 = c(0, 0, ts$vm.sd[1:c(nrow(ts) - 2)])
+        leadsd1 = c(ts$vm.sd[2:nrow(ts)], 0)
+        leadsd2 = c(ts$vm.sd[3:nrow(ts)], 0, 0)
+        combsd = apply(cbind(lagsd1, lagsd2, leadsd1, leadsd2), 1, sd)
+        laglead = cbind(lagsd1, lagsd2, leadsd1, leadsd2, combsd)
+        ts = cbind(ts, laglead)
       }
       # 3.5 - derive timestamp and ID
       timestamp = deriveTimestamps(from = start_time, length = nrow(ts), epoch = epoch)

@@ -83,16 +83,6 @@ ExtractFeatures = function(data, classifier = NULL, sf = NULL, epoch = NULL,
     } else {
       classifierAvailable = FALSE
     }
-    # lag-lead features
-    # if (grepl(pattern = "lag-lead", x = classifier)) {
-    #   lagsd1 = dplyr::lag(hold[,2],default = 0)
-    #   lagsd2 = dplyr::lag(hold[,2],default = 0,n=2)
-    #   leadsd1 = dplyr::lead(hold[,2],default = 0)
-    #   leadsd2 = dplyr::lead(hold[,2],default = 0,n=2)
-    #   laglead = cbind(lagsd1,lagsd2,leadsd1,leadsd2)
-    #   combsd = apply(cbind(laglead,hold[,2]),1,sd)
-    #   hold = cbind(hold[,1:26],laglead,combsd,hold[,27:29])
-    # }
   }
   # run error if classifier was not found
   if (classifierAvailable == FALSE) {
