@@ -15,7 +15,7 @@ choice <- function(){
   if(n1%in%"Only do enmo"){
     n8<-readline(prompt=cat("\n\nEnmo window length in seconds: " ))
   }else{n8<-0}
-  n2=TRUE
+  n2=FALSE
   if(n2==TRUE){
   n3<-readline(prompt=cat("\n\nIntensity Type:\nCounts\nRaw " ))
   n4<-readline(prompt=cat("\n\nSed Cut-Point: " ))

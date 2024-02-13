@@ -2,13 +2,27 @@
 % Please edit documentation in R/slide.R
 \name{slide}
 \alias{slide}
-\title{Title}
+\title{Compute Summary Statistics of Data Subsets}
 \usage{
 slide(x, width, by = NULL, FUN = NULL, ...)
 }
 \arguments{
-\item{...}{}
+\item{x}{Numeric vector to aggregate.}
+
+\item{width}{Length of the window over which the aggregation will be computed.}
+
+\item{by}{List of grouping elements, each as long as the variables in the
+data frame x, or a formula. The elements are coerced to factors before use.}
+
+\item{FUN}{Function to compute the summary statistics which can be applied to
+all data subsets.}
+
+\item{...}{further arguments passed to or used by methods.}
+}
+\value{
+Numeric vector withe the computed summary statistics.
 }
 \description{
-Title
+Splits the data into subsets, computes summary statistics for each, and
+returns the result in a convenient form.
 }

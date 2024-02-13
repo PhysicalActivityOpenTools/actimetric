@@ -23,72 +23,34 @@ features<-function(input,output,win=15,axis="yaxis",Sed=200,Mod=420,Vig=842,Cali
                    dothis=dothis,ndays=12,folder_name="",file_name="")
 
 {
-  #To do list: ndays utility, update Link to match gt3x read in, only call in functions when needed
-  # custom folder names, sleep/wake, lag/lead models, timestamp, remove unused models
-  list.of.packages <- c("plyr", "dplyr","e1071","zoo","data.table","randomForest",
-                        "readxl","Rcpp","HMM","rattle","GENEAread","signal","GGIR","GGIRread","TLBC","DescTools","tools")
-  new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-  # if(length(new.packages)){
-  #   print(paste("Installing dependancy package:",new.packages))
-  #   install.packages(new.packages)
-  # }
-  library(plyr)
-  library(dplyr)
-  library(e1071)
-  library(data.table)
-  library(randomForest)
-  library(readxl)
-  library(Rcpp)
-  library(HMM)
-  library(rattle)
-  library(GENEAread)
-  library(signal)
-  library(GGIR)
-  library(GGIRread)
-  library(TLBC)
-  library(DescTools)
-  library(tools)
+  # #To do list: ndays utility, update Link to match gt3x read in, only call in functions when needed
+  # # custom folder names, sleep/wake, lag/lead models, timestamp, remove unused models
+  # list.of.packages <- c("plyr", "dplyr","e1071","zoo","data.table","randomForest",
+  #                       "readxl","Rcpp","HMM","rattle","GENEAread","signal","GGIR","GGIRread","TLBC","DescTools","tools")
+  # new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+  # # if(length(new.packages)){
+  # #   print(paste("Installing dependancy package:",new.packages))
+  # #   install.packages(new.packages)
+  # # }
+  # library(plyr)
+  # library(dplyr)
+  # library(e1071)
+  # library(data.table)
+  # library(randomForest)
+  # library(readxl)
+  # library(Rcpp)
+  # library(HMM)
+  # library(rattle)
+  # library(GENEAread)
+  # library(signal)
+  # library(GGIR)
+  # library(GGIRread)
+  # library(TLBC)
+  # library(DescTools)
+  # library(tools)
   options(digits.secs=3)
   oldw <- getOption("warn")
   options(warn = -1)
-  #  # source(paste(mypath,"/feature extraction.R",sep = ""))
-  #  # source(paste(mypath,"/freq domain.R",sep = ""))
-  #  # source(paste(mypath,"/lag.R",sep = ""))
-  #  # source(paste(mypath,"/cross corr.R",sep=""))
-  #  # source(paste(mypath,"/read_accel.R",sep = ""))
-  #  # source(paste(mypath,"/round_df.R",sep = ""))
-  #  # source(paste(mypath,"/slide.R",sep = ""))
-  #  # source(paste(mypath,"/time domain.R",sep = ""))
-  #  # source(paste(mypath,"/summaryV2.R",sep = ""))
-  #  # source(paste(mypath,"/nonwear_1min.R",sep = ""))
-  #  # source(paste(mypath,"/read_excel.R",sep = ""))
-  #  # source(paste(mypath,"/read_counts.R",sep = ""))
-  #  # source(paste(mypath,"/sleep detection.R",sep = ""))
-  #  # source(paste(mypath,"/detect_sleep_periods.R",sep = ""))
-  #  # source(paste(mypath,"/IntensityCutPoint.R",sep = ""))
-  #  # source(paste(mypath,"/getbout.R",sep = ""))
-  #  # source(paste(mypath,"/note.R",sep = ""))
-  #  # source(paste(mypath,"/choice.R",sep = ""))
-  #  # source(paste(mypath,"/genplot.R",sep = ""))
-  #  # source(paste(mypath,"/read_gt3x.R",sep = ""))
-  #  # source(paste(mypath,"/parse_txt.R",sep = ""))
-  #  # source(paste(mypath,"/tick.R",sep = ""))
-  #  # source(paste(mypath,"/read_acceleration.R",sep = ""))
-  #  # source(paste(mypath,"/test2.R",sep = ""))
-  #  # source(paste(mypath,"/partialdaysummary.R",sep = ""))
-  #  # source(paste(mypath,"/partialdaysummary.R",sep = ""))
-  #  # source(paste(mypath,"/mattcalibrate.R",sep = ""))
-  #  # source(paste(mypath,"/EllipsoidFit.R",sep = ""))
-  #  # source(paste(mypath,"/center_radius.R",sep = ""))
-  #  # source(paste(mypath,"/read_accelerationLink.R",sep = ""))
-  #  # source(paste(mypath,"/readGA.R",sep = ""))
-  #  # source(paste(mypath,"/readax3.R",sep = ""))
-  #  # source(paste(mypath,"/cwa.R",sep = ""))
-  #  # source(paste(mypath,"/GN function_20191024.R",sep = ""))
-
-
-
-
   is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol
   #Designate activity, intensity, sleep, calibration, etc. parameters----
   #moo<-choice()
@@ -286,29 +248,29 @@ features<-function(input,output,win=15,axis="yaxis",Sed=200,Mod=420,Vig=842,Cali
         }
       }
       classifier<-classifier_Preschool(raw=hip.data$data,Fs=hip.data$header$Sample_Rate,ID=ID,
-                                     mypath=mypath,sleep=sleep,win=win,rfmodel=rfmodel,Classifier=Classifier,start.time=hip.data$dat)}
+                                       mypath=mypath,sleep=sleep,win=win,rfmodel=rfmodel,Classifier=Classifier,start.time=hip.data$dat)}
     # LVAY Hip RF (2019/10/04) ----
     if(Classifier%in%"School age Hip Random Forest"){
       if(i==1){
         win=10
-         # source(paste(mypath,"/RFClassifier.R",sep = ""))
+        # source(paste(mypath,"/RFClassifier.R",sep = ""))
         # load(paste(mypath,"/LVAY.RF.Hip10.RData",sep=""))
         rfmodel<-LVAY.RF.Hip10
         # rm(LVAY.RF.Hip10)
       }
       classifier<-classifier_Preschool(raw=hip.data$data,Fs=hip.data$header$Sample_Rate,ID=ID,
-                                     mypath=mypath,sleep=sleep,win=win,rfmodel=rfmodel,Classifier=Classifier,start.time=hip.data$dat)
+                                       mypath=mypath,sleep=sleep,win=win,rfmodel=rfmodel,Classifier=Classifier,start.time=hip.data$dat)
     }
 
     # Ellis RF/HMM Wrist (12/04/2019); Ellis HMM/RF (Hip 09/07/2019)----
     if(Classifier%in%"Ellis Wrist RF"|Classifier%in%"Ellis Hip RF"){
       if(i==1){
-         # source(paste(mypath,"/EllisClassifier.R",sep = ""))
-         # source(paste(mypath,"/Ellis.feat.extraction.R",sep = ""))
+        # source(paste(mypath,"/EllisClassifier.R",sep = ""))
+        # source(paste(mypath,"/Ellis.feat.extraction.R",sep = ""))
         win=60
       }
       classifier<-classifier_Ellis(raw=hip.data$data,Fs=hip.data$header$Sample_Rate,ID=ID,
-                                     mypath=mypath,win=win,Classifier=Classifier,sleep=sleep,start.time=hip.data$dat)}
+                                   mypath=mypath,win=win,Classifier=Classifier,sleep=sleep,start.time=hip.data$dat)}
 
     #Trost Adult RF Wrist (19/06/2019) ----
     if(Classifier%in%"Trost Adult Wrist RF"){
@@ -322,15 +284,21 @@ features<-function(input,output,win=15,axis="yaxis",Sed=200,Mod=420,Vig=842,Cali
         }
       }
       classifier<-classifier_TrostAdult(raw=hip.data$data,Fs=hip.data$header$Sample_Rate,ID=ID,
-                                     mypath=mypath,win=win,sleep=sleep,rfmodel=rfmodel,Classifier=Classifier,start.time=hip.data$dat)}
+                                        mypath=mypath,win=win,sleep=sleep,rfmodel=rfmodel,Classifier=Classifier,start.time=hip.data$dat)}
     #Thigh Decision Tree; testing, not for use (09/10/2020)----
     if(Classifier%in%"Thigh Decision Tree"){
       if(i==1){
         #  # source(paste(mypath,"/ThighClassifier.R",sep = ""))
         win=10
       }
-      classifier<-classifier_thigh(raw=hip.data$data,Fs=hip.data$header$Sample_Rate,ID=ID,
-                                     mypath=mypath,win=win,sleep=sleep,Classifier=Classifier,start.time=hip.data$dat)}
+      classifier<-classifier_thigh(raw=hip.data$data,
+                                   Fs=hip.data$header$Sample_Rate,
+                                   ID=ID,
+                                   mypath=mypath,
+                                   win=win,
+                                   sleep=sleep,
+                                   Classifier=Classifier,
+                                   start.time=hip.data$dat)}
     # Enmo only (23/07/2019)----
     if(Classifier%in%"Only do enmo"){
       if(i==1){
@@ -616,7 +584,7 @@ features<-function(input,output,win=15,axis="yaxis",Sed=200,Mod=420,Vig=842,Cali
         GenPlot_general(comb,window=win,output=output,folder_name=folder_name,file_name=file_name)
       }
       if(Classifier%in%"Ellis Wrist RF"|Classifier%in%"Ellis Hip RF"){
-         # source(paste(mypath,"/genplotellis.R",sep = ""))
+        # source(paste(mypath,"/genplotellis.R",sep = ""))
         GenPlot_Ellis(comb,window=win,output=output,folder_name=folder_name,file_name=file_name)
       }
       if(Classifier%in%"Trost Adult Wrist RF"){

@@ -1,46 +1,30 @@
 #' Title
 #'
 #' @param raw
-#' @param Fs
+#' @param sf
 #' @param ID
 #' @param mypath
 #' @param sleep
-#' @param win
+#' @param epoch
 #' @param rfmodel
-#' @param Classifier
-#' @param start.time
+#' @param classifier
+#' @param start_time
 #'
 #' @return
 #' @export
 #'
 #' @examples
-classifier_Preschool<-function(raw,Fs,ID,mypath,sleep,win,rfmodel,Classifier,start.time){
+classifier_Preschool = function(raw,sf,ID,mypath,sleep,epoch,rfmodel,classifier,start_time){
 
-  ###########################sleep variables
-  if(sleep==T){
-    s.anglez = (atan(raw[,3]/ (sqrt(raw[,1]^2 + raw[,2]^2)))) / (pi/180)
-    s.anglez<- slide(s.anglez,width=5*Fs,FUN=mean)
-    s.t2<-start.time + 5*(0:(length(s.anglez)-1))
-    class(s.t2) = c('POSIXt','POSIXct')
-    #s.t2<-.POSIXct(s.t2,tz='UTC')
-    #s.t2<-.POSIXct(s.t2,tz=Sys.timezone())
-    #class(s.t2) = c('POSIXt','POSIXct')
-    s.time2<- strptime(s.t2,"%Y-%m-%d %H:%M:%OS")
-    s.date<- format(s.time2, "%Y-%m-%d")
-    s.t2<- format(s.time2, "%H:%M:%OS")
-
-    anglez<-data.frame(s.t2,s.date,s.anglez)
-  }
-  ############################
 
   NR = (60/5)*60*24*30
   hold<- matrix(9999,NR,29) #matrix to hold one month of data at 5s windows
-  start = increment = constant = (Fs*60*60*24) #variables used to read data in 24 hr increment
+  start = increment = constant = (sf*60*60*24) #variables used to read data in 24 hr increment
   LD<-2
   count<-1
   chunk<-1
   cat("\n")
-  b<-round(dim(raw)[1]/Fs/3600,2)
+  b<-round(dim(raw)[1]/sf/3600,2)
   a<- Sys.time()
   while(LD>1){
 
@@ -49,38 +33,19 @@ classifier_Preschool<-function(raw,Fs,ID,mypath,sleep,win,rfmodel,Classifier,sta
     acc = raw[(1+(start *(chunk -1))):(increment) ,]
     acc<-na.omit(acc) #this is needed for the last day
     LD<-nrow(acc)
-    if(LD<Fs*15){#need a minimum of 1 window length to extract features
+    if(LD<sf*15){#need a minimum of 1 window length to extract features
       break
     }
     if (chunk == 1) {
-      hr<-round(((LD/Fs)/3600),2)
+      hr<-round(((LD/sf)/3600),2)
     }
     else {
-      hr<-hr+round(((LD/Fs)/3600),2)
+      hr<-hr+round(((LD/sf)/3600),2)
     }
 
-    cat(paste("Extracting features for hours",round((1+(start *(chunk -1)))/Fs/3600,2),"to",hr,"out of",b,"\r", sep = " "))
+    cat(paste("Extracting features for hours",round((1+(start *(chunk -1)))/sf/3600,2),"to",hr,"out of",b,"\r", sep = " "))
 
-    increment = increment+constant
-    acc2<- round_df(feature.extraction(acc,domain=3, vector.mag =2, window=win,overlap=0,freq=Fs,
-                                       upper=5,lower=.25),3)
 
-    if(nrow(acc)>=(Fs*60*60*1)){#need at least 1hr of data to calculate nonwear
-      nw<-nonwear_vm(acc,Fs=Fs,window=win)
-      #nw<-rep(nw,each=4) #need to adjust according to window size
-      if(length(nw)<nrow(acc2)){
-        z<-abs(as.numeric(length(nw)-nrow(acc2)))
-        z<-rep(nw[length(nw)],z)
-        nw<-c(nw,z)
-      }
-      if(length(nw)>nrow(acc2)){
-        e<-nrow(acc2)
-        nw<-nw[1:e]
-      }}
-    if(nrow(acc)<(Fs*60*60*1)){
-      e<-which(!hold[, 29] == 9999)
-      nw<-rep(hold[(e[length(e)]-1),29],nrow(acc2))
-    }
     acc2<-cbind(acc2,nw)
     hold[count:(count - 1 + dim(acc2)[1]),]<-as.matrix(acc2) #putting features into matrix
 
@@ -93,7 +58,7 @@ classifier_Preschool<-function(raw,Fs,ID,mypath,sleep,win,rfmodel,Classifier,sta
 
   cut = which(hold[, 1] == 9999)
   hold =hold[-cut, ]
-  if(Classifier%in%"Preschool Hip Random Forest Free Living Lag-Lead"|Classifier%in%"Preschool Wrist Random Forest Free Living Lag-Lead"){
+  if(classifier%in%"Preschool Hip Random Forest Free Living Lag-Lead"|classifier%in%"Preschool Wrist Random Forest Free Living Lag-Lead"){
     cat("\nExtracting lag-lead features")
     lagsd1<-dplyr::lag(hold[,2],default = 0)
     lagsd2<-dplyr::lag(hold[,2],default = 0,n=2)
@@ -106,7 +71,7 @@ classifier_Preschool<-function(raw,Fs,ID,mypath,sleep,win,rfmodel,Classifier,sta
   b<- Sys.time()-a
   cat(paste("\nfeature extraction completed:",format(b,digits=2),"\n"))
 
-  time<-start.time + win*(0:(nrow(hold)-1))#################### FIX WINDOW SIZE AND OVERLAP ACCORDINGLY
+  time<-start_time + epoch*(0:(nrow(hold)-1))#################### FIX WINDOW SIZE AND OVERLAP ACCORDINGLY
   class(time) = c('POSIXt','POSIXct')############################### THESE TWO LINES ARE IMPORTANT TO CONVERT NUMERIC STRING TO DATE/TIME
   cat("completed timestamp")
   time2<- strptime(time,"%Y-%m-%d %H:%M:%OS")
@@ -116,23 +81,23 @@ classifier_Preschool<-function(raw,Fs,ID,mypath,sleep,win,rfmodel,Classifier,sta
   raw<- data.frame(subject=ID,date=date,time=time3,hold)
   ###########################scoring file
   cat("\nClassifying Activity\n")
-  if(Classifier%in%"Preschool Hip Random Forest Free Living Lag-Lead"|Classifier%in%"Preschool Wrist Random Forest Free Living Lag-Lead"){
+  if(classifier%in%"Preschool Hip Random Forest Free Living Lag-Lead"|classifier%in%"Preschool Wrist Random Forest Free Living Lag-Lead"){
     b<-rfmodel$xNames
     colnames(raw)<-c("subject","date","time",b[1:14],"sum","mad",b[15:20],"Entropy_0.25.5hz",
                      b[21:28],"enmo","tilt","nonwear")
   }
-  if(Classifier%in%"Preschool Wrist Random Forest Free Living"|Classifier%in%"Preschool Hip Random Forest Free Living"){
+  if(classifier%in%"Preschool Wrist Random Forest Free Living"|classifier%in%"Preschool Hip Random Forest Free Living"){
     b<-rfmodel$coefnames
     colnames(raw)<-c("subject","date","time",b[1:14],"sum","mad",b[15:20],"Entropy_0.25.5hz",
                      b[21:23],"enmo","tilt","nonwear")
   }
-  if(Classifier%in%"School age Wrist Random Forest"){
+  if(classifier%in%"School age Wrist Random Forest"){
     a<-data.frame(rfmodel$forest$xlevels)
     b<-colnames(a)
     colnames(raw)<-c("subject","date","time",b[12],b[22],b[2],b[15],b[16],b[17],b[18],b[19],b[21],b[9],
                      b[11],b[14],b[24],b[13],b[23],"mad",b[20],b[1],b[10],b[8],
                      b[6],b[7],"entropy",b[3],b[4],b[5],"enmo","tilt","nonwear")}
-  if(Classifier%in%"School age Hip Random Forest"){
+  if(classifier%in%"School age Hip Random Forest"){
     b<-rfmodel$coefnames
     colnames(raw)<-c("subject","date","time",b[1:22],"entropy",b[23:25],"enmo","tilt","nonwear")
   }
@@ -140,11 +105,11 @@ classifier_Preschool<-function(raw,Fs,ID,mypath,sleep,win,rfmodel,Classifier,sta
   raw<-do.call(data.frame,lapply(raw, function(x) replace(x, is.infinite(x),NA)))
   raw[is.na(raw)] <- 0
   class<-predict(rfmodel,raw)
-  if(Classifier%in%"Preschool Hip Random Forest Free Living"){
+  if(classifier%in%"Preschool Hip Random Forest Free Living"){
     levels(class)<-c("2","3","5","1","4")
     class<-as.character(class)
   }
-  if(Classifier%in%"School age Wrist Random Forest"){
+  if(classifier%in%"School age Wrist Random Forest"){
     levels(class)<-c("1","2","4","5","3")
     class<-as.character(class)
   }
@@ -235,7 +200,7 @@ classifier_Preschool<-function(raw,Fs,ID,mypath,sleep,win,rfmodel,Classifier,sta
   if(sleep==T){
     cat("\nDetecting Sleep Periods\n")
     raw$sleep_windows_orig<-ifelse(raw$sleep%in%'s',1,0)
-    raw$sleep_periods<-detect_sleep_periods(raw,win)
+    raw$sleep_periods<-detect_sleep_periods(raw,epoch)
   }
   else{
     raw$sleep_windows_orig<-0

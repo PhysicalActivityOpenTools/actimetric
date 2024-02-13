@@ -6,7 +6,8 @@
 #' @return
 #' @export
 #'
-#' @examples
+#' @importFrom signal specgram
+#' @import stats
 Ellis.feat.extraction<-function (w, Fs)
 {
   g = matrix(0, nrow(w), 3)
@@ -67,7 +68,8 @@ Ellis.feat.extraction<-function (w, Fs)
   fRollG = atan2(gg[2], gg[1])
   fPitchG = atan2(gg[1], gg[3])
   fYawG = atan2(gg[2], gg[3])
-  s = specgram(v, n = length(v), Fs = Fs)
+  # frequency domain
+  s = signal::specgram(v, n = length(v), Fs = Fs)
   S = abs(s$S)
   f = S/max(S)
   freq = s$f
@@ -80,7 +82,7 @@ Ellis.feat.extraction<-function (w, Fs)
   freqband = freq[freq > 0.3 & freq < 3]
   fFmaxBand = freqband[which.max(band)]
   fEntropy = -sum(f * log(f))
-  s = specgram(v, n = Fs, Fs = Fs)
+  s = signal::specgram(v, n = Fs, Fs = Fs)
   S = abs(s$S)
   f = S/max(S)
   freq = s$f
