@@ -47,6 +47,8 @@
 #' @export
 #' @references van hees 2014; neishabouri 2022
 #' @importFrom caret predict.train
+#' @importFrom stats predict
+#' @import randomForest
 #'
 #' @author Jairo H. Migueles <jairo@jhmigueles.com>
 classify = function(input_directory = NULL, output_directory = NULL, studyname = "actimetric",
@@ -139,7 +141,6 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
       }
       # Now add lag-lead features if needed
       if (grepl("lag-lead", classifier, ignore.case = TRUE)) {
-        browser()
         lagsd1 = c(0, ts$vm.sd[1:c(nrow(ts) - 1)])
         lagsd2 = c(0, 0, ts$vm.sd[1:c(nrow(ts) - 2)])
         leadsd1 = c(ts$vm.sd[2:nrow(ts)], 0)
@@ -157,7 +158,11 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
       # 4 - apply classifier
       ts  = do.call(data.frame,lapply(ts, function(x) replace(x, is.infinite(x), NA)))
       ts[is.na(ts)] = 0
-      ts$activity = caret::predict.train(rfmodel, ts)
+      if (grepl("lag-lead", classifier, ignore.case = TRUE)) {
+        ts$activity = stats::predict(rfmodel, ts)
+      } else {
+        ts$activity = caret::predict.train(rfmodel, ts)
+      }
       ts$activity = as.numeric(ts$activity)
       # 5 - detect sleep
       ts$sleep_windows_orig = ts$sleep_periods = ts$sleep = 0
