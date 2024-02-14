@@ -158,11 +158,8 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
       # 4 - apply classifier
       ts  = do.call(data.frame,lapply(ts, function(x) replace(x, is.infinite(x), NA)))
       ts[is.na(ts)] = 0
-      if (grepl("lag-lead", classifier, ignore.case = TRUE)) {
-        ts$activity = stats::predict(rfmodel, ts)
-      } else {
-        ts$activity = caret::predict.train(rfmodel, ts)
-      }
+      ts$activity = tryCatch(stats::predict(rfmodel, ts),
+                             error = function(e) caret::predict.train(rfmodel, ts))
       ts$activity = as.numeric(ts$activity)
       # 5 - detect sleep
       ts$sleep_windows_orig = ts$sleep_periods = ts$sleep = 0

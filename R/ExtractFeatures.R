@@ -22,6 +22,7 @@
 #' @param do.actilifecountsLFE Logical (default = FALSE) indicating whether activity
 #' counts using the low-frequency extension filter should be calculated.
 #' @param ID Character with ID corresponding to subject
+#'
 #' @return
 #' @export
 #' @details
@@ -74,6 +75,20 @@ ExtractFeatures = function(data, classifier = NULL, sf = NULL, epoch = NULL,
       features = featuresTrost2018(data = data[, 1:3], vm = vm,
                                    epoch = epoch, sf = sf,
                                    overlap = 0, lowerBound = 0.25, upperBound = 5)
+      # handle column names to apply classifier later on
+      if (grepl(pattern = "school age wrist", x = classifier)) {
+        colnames(features) = c("E_mag_X_Y_Z", "std_mag_X_Y_Z", "cv_mag_X_Y_Z",
+                               paste0("percentile_mag_X_Y_Z_", c(10, 25, 50, 75, 90)),
+                               "skew_mag_X_Y_Z", "kurt_mag_X_Y_Z", "max_mag_X_Y_Z",
+                               "min_mag_X_Y_Z", "p2p_mag_X_Y_Z", "xmedian_mag_X_Y_Z",
+                               "sum_mag_X_Y_Z", "mad", "power_mag_X_Y_Z",
+                               "acorr_mag_X_Y_Z", "logen_mag_X_Y_Z", "iqr_mag_X_Y_Z",
+                               "f1_mag_X_Y_Z", "fm1_mag_X_Y_Z", "entropy",
+                               paste0("xcorr_", c("X_Y", "X_Z", "Y_Z")))
+      } else if (grepl(pattern = "school age hip", x = classifier)) {
+        colnames(features) = gsub("^sum", "vm.sum", colnames(features))
+        colnames(features) = gsub("^mad", "vm.mad", colnames(features))
+      }
     } else if (classifier == "adult wrist rf trost") {
       features = featuresTrost2017(data = data[, 1:3], epoch = epoch, sf = sf)
     } else if (grepl(pattern = "ellis", x = classifier)) {
