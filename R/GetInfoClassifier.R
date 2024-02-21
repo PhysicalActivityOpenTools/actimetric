@@ -73,8 +73,7 @@ GetInfoClassifier = function(classifier) {
       rfmodel = trostRF_7112014
       # 3 - Adult women Ellis
     } else if (grepl(pattern = "ellis", x = classifier)) {
-      classes = c("biking", "sedentary",
-                  "standMoving", "standStill", "walk")
+      classes = c("biking", "sedentary", "standMoving", "standStill", "vehicle","walk")
       epoch = 60
       if (classifier == "adult women wrist rf ellis") {
         rfmodel = Ellis.Wrist.RF.HMM$rf

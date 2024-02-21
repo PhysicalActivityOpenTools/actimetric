@@ -5,12 +5,14 @@
 \alias{detect_sleep_periods}
 \title{Title}
 \usage{
-detect_sleep_periods(data, window)
+detect_sleep_periods(data, window, sleepnr)
 
-detect_sleep_periods(data, window)
+detect_sleep_periods(data, window, sleepnr)
 }
 \arguments{
 \item{window}{}
+
+\item{sleepnr}{}
 }
 \description{
 Title

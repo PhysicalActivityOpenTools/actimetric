@@ -49,6 +49,7 @@
 #' @importFrom caret predict.train
 #' @importFrom stats predict
 #' @import randomForest
+#' @importFrom HMM viterbi
 #'
 #' @author Jairo H. Migueles <jairo@jhmigueles.com>
 classify = function(input_directory = NULL, output_directory = NULL, studyname = "actimetric",
@@ -158,8 +159,20 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
       # 4 - apply classifier
       ts  = do.call(data.frame,lapply(ts, function(x) replace(x, is.infinite(x), NA)))
       ts[is.na(ts)] = 0
-      ts$activity = tryCatch(stats::predict(rfmodel, ts),
-                             error = function(e) caret::predict.train(rfmodel, ts))
+      if (is.null(hmmmodel)) {
+        ts$activity = tryCatch(stats::predict(rfmodel, ts),
+                               error = function(e) caret::predict.train(rfmodel, ts))
+      } else {
+        # For now, only Ellis classifiers
+        testDat = ts[, which(colnames(ts) == "mean"):which(colnames(ts) == "fft14")]
+        testDat = predict(rfmodel$preProcValues, testDat)
+        activity = stats::predict(rfmodel,testDat)
+        ts[, 4:44] = testDat
+        filtered = HMM::viterbi(hmmmodel, activity)
+        ts = cbind(ts, activity, filtered)
+        ts$activity_orig = ts$activity
+        ts$hmm_orig = ts$filtered
+      }
       ts$activity = as.numeric(ts$activity)
       # 5 - detect sleep
       ts$sleep_windows_orig = ts$sleep_periods = ts$sleep = 0

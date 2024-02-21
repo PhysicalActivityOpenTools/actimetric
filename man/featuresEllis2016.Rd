@@ -2,13 +2,24 @@
 % Please edit documentation in R/featuresEllis2016.R
 \name{featuresEllis2016}
 \alias{featuresEllis2016}
-\title{Title}
+\title{Calculates Features Proposed By Ellis 2016}
 \usage{
-featuresEllis2016(w, Fs)
+featuresEllis2016(x, y, z, epoch, sf)
 }
 \arguments{
-\item{Fs}{}
+\item{epoch}{Numeric with the epoch length in seconds.}
+
+\item{sf}{Numeric with the sampling frequency in Hz.}
+
+\item{data}{Matrix with 3 columns containing the raw acceleration for X, Y,
+and Z axes in G units.}
+}
+\value{
+Matrix with features per epoch as proposed in Ellis 2016.
 }
 \description{
-Title
+Calculates Features Proposed By Ellis 2016
+}
+\references{
+Ellis et al., Medicine and Science in Sport and Exercise 2016;48(5): 933-940
 }

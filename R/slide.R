@@ -16,14 +16,18 @@
 #' @return Numeric vector withe the computed summary statistics.
 #' @export
 slide = function(x, width, by = NULL, FUN = NULL, ...) {
+  isMatrix = FALSE
   FUN = match.fun(FUN)
   if (is.null(by)) by = width
-
+  if (is.matrix(x)) {
+    z = x[, 3]; y = x[, 2]; x = x[, 1]
+    isMatrix = TRUE
+  }
   lenX = length(x)
   QUT1 = seq(1, lenX - width + 1, by = by)
   QUT2 = lapply(QUT1, function(x) x:(x + width - 1))
-
-  QUT3 = lapply(QUT2, function(a) FUN(x[a], ...))
+  if (isMatrix == FALSE) QUT3 = lapply(QUT2, function(a) FUN(x[a], ...))
+  if (isMatrix == TRUE) QUT3 = lapply(QUT2, function(a) FUN(x[a], y[a], z[a], ...))
   QUT4 = do.call(rbind,QUT3)
   return(QUT4)
 }

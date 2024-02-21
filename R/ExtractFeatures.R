@@ -92,7 +92,7 @@ ExtractFeatures = function(data, classifier = NULL, sf = NULL, epoch = NULL,
     } else if (classifier == "adult wrist rf trost") {
       features = featuresTrost2017(data = data[, 1:3], epoch = epoch, sf = sf)
     } else if (grepl(pattern = "ellis", x = classifier)) {
-      features = featuresEllis2016(data = data[, 1:3], epoch = epoch, sf = sf)
+      features = slide(data, width = epoch*sf, FUN = featuresEllis2016, epoch = epoch, sf = sf)
     } else if (classifier == "thigh decision tree") {
       features = featuresThigh()
     } else {

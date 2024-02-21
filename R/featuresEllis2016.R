@@ -11,59 +11,48 @@
 #'
 #' @importFrom signal specgram
 #' @import stats
-featuresEllis2016 = function(data, epoch, sf) {
-  for (ai in 1:ncol(data)) {
-    window = epoch * sf
-    w = matrix(data[, ai], nrow = window, ncol = ceiling(nrow(data)/(window)))
+featuresEllis2016 = function(x, y, z, epoch, sf) {
+  window = epoch * sf
+  # from = rowi = 1
+  # to = window
+  # out = matrix(NA, nrow = ceiling(nrow(data)/sf/epoch), ncol = 41)
+  # colnames(out) = c("fMean", "fStd", "fCoefVariation", "fMedian", "fMin", "fMax",
+  #                   "f25thP", "f75thP", "fAutocorr", "fCorrxy", "fCorrxz", "fCorryz",
+  #                   "fAvgRoll", "fAvgPitch", "fAvgYaw", "fSdRoll", "fSdPitch", "fSdYaw",
+  #                   "fRollG", "fPitchG", "fYawG", "fFmax", "fPmax", "fFmaxBand", "fPmaxBand",
+  #                   "fEntropy", "FFT0", "FFT1", "FFT2", "FFT3", "FFT4", "FFT5", "FFT6",
+  #                   "FFT7", "FFT8", "FFT9", "FFT10", "FFT11", "FFT12", "FFT13", "FFT14")
+  # lastEpoch = FALSE
+  # while (lastEpoch == FALSE) {
+    # w = data[from:to,]
+    w = cbind(x, y, z)
     g = matrix(0, nrow(w), 3)
     x = 0.9
     g[1, ] = (1 - x) * w[1, ]
-    for (n in 2:nrow(w)) {
-      g[n, ] = x * g[n - 1] + (1 - x) * w[n, ]
-    }
-    g = g[Fs:nrow(g), ]
+    for (n in 2:nrow(w)) g[n, ] = x * g[n - 1] + (1 - x) * w[n, ]
+    g = g[sf:nrow(g), ]
     gg = colMeans(g)
     w = w - gg
     v = sqrt(rowSums(w^2))
     fMean = mean(v)
     fStd = sd(v)
-    if (fMean > 0) {
-      fCoefVariation = fStd/fMean
-    }
-    else {
-      fCoefVariation = 0
-    }
+    fCoefVariation = ifelse(test = fMean > 0, yes = fStd/fMean, no = 0)
     fMedian = median(v)
     fMin = min(v)
     fMax = max(v)
     f25thP = quantile(v, 0.25)[[1]]
     f75thP = quantile(v, 0.75)[[1]]
     a = acf(v, plot = FALSE)
-    fAutocorr = which.max(abs(a$acf[2:length(a$acf)]))/(nrow(w)/Fs)
-    if ((sd(w[, 3]) > 0) & (sd(w[, 2]) > 0)) {
-      fCorrxy = cor(w[, 3], w[, 2])
-    }
-    else {
-      fCorrxy = 0
-    }
-    if ((sd(w[, 3]) > 0) & (sd(w[, 1]) > 0)) {
-      fCorrxz = cor(w[, 3], w[, 1])
-    }
-    else {
-      fCorrxz = 0
-    }
-    if ((sd(w[, 2]) > 0) & (sd(w[, 1]) > 0)) {
-      fCorryz = cor(w[, 2], w[, 1])
-    }
-    else {
-      fCorryz = 0
-    }
-    if (is.na(fCorrxy))
-      fCorrxy = 0
-    if (is.na(fCorrxz))
-      fCorrxz = 0
-    if (is.na(fCorryz))
-      fCorryz = 0
+    fAutocorr = which.max(abs(a$acf[2:length(a$acf)]))/(nrow(w)/sf)
+    fCorrxy = ifelse(test = (sd(w[, 3]) > 0) & (sd(w[, 2]) > 0),
+                     yes = cor(w[, 3], w[, 2]), no = 0)
+    fCorrxz = ifelse(test = (sd(w[, 3]) > 0) & (sd(w[, 1]) > 0),
+                     yes = cor(w[, 3], w[, 1]), no = 0)
+    fCorryz = ifelse(test = (sd(w[, 2]) > 0) & (sd(w[, 1]) > 0),
+                     yes = cor(w[, 2], w[, 1]), no = 0)
+    if (is.na(fCorrxy)) fCorrxy = 0
+    if (is.na(fCorrxz)) fCorrxz = 0
+    if (is.na(fCorryz)) fCorryz = 0
     fAvgRoll = mean(atan2(w[, 2], w[, 1]))
     fAvgPitch = mean(atan2(w[, 1], w[, 3]))
     fAvgYaw = mean(atan2(w[, 2], w[, 3]))
@@ -74,7 +63,7 @@ featuresEllis2016 = function(data, epoch, sf) {
     fPitchG = atan2(gg[1], gg[3])
     fYawG = atan2(gg[2], gg[3])
     # frequency domain
-    s = signal::specgram(v, n = length(v), Fs = Fs)
+    s = signal::specgram(v, n = length(v), Fs = sf)
     S = abs(s$S)
     f = S/max(S)
     freq = s$f
@@ -87,7 +76,7 @@ featuresEllis2016 = function(data, epoch, sf) {
     freqband = freq[freq > 0.3 & freq < 3]
     fFmaxBand = freqband[which.max(band)]
     fEntropy = -sum(f * log(f))
-    s = signal::specgram(v, n = Fs, Fs = Fs)
+    s = signal::specgram(v, n = sf, Fs = sf)
     S = abs(s$S)
     f = S/max(S)
     freq = s$f
@@ -107,13 +96,28 @@ featuresEllis2016 = function(data, epoch, sf) {
     FFT12 = f[13]
     FFT13 = f[14]
     FFT14 = f[15]
-  }
-
-  return(c(fMean, fStd, fCoefVariation, fMedian, fMin, fMax,
-           f25thP, f75thP, fAutocorr, fCorrxy, fCorrxz, fCorryz,
-           fAvgRoll, fAvgPitch, fAvgYaw, fSdRoll, fSdPitch, fSdYaw,
-           fRollG, fPitchG, fYawG, fFmax, fPmax, fFmaxBand, fPmaxBand,
-           fEntropy, FFT0, FFT1, FFT2, FFT3, FFT4, FFT5, FFT6,
-           FFT7, FFT8, FFT9, FFT10, FFT11, FFT12, FFT13, FFT14))
+    out = c(fMean, fStd, fCoefVariation, fMedian, fMin, fMax,
+            f25thP, f75thP, fAutocorr, fCorrxy, fCorrxz, fCorryz,
+            fAvgRoll, fAvgPitch, fAvgYaw, fSdRoll, fSdPitch, fSdYaw,
+            fRollG, fPitchG, fYawG, fFmax, fPmax, fFmaxBand, fPmaxBand,
+            fEntropy, FFT0, FFT1, FFT2, FFT3, FFT4, FFT5, FFT6,
+            FFT7, FFT8, FFT9, FFT10, FFT11, FFT12, FFT13, FFT14)
+    names(out) = c("mean", "sd", "coefvariation", "median", "min", "max",
+                   "X25thp", "X75thp", "autocorr", "corrxy", "corrxz", "corryz",
+                   "avgroll", "avgpitch", "avgyaw", "sdroll", "sdpitch", "sdyaw",
+                   "rollg", "pitchg", "yawg", "fmax", "pmax", "fmaxband", "pmaxband",
+                   "entropy", "fft0", "fft1", "fft2", "fft3", "fft4", "fft5", "fft6",
+                   "fft7", "fft8", "fft9", "fft10", "fft11", "fft12", "fft13", "fft14")
+    return(out)
+  #   # for next loop...
+  #   rowi = rowi + 1
+  #   from = from + window
+  #   to = to + window
+  #   if (to >= nrow(data)) lastEpoch = TRUE
+  # }
+  # # clean up out
+  # rows2delete = which(rowSums(is.na(out)) == ncol(out))
+  # if (length(rows2delete) > 0) out = out[-rows2delete,]
+  # return(out)
 }
 

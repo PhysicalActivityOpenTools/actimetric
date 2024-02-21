@@ -2,18 +2,19 @@
 #'
 #' @param data
 #' @param window
+#' @param sleepnr
 #'
 #' @return
 #' @export
 #'
 #' @examples
-detect_sleep_periods<-function(data, window){
+detect_sleep_periods<-function(data, window, sleepnr){
 
   sleepperiod<-rep(0,nrow(data))
 
-  if(any(data$activity==6)==T){ #determine if at least 1 sleep window was detected for participant
+  if(any(data$activity==sleepnr)==T){ #determine if at least 1 sleep window was detected for participant
 
-    sleep<-ifelse(data$activity==6,1,0) #make all instances into binary sleep 1/0
+    sleep<-ifelse(data$activity==sleepnr,1,0) #make all instances into binary sleep 1/0
     sleep<-c(0,diff(sleep))
     start<-which(sleep==1) #identify start of each sleep window
     end<-which(sleep==-1) #identify end of each sleep window

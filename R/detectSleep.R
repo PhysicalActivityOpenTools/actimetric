@@ -9,6 +9,8 @@
 #' @return
 #' @export
 detectSleep = function(data, ts, epoch, sf, start_time) {
+  sleepnr = max(ts$activity) + 1
+  nwnr = max(ts$activity) + 2
   # 1 - get angle z
   prevChunk = 0; lastChunk = FALSE
   while (lastChunk == FALSE) {
@@ -76,13 +78,13 @@ detectSleep = function(data, ts, epoch, sf, start_time) {
   }
   # nonwear recategorized to 6
   e = which(ts$nonwear == 6)
-  ts$activity[e] = 6
+  ts$activity[e] = sleepnr
   e = which(ts$nonwear == 1)
-  ts$activity[e] = 7
+  ts$activity[e] = nwnr
 
   # detect sleep periods
   ts$sleep_windows_orig = ts$sleep
-  ts$sleep_periods = detect_sleep_periods(ts, epoch)
+  ts$sleep_periods = detect_sleep_periods(ts, epoch, sleepnr)
 
   ts = subset(ts, select = -c(nonwear, sleep))
   return(ts)
