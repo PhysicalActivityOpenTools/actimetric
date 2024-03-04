@@ -7,12 +7,15 @@
 featuresEllis2016(x, y, z, epoch, sf)
 }
 \arguments{
+\item{x}{Numeric vector with the raw acceleration for X axis in G units.}
+
+\item{y}{Numeric vector with the raw acceleration for Y axis in G units.}
+
+\item{z}{Numeric vector with the raw acceleration for Z axis in G units.}
+
 \item{epoch}{Numeric with the epoch length in seconds.}
 
 \item{sf}{Numeric with the sampling frequency in Hz.}
-
-\item{data}{Matrix with 3 columns containing the raw acceleration for X, Y,
-and Z axes in G units.}
 }
 \value{
 Matrix with features per epoch as proposed in Ellis 2016.

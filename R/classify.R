@@ -159,7 +159,9 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
       # 4 - apply classifier
       ts  = do.call(data.frame,lapply(ts, function(x) replace(x, is.infinite(x), NA)))
       ts[is.na(ts)] = 0
-      if (is.null(hmmmodel)) {
+      if (grepl("thigh", classifier)) {
+
+      } else if (is.null(hmmmodel)) {
         ts$activity = tryCatch(stats::predict(rfmodel, ts),
                                error = function(e) caret::predict.train(rfmodel, ts))
       } else {
@@ -177,7 +179,8 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
       # 5 - detect sleep
       ts$sleep_windows_orig = ts$sleep_periods = ts$sleep = 0
       if (do.sleep) {
-        ts = detectSleep(data = raw, ts = ts, epoch = 5, sf = sf, start_time = start_time)
+        ts = detectSleep(data = raw, ts = ts, epoch = 5, sf = sf,
+                         start_time = start_time)
       }
       # MILESTONE: save features data in features folder
       original_classifier = classifier
