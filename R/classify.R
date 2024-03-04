@@ -159,8 +159,32 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
       # 4 - apply classifier
       ts  = do.call(data.frame,lapply(ts, function(x) replace(x, is.infinite(x), NA)))
       ts[is.na(ts)] = 0
-      if (grepl("thigh", classifier)) {
-
+      if (grepl("thigh", classifier, ignore.case = TRUE)) {
+        ts$activity = ts$post = thres = NA
+        sit = which(ts$bfsd.x <= 0.1 & ts$inc.x < 135)
+        ts$activity[sit] = 1
+        e  = apply(ts[, c("bfsd.y", "bfsd.x", "bfsd.z")], 1, max)
+        standMove = which(e > 0.1 & ts$bfsd.x <= 0.1 & abs(ts$inc.x) >= 135)
+        ts$activity[standMove] = 3
+        stand = which(e <= 0.1 & ts$bfsd.x <= 0.1 & ts$inc.x >= 135)
+        ts$activity[stand] = 2
+        ee = which(is.na(ts$activity))
+        bike = which(ts$bfsd.x[ee] > 0.1 & ts$fb.z[ee] > 24)
+        ts$activity[ee[bike]] = 7
+        run = which(ts$bfsd.x[ee] > 0.1 & ts$bfsd.x[ee] > 0.72 & ts$fb.z[ee] < 24)
+        ts$activity[ee[run]] = 5
+        walk = which(ts$bfsd.x[ee] > 0.1 & ts$bfsd.x[ee] < 0.72 & ts$fb.z[ee] < 24)
+        ts$activity[ee[walk]] = 4
+        e = which(ts$activity == 1)
+        if (length(e) > 0) {
+          thres = as.numeric(abs(base::summary(ts$fb.z[e & ts$fb.z[e] < 5 & ts$fb.z[e] > -5])[3]) + 4.5)
+          climbStairs = which(ts$activity %in% c(4:5) & ts$fb.z > thres)
+          ts$activity[climbStairs] = 6
+        }
+        if (length(e) == 0 & !is.na(thres)) {
+          climbStairs = which(ts$activity %in% c(4:5) & ts$fb.z > thres)
+          ts$activity[climbStairs] = 6
+        }
       } else if (is.null(hmmmodel)) {
         ts$activity = tryCatch(stats::predict(rfmodel, ts),
                                error = function(e) caret::predict.train(rfmodel, ts))
@@ -179,8 +203,11 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
       # 5 - detect sleep
       ts$sleep_windows_orig = ts$sleep_periods = ts$sleep = 0
       if (do.sleep) {
+        sleep_id = length(classes) + 1
+        nonwear_id = length(classes) + 2
         ts = detectSleep(data = raw, ts = ts, epoch = 5, sf = sf,
-                         start_time = start_time)
+                         start_time = start_time, sleep_id = sleep_id,
+                         nonwear_id = nonwear_id)
       }
       # MILESTONE: save features data in features folder
       original_classifier = classifier

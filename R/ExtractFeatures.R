@@ -94,7 +94,7 @@ ExtractFeatures = function(data, classifier = NULL, sf = NULL, epoch = NULL,
     } else if (grepl(pattern = "ellis", x = classifier)) {
       features = slide(data, width = epoch*sf, FUN = featuresEllis2016, epoch = epoch, sf = sf)
     } else if (classifier == "thigh decision tree") {
-      features = featuresThigh()
+      features = slide(data, width = epoch*sf, FUN = featuresThigh, epoch = epoch, sf = sf)
     } else {
       classifierAvailable = FALSE
     }

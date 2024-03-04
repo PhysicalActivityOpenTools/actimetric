@@ -4,7 +4,7 @@
 \alias{detectSleep}
 \title{Detects Sleep Periods}
 \usage{
-detectSleep(data, ts, epoch, sf, start_time)
+detectSleep(data, ts, epoch, sf, start_time, sleep_id, nonwear_id)
 }
 \arguments{
 \item{data}{Matrix with 3 columns containing the raw acceleration for X, Y,
@@ -15,6 +15,12 @@ and Z axes in G units.}
 \item{epoch}{Numeric with the epoch length in seconds.}
 
 \item{sf}{Numeric with the sampling frequency in Hz.}
+
+\item{start_time}{Start time.}
+
+\item{sleep_id}{Identification number for sleep periods.}
+
+\item{nonwear_id}{Identification number for nonwear periods.}
 }
 \description{
 Detects Sleep Periods

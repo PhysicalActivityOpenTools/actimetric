@@ -86,8 +86,8 @@ GetInfoClassifier = function(classifier) {
       }
       # 4 - Thigh
     } else if (classifier == "thigh decision tree") {
-      classes = c("sitting", "laying", "standMoving",
-                  "walk", "run", "climbStairs", "biking")
+      classes = c("sit", "stand", "standMove",
+                  "walk", "run", "climbStairs", "bike")
       epoch = 10
     } else {
       classifierAvailable = FALSE

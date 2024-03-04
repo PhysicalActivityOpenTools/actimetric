@@ -5,12 +5,13 @@
 #' @param ts Data frame with ts object from \link{extractFeatures}
 #' @param epoch Numeric with the epoch length in seconds.
 #' @param sf Numeric with the sampling frequency in Hz.
+#' @param start_time Start time.
+#' @param sleep_id Identification number for sleep periods.
+#' @param nonwear_id Identification number for nonwear periods.
 #'
 #' @return
 #' @export
-detectSleep = function(data, ts, epoch, sf, start_time) {
-  sleepnr = max(ts$activity) + 1
-  nwnr = max(ts$activity) + 2
+detectSleep = function(data, ts, epoch, sf, start_time, sleep_id, nonwear_id) {
   # 1 - get angle z
   prevChunk = 0; lastChunk = FALSE
   while (lastChunk == FALSE) {
@@ -78,13 +79,13 @@ detectSleep = function(data, ts, epoch, sf, start_time) {
   }
   # nonwear recategorized to 6
   e = which(ts$nonwear == 6)
-  ts$activity[e] = sleepnr
+  ts$activity[e] = sleep_id
   e = which(ts$nonwear == 1)
-  ts$activity[e] = nwnr
+  ts$activity[e] = nonwear_id
 
   # detect sleep periods
   ts$sleep_windows_orig = ts$sleep
-  ts$sleep_periods = detect_sleep_periods(ts, epoch, sleepnr)
+  ts$sleep_periods = detect_sleep_periods(ts, epoch, sleep_id)
 
   ts = subset(ts, select = -c(nonwear, sleep))
   return(ts)
