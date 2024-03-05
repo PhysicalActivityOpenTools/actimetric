@@ -25,9 +25,3 @@ List containing epoch, rfmodel, and hmmmodel
 \description{
 Gets the required information to run a classifier (i.e., epoch and models)
 }
-\examples{
-# example code
-\dontRun{
-GetInfoClassifier(classifier = "Preschool Wrist Random Forest Free Living")
-}
-}

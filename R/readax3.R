@@ -79,9 +79,9 @@ readax3<-function(raw){
 
     i<-i+1
   }
-  dat = as.numeric(strptime(PP$header$start,"%Y-%m-%d %H:%M:%OS"))
+  start_time = as.numeric(strptime(PP$header$start,"%Y-%m-%d %H:%M:%OS"))
   cat('\n')
-  return(invisible(list(Fs = sf, data = matt,dat = dat)))
+  return(invisible(list(sf = sf, data = matt,start_time = start_time)))
 
 }
 

@@ -33,13 +33,11 @@ ReadAccFile = function(file, verbose = TRUE) {
     raw = readGeneactiv(file)
     raw$header = data.frame(1, 1)
     zz = GENEAread::header.info(file)
-    sf = as.numeric(unlist(zz$Value[2]))
-    raw$header$Sample_Rate = sf
+    raw$sf = as.numeric(unlist(zz$Value[2]))
   } else if (format == "cwa") {
     raw = readax3(file) #2020/19/11 AX3 has temp, battery, and light data. These have been removed
     #to save memory space and speed up reading in data. Can be included in the future if needed
     raw$header = data.frame(1,1)
-    raw$header$Sample_Rate = raw$Fs
   }
   # Add identifier to raw
   raw$ID = ID

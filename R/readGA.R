@@ -6,7 +6,7 @@
 #' @export
 #'
 #' @examples
-readGA<-function(raw){
+readGeneactiv<-function(raw){
 
   updatepageindexing = function(startpage=c(), deltapage=c(), blocknumber=c(),PreviousEndPage=c(),
 
@@ -77,10 +77,10 @@ readGA<-function(raw){
   # dat = strptime(unlist(zz$Value[4]),"%Y-%m-%d %H:%M:%OS")
   #
   # time = dat + (0:(nrow(matt)-1))/sf
-  dat = as.numeric(strptime(unlist(zz$Value[4]),"%Y-%m-%d %H:%M:%OS"))
+  start_time = as.numeric(strptime(unlist(zz$Value[4]),"%Y-%m-%d %H:%M:%OS"))
 
 
-  return(invisible(list(data = matt,dat = dat)))
+  return(invisible(list(data = matt,start_time = start_time)))
 
 }
 

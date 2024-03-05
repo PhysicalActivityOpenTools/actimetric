@@ -1,7 +1,7 @@
 
 library(actimetric)
 
-c = 2
+c = 1
 
 classify(input_directory = "D:/GGIRdev/files/nonwear/smallfile/",
          output_directory = "D:/actimetric/",
@@ -25,7 +25,7 @@ classify(input_directory = "D:/GGIRdev/files/nonwear/smallfile/",
          do.enmo = TRUE,
          do.actilifecounts = FALSE,
          do.actilifecountsLFE = FALSE,
-         verbose = TRUE, overwrite = TRUE)
+         verbose = TRUE, overwrite = FALSE)
 
 
 # interactive selection of directories: both interactive and via code

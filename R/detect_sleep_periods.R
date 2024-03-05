@@ -2,18 +2,19 @@
 #'
 #' @param data
 #' @param window
+#' @param sleepnr
 #'
 #' @return
 #' @export
 #'
 #' @examples
-detect_sleep_periods<-function(data, window){
+detect_sleep_periods = function(data, window, sleep_id){
 
   sleepperiod<-rep(0,nrow(data))
 
-  if(any(data$class==6)==T){ #determine if at least 1 sleep window was detected for participant
+  if(any(data$activity==sleep_id)==T){ #determine if at least 1 sleep window was detected for participant
 
-    sleep<-ifelse(data$class==6,1,0) #make all instances into binary sleep 1/0
+    sleep<-ifelse(data$activity==sleep_id,1,0) #make all instances into binary sleep 1/0
     sleep<-c(0,diff(sleep))
     start<-which(sleep==1) #identify start of each sleep window
     end<-which(sleep==-1) #identify end of each sleep window
@@ -24,17 +25,17 @@ detect_sleep_periods<-function(data, window){
       tilt<-data$tilt[start[i]:end[i]]
       sdl1<-rep(0,length(tilt))
 
-      postch = which(abs(diff(tilt)) > 5) #identify when tilt changes by more than 5 degrees between instances
-      if (length(postch) > 1) {
-        s1 = which(diff(postch) > (5*(60/window))) #identify when there is more than 5 minutes between tilt changes > 5 degrees
-      }else{s1 = c()}
-      if (length(s1) > 0) {
-        try(for (gi in 1:length(s1)) {
-          sdl1[postch[s1[gi]]:postch[s1[gi]+1]] = 1 #periods with less than 5 degree change between instances for at least 5 minutes = 1
-        },silent=T)
-      }else{
-        sdl1[1:length(sdl1)]<-0 #no periods during sleep window had less than 5 degree change between instances for at least 5 minutes
-      }
+      postch = abs(diff(tilt))
+      postch = ifelse(postch<=5,1,0)
+      postch<-c(postch,postch[length(postch)]) #repeat last instance to make the length of "postch" the same as "tilt"
+      run = rle(postch)
+
+      run<-rep(run$lengths,run$lengths)
+      postch<-cbind(postch,run)
+
+      e<-which(postch[,1]==1 & postch[,2]>=(5*(60/window)))
+
+      sdl1[e]<-1
 
       sleepperiod[start[i]:end[i]]<-sdl1
     }

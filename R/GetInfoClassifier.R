@@ -16,12 +16,6 @@
 #'
 #' @return List containing epoch, rfmodel, and hmmmodel
 #' @export
-#'
-#' @examples
-#' # example code
-#' \dontRun{
-#' GetInfoClassifier(classifier = "Preschool Wrist Random Forest Free Living")
-#' }
 GetInfoClassifier = function(classifier) {
   # initiate objects to return
   epoch = rfmodel = hmmmodel = classes = NULL
