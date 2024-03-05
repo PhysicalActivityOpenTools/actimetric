@@ -1,4 +1,4 @@
-#' Detects Sleep Periods
+#' Detects Sleep Periods from Wrist Attachment Site
 #'
 #' @param data Matrix with 3 columns containing the raw acceleration for X, Y,
 #' and Z axes in G units.
@@ -11,7 +11,7 @@
 #'
 #' @return
 #' @export
-detectSleep = function(data, ts, epoch, sf, start_time, sleep_id, nonwear_id) {
+detectSleepWrist = function(data, ts, epoch, sf, start_time, sleep_id, nonwear_id) {
   # 1 - get angle z
   prevChunk = 0; lastChunk = FALSE
   while (lastChunk == FALSE) {

@@ -99,6 +99,14 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
       infoClassifier = GetInfoClassifier(classifier = classifier)
       epoch = infoClassifier$epoch; classes = infoClassifier$classes
       rfmodel = infoClassifier$rfmodel; hmmmodel = infoClassifier$hmmmodel
+      body_attachment_site = NA
+      if (grepl("hip", classifier, ignore.case = TRUE)) {
+        body_attachment_site = "hip"
+      } else if (grepl("wrist", classifier, ignore.case = TRUE)) {
+        body_attachment_site = "wrist"
+      } else if (grepl("thigh", classifier, ignore.case = TRUE)) {
+        body_attachment_site = "thigh"
+      }
       # 3.2 - set loop to read data in chunks and classify
       prevChunk = 0; lastChunk = FALSE
       while (lastChunk == FALSE) {
@@ -205,9 +213,17 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
       if (do.sleep) {
         sleep_id = length(classes) + 1
         nonwear_id = length(classes) + 2
-        ts = detectSleep(data = raw, ts = ts, epoch = 5, sf = sf,
-                         start_time = start_time, sleep_id = sleep_id,
-                         nonwear_id = nonwear_id)
+        if (body_attachment_site == "wrist") {
+          ts = detectSleepWrist(data = raw, ts = ts, epoch = 5, sf = sf,
+                                start_time = start_time, sleep_id = sleep_id,
+                                nonwear_id = nonwear_id)
+        } else if (body_attachment_site == "thigh") {
+          ts = detectSleepThigh(ts = ts, epoch = epoch, sleep_id = sleep_id,
+                                nonwear_id = nonwear_id)
+        } else {
+          warning("Sleep detection only available for wrist and thigh attachment sites.")
+        }
+
       }
       # MILESTONE: save features data in features folder
       original_classifier = classifier

@@ -196,82 +196,82 @@ classifier_thigh<-function(raw,Fs,ID,mypath,win,sleep,rfmodel=rfmodel,Classifier
   raw<- data.frame(subject=ID,date=date,time=time3,hold)
   ###########################scoring file
 
-    b<-c("bfvm","bfsd","bfsd.y","bfsd.x","bfsd.z","inc.y","inc.x","inc.z","fb.y","fb.x","fb.z","median.x",
-         'median.y','median.z','median.vm')
-    colnames(raw)<-c("subject","date","time",c(b),"enmo","nonwear")
-    ################    Implement Decision Tree
-    raw$class<-NA
-    raw$post<-NA
-    thresh<-NA
-    dat<-unique(raw$date)
-    for(dit in 1 :length(dat)){
-      temp<-raw[raw$date%in%dat[dit],]
-      cat(paste("Classifying day", dit, "out of", length(dat),"\r",sep = ' '))
+  b<-c("bfvm","bfsd","bfsd.y","bfsd.x","bfsd.z","inc.y","inc.x","inc.z","fb.y","fb.x","fb.z","median.x",
+       'median.y','median.z','median.vm')
+  colnames(raw)<-c("subject","date","time",c(b),"enmo","nonwear")
+  ################    Implement Decision Tree
+  raw$class<-NA
+  raw$post<-NA
+  thresh<-NA
+  dat<-unique(raw$date)
+  for(dit in 1 :length(dat)){
+    temp<-raw[raw$date%in%dat[dit],]
+    cat(paste("Classifying day", dit, "out of", length(dat),"\r",sep = ' '))
 
-      # post<-which(abs(temp$fb.z)<45)
-      # if(length(post)<1){ post<-"x1a"}
-      #
-      # else if(length(post)>=1){
-      #   if(abs(base::summary(temp$fb.y[post])[3])<20){
-      #     if(sign(base::summary(temp$fb.x)[3])==1){ post<-"x1a"}
-      #     if(sign(base::summary(temp$fb.x)[3])==-1){
-      #       post<-"x1b"
-      #       temp$inc.y<-180-temp$inc.y; temp$inc.x<-180-temp$inc.x
-      #       temp$fb.y<-(-1)*temp$fb.y; temp$fb.x<-(-1)*temp$fb.x
-      #       }
-      #   }
-      #   else if(abs(base::summary(temp$fb.y[post])[3])>=20){
-      #     if(sign(base::summary(temp$fb.y)[3])==1){
-      #       post<-"x2a"
-      #       temp <- transform(temp, inc.y = inc.x, inc.x = inc.y)
-      #       temp <- transform(temp, fb.y = fb.x, fb.x = fb.y)
-      #     }
-      #     if(sign(base::summary(temp$fb.y)[3])==-1){
-      #       post<-"x2b"
-      #       temp <- transform(temp, inc.y = inc.x, inc.x = inc.y)
-      #       temp <- transform(temp, fb.y = fb.x, fb.x = fb.y)
-      #       temp$inc.y<-180-temp$inc.y; temp$inc.x<-180-temp$inc.x
-      #       temp$fb.y<-(-1)*temp$fb.y; temp$fb.x<-(-1)*temp$fb.x
-      #       }
-      #   }
-      # }
-      post<-"x1a"
-      if(post%in%"x1a"|post%in%"x1b"|post%in%"x2a"|post%in%"x2b"){
-        inds<-which(temp$bfsd.x<=0.1 & temp$inc.x<135)
-        temp$class[inds]<-"sit"
-        e<-apply(temp[,6:8],1,max)
-        inds<-which( e>0.1 & temp$bfsd.x<=0.1 & abs(temp$inc.x)>=135)
-        temp$class[inds]<-"move"
-        inds<-which( e<=0.1 & temp$bfsd.x<=0.1 & temp$inc.x>=135)
-        temp$class[inds]<-"stand"
+    # post<-which(abs(temp$fb.z)<45)
+    # if(length(post)<1){ post<-"x1a"}
+    #
+    # else if(length(post)>=1){
+    #   if(abs(base::summary(temp$fb.y[post])[3])<20){
+    #     if(sign(base::summary(temp$fb.x)[3])==1){ post<-"x1a"}
+    #     if(sign(base::summary(temp$fb.x)[3])==-1){
+    #       post<-"x1b"
+    #       temp$inc.y<-180-temp$inc.y; temp$inc.x<-180-temp$inc.x
+    #       temp$fb.y<-(-1)*temp$fb.y; temp$fb.x<-(-1)*temp$fb.x
+    #       }
+    #   }
+    #   else if(abs(base::summary(temp$fb.y[post])[3])>=20){
+    #     if(sign(base::summary(temp$fb.y)[3])==1){
+    #       post<-"x2a"
+    #       temp <- transform(temp, inc.y = inc.x, inc.x = inc.y)
+    #       temp <- transform(temp, fb.y = fb.x, fb.x = fb.y)
+    #     }
+    #     if(sign(base::summary(temp$fb.y)[3])==-1){
+    #       post<-"x2b"
+    #       temp <- transform(temp, inc.y = inc.x, inc.x = inc.y)
+    #       temp <- transform(temp, fb.y = fb.x, fb.x = fb.y)
+    #       temp$inc.y<-180-temp$inc.y; temp$inc.x<-180-temp$inc.x
+    #       temp$fb.y<-(-1)*temp$fb.y; temp$fb.x<-(-1)*temp$fb.x
+    #       }
+    #   }
+    # }
+    post<-"x1a"
+    if(post%in%"x1a"|post%in%"x1b"|post%in%"x2a"|post%in%"x2b"){
+      inds<-which(temp$bfsd.x<=0.1 & temp$inc.x<135)
+      temp$class[inds]<-"sit"
+      e<-apply(temp[,6:8],1,max)
+      inds<-which( e>0.1 & temp$bfsd.x<=0.1 & abs(temp$inc.x)>=135)
+      temp$class[inds]<-"move"
+      inds<-which( e<=0.1 & temp$bfsd.x<=0.1 & temp$inc.x>=135)
+      temp$class[inds]<-"stand"
 
-        ee<-which(temp$class%in%NA)
-        inds<-which(temp$bfsd.x[ee]>0.1 & temp$fb.z[ee]>24)
-        temp$class[ee[inds]]<-"cycle"
+      ee<-which(temp$class%in%NA)
+      inds<-which(temp$bfsd.x[ee]>0.1 & temp$fb.z[ee]>24)
+      temp$class[ee[inds]]<-"cycle"
 
-        inds<-which(temp$bfsd.x[ee]>0.1 & temp$bfsd.x[ee]>0.72 & temp$fb.z[ee]<24)
-        temp$class[ee[inds]]<-"run"
-        inds<-which(temp$bfsd.x[ee]>0.1 & temp$bfsd.x[ee]<0.72 & temp$fb.z[ee]<24)
-        temp$class[ee[inds]]<-"walk"
+      inds<-which(temp$bfsd.x[ee]>0.1 & temp$bfsd.x[ee]>0.72 & temp$fb.z[ee]<24)
+      temp$class[ee[inds]]<-"run"
+      inds<-which(temp$bfsd.x[ee]>0.1 & temp$bfsd.x[ee]<0.72 & temp$fb.z[ee]<24)
+      temp$class[ee[inds]]<-"walk"
 
-        e<-which(temp$class%in%"sit")
-        if(length(e)>0){
-          thresh<-as.numeric(abs(base::summary(temp$fb.z[e & temp$fb.z<5 & temp$fb.z>-5])[3])+4.5)
-          inds<-which(temp$class%in%c('walk','run') & temp$fb.z>thresh)
-          temp$class[inds]<-"stairs"
-        }
-        if(length(e)==0 & !thresh%in%NA){
-          inds<-which(temp$class%in%c('walk','run') & temp$fb.z>thresh)
+      e<-which(temp$class%in%"sit")
+      if(length(e)>0){
+        thresh<-as.numeric(abs(base::summary(temp$fb.z[e & temp$fb.z<5 & temp$fb.z>-5])[3])+4.5)
+        inds<-which(temp$class%in%c('walk','run') & temp$fb.z>thresh)
         temp$class[inds]<-"stairs"
       }
-    temp$post<-post
-    raw[raw$date%in%dat[dit],]<-temp
-
+      if(length(e)==0 & !thresh%in%NA){
+        inds<-which(temp$class%in%c('walk','run') & temp$fb.z>thresh)
+        temp$class[inds]<-"stairs"
       }
-      #########################
-
+      temp$post<-post
+      raw[raw$date%in%dat[dit],]<-temp
 
     }
+    #########################
+
+
+  }
 
   ########################sleep detection
   cat("\n")
@@ -287,132 +287,131 @@ classifier_thigh<-function(raw,Fs,ID,mypath,win,sleep,rfmodel=rfmodel,Classifier
     time<-format(time, "%H:%M:%S")
     raw$time<-time
 
-      x = slide(raw$bfsd.x, width = (60/win)*5, FUN=Median,by=1)
-      x2 = slide(raw$inc.x, width = (60/win)*5, FUN=Median,by=1)
-      x2<-which(x<0.1 & x2 <135)
-      x<-rep(NA,length(x))
-      x[x2]<-'sit'
-      xangle = slide(raw$fb.y, width = (60/win)*5, FUN=Median,by=1)
+    x = slide(raw$bfsd.x, width = (60/win)*5, FUN=Median,by=1)
+    x2 = slide(raw$inc.x, width = (60/win)*5, FUN=Median,by=1)
+    x2<-which(x<0.1 & x2 <135)
+    x<-rep(NA,length(x))
+    x[x2]<-'sit'
+    xangle = slide(raw$fb.y, width = (60/win)*5, FUN=Median,by=1)
 
 
-      nomov = rep(0, length(x))
-      inbedtime = rep(NA, length(x))
-      legangle =  rep(0, length(x))
-      nomov[which(x%in%"sit")] = 1
-      nomov = c(0, nomov, 0)
-      s1 = which(diff(nomov) == 1)
-      e1 = which(diff(nomov) == -1)
-      bedblock = which((e1 - s1) > ((60/win) * 60 *
-                                      1))
+    nomov = rep(0, length(x))
+    inbedtime = rep(NA, length(x))
+    legangle =  rep(0, length(x))
+    nomov[which(x%in%"sit")] = 1
+    nomov = c(0, nomov, 0)
+    s1 = which(diff(nomov) == 1)
+    e1 = which(diff(nomov) == -1)
+    bedblock = which((e1 - s1) > ((60/win) * 60 *
+                                    1))
 
-      if (length(bedblock) > 0) {
-        s2 = s1[bedblock]
-        e2 = e1[bedblock]
+    if (length(bedblock) > 0) {
+      s2 = s1[bedblock]
+      e2 = e1[bedblock]
       if(e2[length(e2)]>length(xangle)){e2[length(e2)]<-length(xangle)}
 
 
-        for (j in 1:length(s2)) {
-          inbedtime[s2[j]:e2[j]] = 1
-        }
+      for (j in 1:length(s2)) {
+        inbedtime[s2[j]:e2[j]] = 1
+      }
 
 
 
-        legangle[which(inbedtime==1 & abs(xangle)>35)]<-1
+      legangle[which(inbedtime==1 & abs(xangle)>35)]<-1
 
 
-        outofbed = rep(0, length(inbedtime))
-        outofbed[which(is.na(inbedtime) == TRUE)] = 1
-        outofbed = c(0, outofbed,0)
-        s3 = which(diff(outofbed) == 1)
-        e3 = which(diff(outofbed) == -1)
-        outofbedblock = which((e3 - s3) < ((60/win) * 30 *
-                                             1))
-        if (length(outofbedblock) > 0) {
-          s4 = s3[outofbedblock]
-          e4 = e3[outofbedblock]
-          if(e4[length(e4)]>length(inbedtime)){e4[length(e4)]<-length(inbedtime)}
-          if (length(s4) > 0) {
-            for (j in 1:length(s4)) {
-              inbedtime[s4[j]:e4[j]] = 1
-            }
-            legangle[which(inbedtime==1 & abs(xangle)>35)]<-1
-
+      outofbed = rep(0, length(inbedtime))
+      outofbed[which(is.na(inbedtime) == TRUE)] = 1
+      outofbed = c(0, outofbed,0)
+      s3 = which(diff(outofbed) == 1)
+      e3 = which(diff(outofbed) == -1)
+      outofbedblock = which((e3 - s3) < ((60/win) * 30 *
+                                           1))
+      if (length(outofbedblock) > 0) {
+        s4 = s3[outofbedblock]
+        e4 = e3[outofbedblock]
+        if(e4[length(e4)]>length(inbedtime)){e4[length(e4)]<-length(inbedtime)}
+        if (length(s4) > 0) {
+          for (j in 1:length(s4)) {
+            inbedtime[s4[j]:e4[j]] = 1
           }
-        }
-        if (length(inbedtime) == (length(x) + 1))
-          inbedtime = inbedtime[1:(length(inbedtime) -1)]
-
-        inbedtime[inbedtime%in%NA]<-0
-        s4 = which(diff(c(0, inbedtime, 0)) == 1)
-        e4 = which(diff(c(0, inbedtime, 0)) == -1)
-
-        for(nw in 1:length(s4)){
-          non<-length(which(legangle[s4[nw]:e4[nw]]==1)) #determine length of non-wear within sleep duration
-          sl<-length(which(inbedtime[s4[nw]:e4[nw]]==1)) #determine length of sleep duration
-          if(non/sl<.2){inbedtime[s4[nw]:e4[nw]]<-0} #apply 75% rule
+          legangle[which(inbedtime==1 & abs(xangle)>35)]<-1
 
         }
+      }
+      if (length(inbedtime) == (length(x) + 1))
+        inbedtime = inbedtime[1:(length(inbedtime) -1)]
 
-        s5 = which(diff(c(0, inbedtime, 0)) == 1)
-        e5 = which(diff(c(0, inbedtime, 0)) == -1)
+      inbedtime[inbedtime%in%NA]<-0
+      s4 = which(diff(c(0, inbedtime, 0)) == 1)
+      e4 = which(diff(c(0, inbedtime, 0)) == -1)
 
-        if(length(s5)>0){ #check if there are actually any sleep periods
+      for(nw in 1:length(s4)){
+        non<-length(which(legangle[s4[nw]:e4[nw]]==1)) #determine length of non-wear within sleep duration
+        sl<-length(which(inbedtime[s4[nw]:e4[nw]]==1)) #determine length of sleep duration
+        if(non/sl<.2){inbedtime[s4[nw]:e4[nw]]<-0} #apply 75% rule
+
+      }
+
+      s5 = which(diff(c(0, inbedtime, 0)) == 1)
+      e5 = which(diff(c(0, inbedtime, 0)) == -1)
+
+      if(length(s5)>0){ #check if there are actually any sleep periods
         for(zz in 1:length(s5)){
 
           raw$sleep[s5[zz]:e5[zz]]<-"s"
 
         }
       }
+    }
+    a<-unique(raw$date)
+    b<-1
+    c<-2
+    sss=2
+    for(sss in 1: length(a))
+    {
+      if(c>length(a)){
+        break
       }
-        a<-unique(raw$date)
-        b<-1
-        c<-2
-        sss=2
-        for(sss in 1: length(a))
-        {
-          if(c>length(a)){
-            break
-          }
 
 
-          try(if(c<=length(a)){z<-which(raw$date==a[b]&raw$time>="12:00:00")
-          z<-z[1]
-          x<-which(raw$date==a[c]&raw$time<="12:00:00")
-          x<-x[length(x)]
-          if(length(x)==0){break}
-          x<-x-1
-          ga<-raw[z:x,]
-          inbedtime2 = rep(0, nrow(ga))
-          inbedtime2[which(ga$sleep%in%"s")] = 1
-          s5 = which(diff(c(0, inbedtime2, 0)) == 1)
-          e5 = which(diff(c(0, inbedtime2, 0)) == -1)
-          inbeddurations = e5 - s5
-          longestinbed = which(inbeddurations == max(inbeddurations))
-          lightsout = s5[longestinbed] - 1
-          lightson = e5[longestinbed] - 1
+      try(if(c<=length(a)){z<-which(raw$date==a[b]&raw$time>="12:00:00")
+      z<-z[1]
+      x<-which(raw$date==a[c]&raw$time<="12:00:00")
+      x<-x[length(x)]
+      if(length(x)==0){break}
+      x<-x-1
+      ga<-raw[z:x,]
+      inbedtime2 = rep(0, nrow(ga))
+      inbedtime2[which(ga$sleep%in%"s")] = 1
+      s5 = which(diff(c(0, inbedtime2, 0)) == 1)
+      e5 = which(diff(c(0, inbedtime2, 0)) == -1)
+      inbeddurations = e5 - s5
+      longestinbed = which(inbeddurations == max(inbeddurations))
+      lightsout = s5[longestinbed] - 1
+      lightson = e5[longestinbed] - 1
 
-          d1<-ga$date[lightsout]
-          t1<-ga$time[lightsout]
-          e<-which(raw$date%in%d1 &raw$time>=t1)
-          e<-e[1]
-          d1<-ga$date[lightson]
-          t1<-ga$time[lightson]
-          e1<-which(raw$date%in%d1 &raw$time<=t1)
-          e1<-e1[length(e1)]
-          for(zz in 1:length(e)){
-            raw$sleep[e[zz]:e1[zz]]<-"sleep"
-          }
+      d1<-ga$date[lightsout]
+      t1<-ga$time[lightsout]
+      e<-which(raw$date%in%d1 &raw$time>=t1)
+      e<-e[1]
+      d1<-ga$date[lightson]
+      t1<-ga$time[lightson]
+      e1<-which(raw$date%in%d1 &raw$time<=t1)
+      e1<-e1[length(e1)]
+      for(zz in 1:length(e)){
+        raw$sleep[e[zz]:e1[zz]]<-"sleep"
+      }
 
 
-          },silent=T)
-          b<-b+1
-          c<-c+1
+      },silent=T)
+      b<-b+1
+      c<-c+1
 
       cat(paste("completed sleep for day:",sss,"\r",sep=" "))
 
-        }
-        }
-  else{
+    }
+  } else {
     raw$sleep<-0
     time<-strptime(raw$time, "%H:%M:%S")
     time<-format(time, "%H:%M:%S")
