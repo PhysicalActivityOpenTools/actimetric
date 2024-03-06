@@ -17,7 +17,7 @@ ReadAccFile = function(file, verbose = TRUE) {
   # extract ID and file extension (format) ------------
   dot_position = regexpr("\\.([[:alnum:]]+)$", file)
   format = substr(file, dot_position + 1, nchar(file))
-  ID = gsub(paste0(".", format), "", basename(file))
+  ID = gsub(paste0(".", format, "$"), "", basename(file))
   if (verbose) {
     cat(paste("\nReading", format, "accelerometer data...\n"))
     cat(paste("File Size:", round(file.info(file)$size/1024^2, 1), "MB"))

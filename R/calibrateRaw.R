@@ -100,7 +100,7 @@ calibrateRaw = function(raw, sf, verbose = TRUE) {
   if (verbose) cat("\n\nCalibration in Progress\n")
   # use first 72 hours for calibration
   raw_bu = raw # back up of raw
-  if (nrow(raw) > (72*60*60*sf)) raw = raw[1:(72*60*60*sf), ]
+  raw = raw[, -1] # first column is timestamp
   vm = sqrt(rowSums(raw[,1:3]^2))
   # 30-second means/sds per axis
   Gx = slide(raw[,1], 30*sf, FUN = mean)
@@ -143,10 +143,10 @@ calibrateRaw = function(raw, sf, verbose = TRUE) {
                 aa2$center[3],")\n",sep = ""))
       cat(paste("Radius Error: ",aa2$radius,"\n",sep = ""))
     }
+    return(list(calCoefs = calCoefs, vm.error.st = vm.error.st, vm.error.end = vm.error.end))
   } else {
     warning("Device not calibrated because it did not record enough orientation changes")
-    return(list(raw = raw_bu, calCoefs = NULL,
-                vm.error.st = NULL, vm.error.end = NULL))
+    return(list(calCoefs = NULL, vm.error.st = NULL, vm.error.end = NULL))
   }
   # Calibrate raw -----------------------------------------------------------
   if (verbose) cat("\n")

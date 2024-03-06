@@ -1,34 +1,15 @@
 #' Detects Sleep Periods from Wrist Attachment Site
 #'
-#' @param data Matrix with 3 columns containing the raw acceleration for X, Y,
-#' and Z axes in G units.
 #' @param ts Data frame with ts object from \link{extractFeatures}
 #' @param epoch Numeric with the epoch length in seconds.
-#' @param sf Numeric with the sampling frequency in Hz.
-#' @param start_time Start time.
 #' @param sleep_id Identification number for sleep periods.
 #' @param nonwear_id Identification number for nonwear periods.
+#' @param anglez Data frame with timestamp and angle z as calculated in \link{classify}
 #'
 #' @return Data frame with time series with sleep period indicator included.
 #' @export
-detectSleep = function(data, ts, epoch, sf, start_time, sleep_id, nonwear_id) {
-  # 1 - get angle z
-  prevChunk = 0; lastChunk = FALSE
-  while (lastChunk == FALSE) {
-    select = chunkIndexing(prevChunk = prevChunk, sf = sf, rawEnd = nrow(data))
-    # info for next iteration
-    prevChunk = prevChunk + 1; lastChunk = select$lastChunk
-    # indices to read in current iteration
-    select = select$select
-    # z angle variability per 5 seconds (if sleep is required)
-    az = (atan(data[select, 3] / (sqrt(data[select, 1]^2 + data[select, 2]^2)))) / (pi/180)
-    az = slide(x = az, width = epoch*sf, FUN = mean)
-    if (prevChunk == 1) anglez = az else anglez = c(anglez, az)
-  }
-  # 2 - add timestamp
-  ts_anglez = deriveTimestamps(from = start_time, length = length(anglez), epoch = epoch)
-  anglez = data.frame(date = ts_anglez[, 1], time = ts_anglez[, 2], anglez = anglez)
-  # 3 - detect sleep
+detectSleep = function(ts, anglez, epoch, sleep_id, nonwear_id) {
+  # 1 - detect sleep
   availableDates = unique(anglez$date)
   b = 1
   c = 2

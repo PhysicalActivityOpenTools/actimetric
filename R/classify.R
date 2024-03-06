@@ -75,78 +75,149 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
 
   # Run pipeline ----------------------------------------------------------
   for (file in files) {
-    # filename to save milestone of raw data
     fn2save = file.path(output_directory, "time_series", paste0(basename(file), ".RData"))
     if (overwrite == TRUE | file.exists(fn2save) == FALSE) {
-
-      # 1 - read data
-      raw = ReadAccFile(file, verbose = verbose)
-      fileInfo = raw$header; start_time = raw$start_time; ID = raw$ID; sf = raw$sf
-      raw = raw$data
-
-      # 2 - calibrate
-      calCoefs = vm.error.st = vm.error.end = NULL
-      if (do.calibration == TRUE) {
-        raw = calibrateRaw(raw, sf = sf, verbose = verbose)
-        if (is.list(raw)) {
-          calCoefs = raw$calCoefs; vm.error.st = raw$vm.error.st;
-          vm.error.end = raw$vm.error.end
-          raw = raw$raw
-        }
+      # load and classify 24 hours of data -------
+      if (verbose) {
+        cat(paste("\nReading", file, "...\n"))
+        cat(paste("File Size:", round(file.info(file)$size/1024^2, 1), "MB"))
       }
-      # 3 - extract features
-      # 3.1 - get info for classifier
-      infoClassifier = GetInfoClassifier(classifier = classifier)
-      epoch = infoClassifier$epoch; classes = infoClassifier$classes
-      rfmodel = infoClassifier$rfmodel; hmmmodel = infoClassifier$hmmmodel
-      body_attachment_site = NA
-      if (grepl("hip", classifier, ignore.case = TRUE)) {
-        body_attachment_site = "hip"
-      } else if (grepl("wrist", classifier, ignore.case = TRUE)) {
-        body_attachment_site = "wrist"
-      } else if (grepl("thigh", classifier, ignore.case = TRUE)) {
-        body_attachment_site = "thigh"
-      }
-      # 3.2 - set loop to read data in chunks and classify
-      prevChunk = 0; lastChunk = FALSE
-      while (lastChunk == FALSE) {
-        select = chunkIndexing(prevChunk = prevChunk, sf = sf, rawEnd = nrow(raw))
-        # info for next iteration
-        prevChunk = prevChunk + 1; lastChunk = select$lastChunk
-        # indices to read in current iteration
-        select = select$select
-        # print progress in console
-        if (verbose == TRUE) {
-          from = round(min(select)/sf/3600, 2)
-          to = round(max(select)/sf/3600, 2)
-          total = round(nrow(raw)/sf/3600, 2)
-          cat(paste("\rClassifying hours", from, "to", to, "out of", total, "\r"))
+      # extract ID and file extension (format) ------------
+      dot_position = regexpr("\\.([[:alnum:]]+)$", file)
+      format = substr(file, dot_position + 1, nchar(file))
+      ID = gsub(paste0(".", format, "$"), "", basename(file))
+      # file information relevant to read file
+      I = GGIR::g.inspectfile(file)
+      sf = I$sf
+      blocksize = getBlocksizeReadaccfile(file, sf, I$monc, I$dformc)
+      isLastBlock = FALSE
+      blocknumber = 1; iteration = 1
+      PreviousLastValue = c(0, 0, 1); PreviousLastTime = NULL; PreviousEndPage = NULL
+      while (isLastBlock == FALSE) {
+        # 1 - read data
+        accread = GGIR::g.readaccfile(filename = file,
+                                      blocksize = blocksize,
+                                      blocknumber = blocknumber,
+                                      filequality = data.frame(filetooshort = FALSE,
+                                                               filecorrupt = FALSE,
+                                                               filedoesnotholdday = FALSE),
+                                      ws = 3600,
+                                      PreviousEndPage = PreviousEndPage, inspectfileobject = I,
+                                      PreviousLastValue = PreviousLastValue,
+                                      PreviousLastTime = PreviousLastTime)
+        raw = accread$P$data # first column contains timestamp
+        if (blocknumber == 1) start_time = accread$P$data[1,1]
+        # information for next iteration
+        blocknumber = blocknumber + 1; isLastBlock = accread$isLastBlock
+        PreviousEndPage = accread$endpage
+        if ("PreviousLastValue" %in% names(accread$P)) { # output when reading ad-hoc csv
+          PreviousLastValue = accread$P$PreviousLastValue
+          PreviousLastTime = accread$P$PreviousLastTime
         }
-        # 3.3 - detect non wear in 24h chunk
-        if (do.nonwear) {
-          if (nrow(raw[select,]) >= (sf*60*60)) { # at least 1hr of data
-            nw = detectNonWear(raw[select,], sf = sf, epoch = epoch)
-            hold = nw[length(nw)]
-          } else { # repeat last value from previous chunk if available
-            if (exists("hold")) {
-              nw = rep(hold, nrow(raw[select, ]) / (epoch*sf))
-            } else { # or set the full time as wear if full recording < 1 hour
-              nw = rep(0, nrow(raw[select, ]) / (epoch*sf))
+        # If calibration is required, then first load 72 hours to get cal coefs
+        # hours read
+        len = nrow(accread$P$data)
+        from = strptime(as.POSIXct(raw[1,1], origin = "1970-1-1"),
+                        format = "%Y-%m-%d %H:%M:%S")
+        to = strptime(as.POSIXct(raw[len,1], origin = "1970-1-1"),
+                      format = "%Y-%m-%d %H:%M:%S")
+        if (verbose) {
+          cat("Loading data from", as.character(from), "to", as.character(to), "\r")
+        }
+        nHoursRead = difftime(to, from, units = "hours")
+        # if calibration is required, we need to load extra time (up to 72 hours)
+        if (do.calibration & iteration == 1) {
+          while (nHoursRead < 72 & isLastBlock == FALSE) {
+            accread = GGIR::g.readaccfile(filename = file,
+                                          blocksize = blocksize,
+                                          blocknumber = blocknumber,
+                                          filequality = data.frame(filetooshort = FALSE,
+                                                                   filecorrupt = FALSE,
+                                                                   filedoesnotholdday = FALSE),
+                                          ws = 3600,
+                                          PreviousEndPage = PreviousEndPage, inspectfileobject = I,
+                                          PreviousLastValue = PreviousLastValue,
+                                          PreviousLastTime = PreviousLastTime)
+            raw = rbind(raw, accread$P$data) # first column contains timestamp
+            # information for next iteration
+            blocknumber = blocknumber + 1; isLastBlock = accread$isLastBlock
+            PreviousEndPage = accread$endpage
+            if ("PreviousLastValue" %in% names(accread$P)) { # output when reading ad-hoc csv
+              PreviousLastValue = accread$P$PreviousLastValue
+              PreviousLastTime = accread$P$PreviousLastTime
+            }
+            # hours read
+            len = nrow(raw)
+            from = strptime(as.POSIXct(start_time, origin = "1970-1-1"),
+                            format = "%Y-%m-%d %H:%M:%S")
+            to = strptime(as.POSIXct(raw[len,1], origin = "1970-1-1"),
+                          format = "%Y-%m-%d %H:%M:%S")
+            if (verbose) {
+              cat("\nLoading data from", as.character(from), "to", as.character(to))
+            }
+            nHoursRead = difftime(to, from, units = "hours")
+          }
+          # 2 - get calibration coefficients
+          calCoefs = vm.error.st = vm.error.end = NULL
+          if (do.calibration == TRUE & iteration == 1) {
+            cal = calibrateRaw(raw, sf = sf, verbose = verbose)
+            if (is.list(cal)) {
+              calCoefs = cal$calCoefs; vm.error.st = cal$vm.error.st;
+              vm.error.end = cal$vm.error.end
             }
           }
-        } else {
-          nw = rep(0, nrow(raw[select, ]))
         }
-        nw = matrix(data = nw, nrow = length(nw), ncol = 1,
-                    dimnames = list(1:length(nw), "nonwear"))
-        # 3.4 - extract time series in 24h chunk
-        feats = ExtractFeatures(raw[select,], classifier = classifier,
-                                epoch = epoch, sf = sf,
-                                do.enmo = do.enmo, do.actilifecounts = do.actilifecounts,
-                                do.actilifecountsLFE = do.actilifecountsLFE,
-                                ID = ID)
-        feats = cbind(feats, nw)
-        if (prevChunk == 1) ts = feats else ts = rbind(ts, feats)
+        if (!is.null(raw)) {
+          # 2 - calibrate
+          if (do.calibration == TRUE) {
+            raw[, 1] = calCoefs$scale[1]*(raw[,1] - calCoefs$offset[1])
+            raw[, 2] = calCoefs$scale[2]*(raw[,2] - calCoefs$offset[2])
+            raw[, 3] = calCoefs$scale[3]*(raw[,3] - calCoefs$offset[3])
+          }
+          # 3 - extract features
+          # 3.1 - get info for classifier
+          infoClassifier = GetInfoClassifier(classifier = classifier)
+          epoch = infoClassifier$epoch; classes = infoClassifier$classes
+          rfmodel = infoClassifier$rfmodel; hmmmodel = infoClassifier$hmmmodel
+          body_attachment_site = NA
+          if (grepl("hip", classifier, ignore.case = TRUE)) {
+            body_attachment_site = "hip"
+          } else if (grepl("wrist", classifier, ignore.case = TRUE)) {
+            body_attachment_site = "wrist"
+          } else if (grepl("thigh", classifier, ignore.case = TRUE)) {
+            body_attachment_site = "thigh"
+          }
+          # 3.2 - Classify current chunk of raw data
+          # 3.3 - detect non wear in 24h chunk
+          if (do.nonwear) {
+            if (nrow(raw) >= (sf*60*60)) { # at least 1hr of data
+              nw = detectNonWear(raw, sf = sf, epoch = epoch)
+              hold = nw[length(nw)]
+            } else { # repeat last value from previous chunk if available
+              if (exists("hold")) {
+                nw = rep(hold, nrow(raw) / (epoch*sf))
+              } else { # or set the full time as wear if full recording < 1 hour
+                nw = rep(0, nrow(raw) / (epoch*sf))
+              }
+            }
+          } else {
+            nw = rep(0, nrow(raw))
+          }
+          nw = matrix(data = nw, nrow = length(nw), ncol = 1,
+                      dimnames = list(1:length(nw), "nonwear"))
+          # 3.4 - extract time series in 24h chunk
+          feats = ExtractFeatures(raw[,-1], classifier = classifier,
+                                  epoch = epoch, sf = sf,
+                                  do.enmo = do.enmo, do.actilifecounts = do.actilifecounts,
+                                  do.actilifecountsLFE = do.actilifecountsLFE,
+                                  ID = ID)
+          feats$features = cbind(feats$features, nw)
+          if (iteration == 1) ts = feats$features else ts = rbind(ts, feats$features)
+          if (iteration == 1) anglez = feats$anglez else anglez = rbind(anglez, feats$anglez)
+          # remove raw data chunk to free memory
+          iteration = iteration + 1
+          rm(accread); gc()
+        }
       }
       # Now add lag-lead features if needed
       if (grepl("lag-lead", classifier, ignore.case = TRUE)) {
@@ -164,6 +235,8 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
       ts = as.data.frame(cbind(subject, timestamp, ts))
       numeric_columns = sapply(ts, mode) == 'numeric'
       ts[numeric_columns] =  round(ts[numeric_columns], 3)
+      ts_anglez = deriveTimestamps(from = start_time, length = length(anglez), epoch = 5)
+      anglez = data.frame(date = ts_anglez[, 1], time = ts_anglez[, 2], anglez = anglez)
       # 4 - apply classifier
       ts  = do.call(data.frame,lapply(ts, function(x) replace(x, is.infinite(x), NA)))
       ts[is.na(ts)] = 0
@@ -214,9 +287,8 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
         sleep_id = length(classes) + 1
         nonwear_id = length(classes) + 2
         if (body_attachment_site == "wrist") {
-          ts = detectSleep(data = raw, ts = ts, epoch = 5, sf = sf,
-                                start_time = start_time, sleep_id = sleep_id,
-                                nonwear_id = nonwear_id)
+          ts = detectSleep(ts = ts, anglez = anglez, epoch = 5,
+                           sleep_id = sleep_id, nonwear_id = nonwear_id)
         } else {
           warning("Sleep detection only available for wrist and thigh attachment sites.")
         }
@@ -224,7 +296,7 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
       }
       # MILESTONE: save features data in features folder
       original_classifier = classifier
-      save(ts, fileInfo, sf, start_time, ID, calCoefs, vm.error.st, vm.error.end,
+      save(ts, sf, start_time, ID, calCoefs, vm.error.st, vm.error.end,
            original_classifier, file = fn2save)
     } else { # if already existed and not overwritting...
       if (verbose) cat(paste("\nLoading classified time series...\n"))
@@ -249,3 +321,4 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
   files2summarize = dir(file.path(output_directory, "summary"), full.names = TRUE)
   doReport(files2summarize)
 }
+

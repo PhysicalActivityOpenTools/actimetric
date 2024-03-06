@@ -1,8 +1,42 @@
 
 library(actimetric)
 
-c = 1
 
+# read file
+
+
+
+# classify raw data
+# return numeric vector with factorized classes
+# this can be used in GGIR
+# add logical saveMilestone (turn off when used in GG)
+
+
+# detect nonwear
+
+
+
+# detect sleep
+
+
+
+# aggregate per date
+
+
+
+# aggregate per person
+
+
+
+# visualize
+
+
+
+
+
+
+# full pipeline
+c = 1
 classify(input_directory = "D:/GGIRdev/files/nonwear/smallfile/",
          output_directory = "D:/actimetric/",
          studyname = c("PS_wrist", "PS_hip", "PS_hip_LL", "PS_wrist_LL",
@@ -26,7 +60,7 @@ classify(input_directory = "D:/GGIRdev/files/nonwear/smallfile/",
          do.actilifecounts = FALSE,
          do.actilifecountsLFE = FALSE,
          boutdur = 10, boutcriter = 0.8,
-         verbose = TRUE, overwrite = FALSE)
+         verbose = TRUE, overwrite = TRUE)
 
 
 # interactive selection of directories: both interactive and via code

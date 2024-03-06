@@ -65,6 +65,9 @@ ExtractFeatures = function(data, classifier = NULL, sf = NULL, epoch = NULL,
   tilt = acos(data[,2]/vm)*(180/pi)
   tilt = slide(tilt, width = epoch*sf, FUN = mean)
   fnames = c(fnames, "tilt")
+  # z angle variability per 5 seconds
+  az = (atan(data[, 3] / (sqrt(data[, 1]^2 + data[, 2]^2)))) / (pi/180)
+  anglez = slide(x = az, width = 5*sf, FUN = mean)
   # -------------------------------------------------------------------------
   # Extract features needed for each classifier
   classifierAvailable = TRUE
@@ -119,5 +122,5 @@ ExtractFeatures = function(data, classifier = NULL, sf = NULL, epoch = NULL,
   features = as.data.frame(cbind(features, enmo, agcounts, LFEcounts, tilt))
   colnames(features) = fnames
   rownames(features) = 1:nrow(features)
-  return(features)
+  return(list(features = features, anglez = anglez))
 }
