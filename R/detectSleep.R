@@ -11,7 +11,7 @@
 #'
 #' @return Data frame with time series with sleep period indicator included.
 #' @export
-detectSleepWrist = function(data, ts, epoch, sf, start_time, sleep_id, nonwear_id) {
+detectSleep = function(data, ts, epoch, sf, start_time, sleep_id, nonwear_id) {
   # 1 - get angle z
   prevChunk = 0; lastChunk = FALSE
   while (lastChunk == FALSE) {
