@@ -214,11 +214,8 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
         sleep_id = length(classes) + 1
         nonwear_id = length(classes) + 2
         if (body_attachment_site == "wrist") {
-          ts = detectSleepWrist(data = raw, ts = ts, epoch = 5, sf = sf,
+          ts = detectSleep(data = raw, ts = ts, epoch = 5, sf = sf,
                                 start_time = start_time, sleep_id = sleep_id,
-                                nonwear_id = nonwear_id)
-        } else if (body_attachment_site == "thigh") {
-          ts = detectSleepThigh(ts = ts, epoch = epoch, sleep_id = sleep_id,
                                 nonwear_id = nonwear_id)
         } else {
           warning("Sleep detection only available for wrist and thigh attachment sites.")
