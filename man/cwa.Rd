@@ -2,13 +2,24 @@
 % Please edit documentation in R/cwa.R
 \name{cwa}
 \alias{cwa}
-\title{Title}
+\title{Read CWA files}
 \usage{
-cwa(fileName, start = 0, end = 0, progressBar = FALSE, desiredtz = c())
+cwa(file, start = 0, end = 0, progressBar = FALSE, desiredtz = c())
 }
 \arguments{
-\item{desiredtz}{}
+\item{file}{Character with full path to accelerometer raw data file}
+
+\item{start}{Numeric with starting page for reading file.}
+
+\item{end}{Numeric with ending page for reading file.}
+
+\item{progressBar}{Logical indicating whether to show a progress bar.}
+
+\item{desiredtz}{Desired time zone.}
+}
+\value{
+List with header and datar frame with acceleration data.
 }
 \description{
-Title
+Read CWA files
 }

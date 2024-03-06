@@ -2,13 +2,16 @@
 % Please edit documentation in R/readax3.R
 \name{readax3}
 \alias{readax3}
-\title{Title}
+\title{Reads Axivity AX3 files}
 \usage{
-readax3(raw)
+readax3(file)
 }
 \arguments{
-\item{raw}{}
+\item{file}{Character with path to raw acceleration file}
+}
+\value{
+List with sampling frequency, raw acceleration data, and start time.
 }
 \description{
-Title
+Reads Axivity AX3 files
 }

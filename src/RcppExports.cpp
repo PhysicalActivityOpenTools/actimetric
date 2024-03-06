@@ -11,13 +11,13 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // read_activityC
-NumericVector read_activityC(RawVector bytes, double scale);
+NumericVector read_activityC(RawVector bytes, long double scale);
 RcppExport SEXP _actimetric_read_activityC(SEXP bytesSEXP, SEXP scaleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< RawVector >::type bytes(bytesSEXP);
-    Rcpp::traits::input_parameter< double >::type scale(scaleSEXP);
+    Rcpp::traits::input_parameter< long double >::type scale(scaleSEXP);
     rcpp_result_gen = Rcpp::wrap(read_activityC(bytes, scale));
     return rcpp_result_gen;
 END_RCPP
