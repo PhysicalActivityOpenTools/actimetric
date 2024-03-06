@@ -1,18 +1,16 @@
-#' Title
+#' Reads counts files
 #'
-#' @param file.and.path
+#' @param file Character with path to raw acceleration file
 #'
-#' @return
+#' @return List containing counts data and epoch size
 #' @export
-#'
-#' @examples
-read.counts<-function(file.and.path){
+read.counts = function(file) {
 
   header=FALSE
   options(warn = -1)
 
   # read header and start time
-  data <- readLines(paste(file.and.path),n=10)
+  data <- readLines(paste(file),n=10)
   dateFmt = stringr::str_match(data, "date format ([a-z,A-Z,/]*)")[1,2]
   dateFmt = gsub("yyyy", "%Y", dateFmt)
   dateFmt = gsub("MM", "%m", dateFmt)
@@ -29,17 +27,17 @@ read.counts<-function(file.and.path){
   epoch1<-as.numeric(epoch[length(epoch)-1])*60
   epoch<-as.numeric(epoch[length(epoch)])
   epoch<-epoch1+epoch
-  data<-fread(file.and.path,skip = 10,nrow=1,header = F,data.table = F)
+  data<-fread(file,skip = 10,nrow=1,header = F,data.table = F)
   if(class(data[1,2])%in%"character"){
     header=TRUE
   }else{
     header=FALSE
   }
-  data<-fread(file.and.path,skip = 11,nrow=1,header = F,data.table = F)
+  data<-fread(file,skip = 11,nrow=1,header = F,data.table = F)
 
   if (!class(data[,1])%in%"integer" &!class(data[,2])%in%"integer")
   {
-    data<-fread(file.and.path,skip=10,header = header)
+    data<-fread(file,skip=10,header = header)
     data<-data[,c(3:5)]
     n<- dim(data)[1] #number of rows in data
     full.data<-
@@ -48,7 +46,7 @@ read.counts<-function(file.and.path){
     return(list(data = full.data, header = header))
   }
   if (!class(data[,1])%in%"integer" &class(data[,2])%in%"integer"){
-    data<-fread(file.and.path,skip=10,header = header)
+    data<-fread(file,skip=10,header = header)
     data<-data[,c(2:4)]
     n<- dim(data)[1] #number of rows in data
     full.data<-
@@ -57,7 +55,7 @@ read.counts<-function(file.and.path){
     return(list(data = full.data, header = header ))
   }
   if (class(data[,1])%in%"integer"){
-    data<-fread(file.and.path,skip=10,header = header)
+    data<-fread(file,skip=10,header = header)
     data<-data[,c(1:3)]
     n<- dim(data)[1] #number of rows in data
     full.data<-

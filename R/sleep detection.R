@@ -1,17 +1,15 @@
-#' Title
+#' Calculates inbed times.
 #'
-#' @param angle
-#' @param k
-#' @param perc
-#' @param inbedthreshold
-#' @param bedblocksize
-#' @param outofbedsize
-#' @param ws3
+#' @param angle Numeric with angle calculated.
+#' @param k Interval for rolling window.
+#' @param perc Percentage to establish threshold for inbed time definition.
+#' @param inbedthreshold Threshold for inbed time definition.
+#' @param bedblocksize Minimum time interval to define a bed block.
+#' @param outofbedsize Maximum gap allowed in bed blocks.
+#' @param ws3 Epoch size.
 #'
-#' @return
+#' @return List with identificators of inbed time.
 #' @export
-#'
-#' @examples
 inbed = function(angle, k = 60, perc = 0.1, inbedthreshold = 15,
                  bedblocksize = 30, outofbedsize = 60, ws3 = 5) {
   medabsdi = function(angle) {

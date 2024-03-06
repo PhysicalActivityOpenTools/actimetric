@@ -1,14 +1,16 @@
-#' Title
+#' Detects Sleep Periods
 #'
-#' @param data
-#' @param window
-#' @param sleepnr
+#' @description
+#' Function not intended for use by the users. Detects sleep periods for
+#' wrist-worn accelerometers.
 #'
-#' @return
+#' @param data Data frame with time series of data as calculated in \code{detectSleepWrist}
+#' @param sleep_id Identificator of sleep periods.
+#' @param epoch Numeric with epoch size
+#'
+#' @return Indicator of sleep periods.
 #' @export
-#'
-#' @examples
-detect_sleep_periods = function(data, window, sleep_id){
+detect_sleep_periods = function(data, epoch, sleep_id){
 
   sleepperiod<-rep(0,nrow(data))
 
@@ -33,7 +35,7 @@ detect_sleep_periods = function(data, window, sleep_id){
       run<-rep(run$lengths,run$lengths)
       postch<-cbind(postch,run)
 
-      e<-which(postch[,1]==1 & postch[,2]>=(5*(60/window)))
+      e<-which(postch[,1]==1 & postch[,2]>=(5*(60/epoch)))
 
       sdl1[e]<-1
 

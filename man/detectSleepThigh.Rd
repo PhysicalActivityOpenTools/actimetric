@@ -15,6 +15,9 @@ detectSleepThigh(ts, epoch, sleep_id, nonwear_id)
 
 \item{nonwear_id}{Identification number for nonwear periods.}
 }
+\value{
+Data frame with sleep indicator included.
+}
 \description{
 Detects Sleep Periods from Thigh Attachment Site
 }

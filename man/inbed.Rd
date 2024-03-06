@@ -2,7 +2,7 @@
 % Please edit documentation in R/sleep detection.R
 \name{inbed}
 \alias{inbed}
-\title{Title}
+\title{Calculates inbed times.}
 \usage{
 inbed(
   angle,
@@ -15,8 +15,23 @@ inbed(
 )
 }
 \arguments{
-\item{ws3}{}
+\item{angle}{Numeric with angle calculated.}
+
+\item{k}{Interval for rolling window.}
+
+\item{perc}{Percentage to establish threshold for inbed time definition.}
+
+\item{inbedthreshold}{Threshold for inbed time definition.}
+
+\item{bedblocksize}{Minimum time interval to define a bed block.}
+
+\item{outofbedsize}{Maximum gap allowed in bed blocks.}
+
+\item{ws3}{Epoch size.}
+}
+\value{
+List with identificators of inbed time.
 }
 \description{
-Title
+Calculates inbed times.
 }

@@ -1,18 +1,14 @@
-#' Title
+#' Read CWA files
 #'
-#' @param fileName
-#' @param start
-#' @param end
-#' @param progressBar
-#' @param desiredtz
+#' @param file Character with full path to accelerometer raw data file
+#' @param start Numeric with starting page for reading file.
+#' @param end Numeric with ending page for reading file.
+#' @param progressBar Logical indicating whether to show a progress bar.
+#' @param desiredtz Desired time zone.
 #'
-#' @return
+#' @return List with header and datar frame with acceleration data.
 #' @export
-#'
-#' @examples
-cwa<-function (fileName, start = 0, end = 0, progressBar = FALSE,
-               desiredtz = c())
-{
+cwa = function(file, start = 0, end = 0, progressBar = FALSE, desiredtz = c()) {
   timestampDecoder = function(coded, fraction, shift) {
     year = struc[[1]]
     if (year == 0) {
@@ -143,9 +139,9 @@ cwa<-function (fileName, start = 0, end = 0, progressBar = FALSE,
   if (nargin < 1) {
     stop("At least file must be specified")
   }
-  numDBlocks = round(file.info(fileName)$size/512) - 2
+  numDBlocks = round(file.info(file)$size/512) - 2
   pageLength = 300
-  fid = file(fileName, "rb")
+  fid = file(file, "rb")
   struc = list(0, 0L)
   header = readHeader(fid, numDBlocks)
   origin = as.numeric(header$start)
@@ -212,7 +208,7 @@ cwa<-function (fileName, start = 0, end = 0, progressBar = FALSE,
     if (pos + 200 > nr)
       last = nr
     tmp = GGIRread:::resample(rawAccel, rawTime, timeRes[pos:last],
-                   rawLast)
+                              rawLast)
     last = nrow(tmp) + pos - 1
     if (last >= pos) {
       accelRes[pos:last, ] = tmp
@@ -251,7 +247,7 @@ cwa<-function (fileName, start = 0, end = 0, progressBar = FALSE,
     if (pos + 200 > nr)
       last = nr
     tmp = GGIRread:::resample(rawAccel, rawTime, timeRes[pos:last],
-                   rawLast)
+                              rawLast)
     last = nrow(tmp) + pos - 1
     if (last >= pos) {
       accelRes[pos:last, ] = tmp
@@ -282,7 +278,6 @@ cwa<-function (fileName, start = 0, end = 0, progressBar = FALSE,
   }
   # return(invisible(list(header = header, data = as.data.frame(cbind(time = timeRes,
   #                                                                   accelRes, temp, battery, light)))))
-  return(invisible(list(header = header, data = cbind(
-                                                       accelRes))))
+  return(invisible(list(header = header, data = cbind(accelRes))))
 }
 

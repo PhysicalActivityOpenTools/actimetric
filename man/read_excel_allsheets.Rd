@@ -2,13 +2,18 @@
 % Please edit documentation in R/read_excel.R
 \name{read_excel_allsheets}
 \alias{read_excel_allsheets}
-\title{Title}
+\title{Read excel files}
 \usage{
-read_excel_allsheets(filename, tibble = FALSE)
+read_excel_allsheets(file, tibble = FALSE)
 }
 \arguments{
-\item{tibble}{}
+\item{file}{Character with path to file}
+
+\item{tibble}{Read tidyverse tibbles}
+}
+\value{
+List with a data frame per excel sheet.
 }
 \description{
-Title
+Read excel files
 }

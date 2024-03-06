@@ -1,13 +1,11 @@
-#' Title
+#' Converts tick to posix
 #'
-#' @param x
-#' @param tz
+#' @param x Tick
+#' @param tz Time zone
 #' @param ...
 #'
-#' @return
+#' @return POSIXct object
 #' @export
-#'
-#' @examples
 tick_to_posix <- function(x, tz = "UTC", ...) {
 
   x <- as.numeric(as.character(x)) / 10000000

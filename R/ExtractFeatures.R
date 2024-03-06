@@ -23,7 +23,7 @@
 #' counts using the low-frequency extension filter should be calculated.
 #' @param ID Character with ID corresponding to subject
 #'
-#' @return
+#' @return Data frame with features calculated as needed for each classifier.
 #' @export
 #' @details
 #' This is a central function to calculate features from the acceleration signal.

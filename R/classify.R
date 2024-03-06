@@ -249,5 +249,6 @@ classify = function(input_directory = NULL, output_directory = NULL, studyname =
     # 7 - visualize (to be done)
   }
   # 8 - Generate reports
-
+  files2summarize = dir(file.path(output_directory, "summary"), full.names = TRUE)
+  doReport(files2summarize)
 }

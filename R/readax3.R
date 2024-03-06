@@ -1,12 +1,10 @@
-#' Title
+#' Reads Axivity AX3 files
 #'
-#' @param raw
+#' @param file Character with path to raw acceleration file
 #'
-#' @return
+#' @return List with sampling frequency, raw acceleration data, and start time.
 #' @export
-#'
-#' @examples
-readax3<-function(raw){
+readax3 = function(file) {
 
   updatepageindexing = function(startpage=c(), deltapage=c(), blocknumber=c(),PreviousEndPage=c(),
 
@@ -28,7 +26,7 @@ readax3<-function(raw){
   }
 
 
-  PP<- cwa(raw,start=1,end=10,desiredtz = "UTC")
+  PP<- cwa(file,start=1,end=10,desiredtz = "UTC")
   sf<- PP$h$frequency
   chunksize = 1
   blocksize = round (14512*(sf/50)*chunksize)
@@ -55,7 +53,7 @@ readax3<-function(raw){
     startpage = UPI$startpage;    endpage = UPI$endpage
 
 
-    try(expr={P = cwa(raw,start=startpage,end = endpage,desiredtz = 'UTC')},silent=TRUE)
+    try(expr={P = cwa(file,start=startpage,end = endpage,desiredtz = 'UTC')},silent=TRUE)
 
 
     endpage-startpage

@@ -46,6 +46,9 @@ counts using the low-frequency extension filter should be calculated.}
 
 \item{ID}{Character with ID corresponding to subject}
 }
+\value{
+Data frame with features calculated as needed for each classifier.
+}
 \description{
 Extracts Features from raw data
 }

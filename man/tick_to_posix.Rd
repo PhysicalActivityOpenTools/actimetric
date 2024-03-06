@@ -2,13 +2,20 @@
 % Please edit documentation in R/tick.R
 \name{tick_to_posix}
 \alias{tick_to_posix}
-\title{Title}
+\title{Converts tick to posix}
 \usage{
 tick_to_posix(x, tz = "UTC", ...)
 }
 \arguments{
+\item{x}{Tick}
+
+\item{tz}{Time zone}
+
 \item{...}{}
 }
+\value{
+POSIXct object
+}
 \description{
-Title
+Converts tick to posix
 }

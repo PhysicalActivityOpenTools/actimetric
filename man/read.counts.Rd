@@ -2,13 +2,16 @@
 % Please edit documentation in R/read_counts.R
 \name{read.counts}
 \alias{read.counts}
-\title{Title}
+\title{Reads counts files}
 \usage{
-read.counts(file.and.path)
+read.counts(file)
 }
 \arguments{
-\item{file.and.path}{}
+\item{file}{Character with path to raw acceleration file}
+}
+\value{
+List containing counts data and epoch size
 }
 \description{
-Title
+Reads counts files
 }

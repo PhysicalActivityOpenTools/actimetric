@@ -29,6 +29,9 @@ Thigh Decision Tree)}
 
 \item{boutcriter}{Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout}
 }
+\value{
+Data frame with aggregates of time spent in classes per calendar date.
+}
 \description{
 Aggregate Per Date
 }

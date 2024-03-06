@@ -25,6 +25,7 @@ classify(input_directory = "D:/GGIRdev/files/nonwear/smallfile/",
          do.enmo = TRUE,
          do.actilifecounts = FALSE,
          do.actilifecountsLFE = FALSE,
+         boutdur = 10, boutcriter = 0.8,
          verbose = TRUE, overwrite = FALSE)
 
 

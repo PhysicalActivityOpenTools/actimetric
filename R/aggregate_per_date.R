@@ -17,7 +17,7 @@
 #' @param boutdur Numeric vector (default = c(1, 10, 30)) indicating the bout durations over which calculate bouts of behaviors
 #' @param boutcriter Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout
 #'
-#' @return
+#' @return Data frame with aggregates of time spent in classes per calendar date.
 #'
 #' @importFrom GGIR g.getbout
 #'
@@ -37,7 +37,7 @@ aggregate_per_date = function(ts, epoch, classifier, classes,
   daysummary[, ci] = unique(ts$subject)
   dsnames = "ID"; ci = ci + 1
   daysummary[, ci] = classifier
-  dsnames = "classifier"; ci = ci + 1
+  dsnames[ci] = "classifier"; ci = ci + 1
   daysummary[, ci] = availableDates
   dsnames[ci] = "date"; ci = ci + 1
   daysummary[, ci] = weekdays(as.Date(availableDates), abbreviate = FALSE)

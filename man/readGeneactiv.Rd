@@ -2,13 +2,16 @@
 % Please edit documentation in R/readGA.R
 \name{readGeneactiv}
 \alias{readGeneactiv}
-\title{Title}
+\title{Reads GENEActiv files}
 \usage{
-readGeneactiv(raw)
+readGeneactiv(file)
 }
 \arguments{
-\item{raw}{}
+\item{file}{Character with path to raw acceleration file}
+}
+\value{
+Data frame with acceleration data and start time for the measurement.
 }
 \description{
-Title
+Reads GENEActiv files
 }

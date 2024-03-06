@@ -5,7 +5,7 @@
 #' @param sleep_id Identification number for sleep periods.
 #' @param nonwear_id Identification number for nonwear periods.
 #'
-#' @return
+#' @return Data frame with sleep indicator included.
 #' @export
 detectSleepThigh = function(ts, epoch, sleep_id, nonwear_id) {
   # Mode <- function(x) {

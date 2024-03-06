@@ -2,13 +2,21 @@
 % Please edit documentation in R/detect_sleep_periods.R
 \name{detect_sleep_periods}
 \alias{detect_sleep_periods}
-\title{Title}
+\title{Detects Sleep Periods}
 \usage{
-detect_sleep_periods(data, window, sleep_id)
+detect_sleep_periods(data, epoch, sleep_id)
 }
 \arguments{
-\item{sleepnr}{}
+\item{data}{Data frame with time series of data as calculated in \code{detectSleepWrist}}
+
+\item{epoch}{Numeric with epoch size}
+
+\item{sleep_id}{Identificator of sleep periods.}
+}
+\value{
+Indicator of sleep periods.
 }
 \description{
-Title
+Function not intended for use by the users. Detects sleep periods for
+wrist-worn accelerometers.
 }

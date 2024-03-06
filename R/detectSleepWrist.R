@@ -9,7 +9,7 @@
 #' @param sleep_id Identification number for sleep periods.
 #' @param nonwear_id Identification number for nonwear periods.
 #'
-#' @return
+#' @return Data frame with time series with sleep period indicator included.
 #' @export
 detectSleepWrist = function(data, ts, epoch, sf, start_time, sleep_id, nonwear_id) {
   # 1 - get angle z

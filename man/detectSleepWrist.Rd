@@ -22,6 +22,9 @@ and Z axes in G units.}
 
 \item{nonwear_id}{Identification number for nonwear periods.}
 }
+\value{
+Data frame with time series with sleep period indicator included.
+}
 \description{
 Detects Sleep Periods from Wrist Attachment Site
 }
