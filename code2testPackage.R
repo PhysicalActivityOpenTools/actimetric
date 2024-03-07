@@ -2,7 +2,7 @@
 library(actimetric)
 
 
-# read file
+# read file in chunks
 
 
 
@@ -37,7 +37,8 @@ library(actimetric)
 
 # full pipeline
 c = 1
-classify(input_directory = "D:/GGIRdev/files/nonwear/smallfile/",
+debug(runActimetric)
+runActimetric(input_directory = "D:/GGIRdev/files/nonwear/smallfile/",
          output_directory = "D:/actimetric/",
          studyname = c("PS_wrist", "PS_hip", "PS_hip_LL", "PS_wrist_LL",
                        "School_wrist", "School_hip", "Adult_wrist_trost",

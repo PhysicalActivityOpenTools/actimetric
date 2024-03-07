@@ -12,6 +12,7 @@
 #' @export
 #'
 calibrateRaw = function(raw, sf, verbose = TRUE) {
+  calCoefs = NULL; vm.error.st = NULL; vm.error.end = NULL
   # define internal functions (only used here) -----
   centerRadius <- function(aa) {
     A <- matrix(1,nrow(aa), 4)
@@ -100,7 +101,6 @@ calibrateRaw = function(raw, sf, verbose = TRUE) {
   if (verbose) cat("\n\nCalibration in Progress\n")
   # use first 72 hours for calibration
   raw_bu = raw # back up of raw
-  raw = raw[, -1] # first column is timestamp
   vm = sqrt(rowSums(raw[,1:3]^2))
   # 30-second means/sds per axis
   Gx = slide(raw[,1], 30*sf, FUN = mean)
@@ -146,53 +146,7 @@ calibrateRaw = function(raw, sf, verbose = TRUE) {
     return(list(calCoefs = calCoefs, vm.error.st = vm.error.st, vm.error.end = vm.error.end))
   } else {
     warning("Device not calibrated because it did not record enough orientation changes")
-    return(list(calCoefs = NULL, vm.error.st = NULL, vm.error.end = NULL))
-  }
-  # Calibrate raw -----------------------------------------------------------
-  if (verbose) cat("\n")
-  if (vm.error.end < vm.error.st & vm.error.end < 50) {
-    raw = raw_bu
-    rm(raw_bu); gc()
-    #variables used to read data in 24 hr increment
-    start = increment = constant = (sf*60*60*24)
-    LD = LD2 = 0
-    count = chunk = 1
-    rawEnd = dim(raw)[1]
-    # read and calibrate raw
-    while (LD < 1) {
-      # print progress in console
-      if (verbose) {
-        from = round((1 + (start * (chunk - 1)))/sf/3600, 2)
-        to = round(increment/sf/3600, 2)
-        total = round(rawEnd/sf/3600, 2)
-        cat(paste("\rCalibrating hours", from, "to", to, "out of", total, "\r"))
-      }
-      # if remaining data is less than 24 hrs, set to end of data
-      if (increment >= rawEnd) {
-        increment = rawEnd;  LD2 = 1
-      }
-      # calibrate current chunk of data
-      select = (1 + (start * (chunk - 1))):(increment)
-      raw[select, 1] = calCoefs$scale[1]*(raw[select,1] - calCoefs$offset[1])
-      raw[select, 2] = calCoefs$scale[2]*(raw[select,2] - calCoefs$offset[2])
-      raw[select, 3] = calCoefs$scale[3]*(raw[select,3] - calCoefs$offset[3])
-      # update indexing for next loop
-      count = count + (increment)
-      increment = increment + constant
-      chunk = chunk + 1
-      # is this the last chunk?
-      if (LD2 == 1) {
-        LD = 1
-        e = which(is.na(raw[,1]))
-        if (length(e) > 0) raw = raw[-e,]
-      }
-    }
-  } else {
-    warning("Calibration not done because error did not decrease")
-    return(list(raw = raw_bu, calCoefs = calCoefs,
-                vm.error.st = vm.error.st, vm.error.end = vm.error.end))
   }
   # return
-  return(list(raw = raw, calCoefs = calCoefs,
-              vm.error.st = vm.error.st, vm.error.end = vm.error.end))
+  return(list(calCoefs = calCoefs, vm.error.st = vm.error.st, vm.error.end = vm.error.end))
 }
