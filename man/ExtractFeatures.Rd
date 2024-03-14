@@ -4,16 +4,7 @@
 \alias{ExtractFeatures}
 \title{Extracts Features from raw data}
 \usage{
-ExtractFeatures(
-  data,
-  classifier = NULL,
-  sf = NULL,
-  epoch = NULL,
-  do.enmo = TRUE,
-  do.actilifecounts = FALSE,
-  do.actilifecountsLFE = FALSE,
-  ID = NA
-)
+ExtractFeatures(data, classifier = NULL, sf = NULL, epoch = NULL, ID = NA)
 }
 \arguments{
 \item{data}{Matrix with 3 columns containing the raw acceleration for X, Y,
@@ -34,15 +25,6 @@ Thigh Decision Tree)}
 \item{sf}{Numeric with the sampling frequency in Hz.}
 
 \item{epoch}{Numeric with the epoch length in seconds.}
-
-\item{do.enmo}{Logical (default = TRUE) indicating whether ENMO should be
-calculated.}
-
-\item{do.actilifecounts}{Logical (default = FALSE) indicating whether activity
-counts should be calculated.}
-
-\item{do.actilifecountsLFE}{Logical (default = FALSE) indicating whether activity
-counts using the low-frequency extension filter should be calculated.}
 
 \item{ID}{Character with ID corresponding to subject}
 }

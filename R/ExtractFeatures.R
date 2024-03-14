@@ -15,12 +15,6 @@
 #' @param data Matrix with 3 columns containing the raw acceleration for X, Y,
 #' and Z axes in G units.
 #' @param epoch Numeric with the epoch length in seconds.
-#' @param do.enmo Logical (default = TRUE) indicating whether ENMO should be
-#' calculated.
-#' @param do.actilifecounts Logical (default = FALSE) indicating whether activity
-#' counts should be calculated.
-#' @param do.actilifecountsLFE Logical (default = FALSE) indicating whether activity
-#' counts using the low-frequency extension filter should be calculated.
 #' @param ID Character with ID corresponding to subject
 #'
 #' @return Data frame with features calculated as needed for each classifier.
@@ -32,42 +26,10 @@
 #'
 #' @importFrom signal specgram
 #' @import stats
-ExtractFeatures = function(data, classifier = NULL, sf = NULL, epoch = NULL,
-                           do.enmo = TRUE,
-                           do.actilifecounts = FALSE, do.actilifecountsLFE = FALSE,
-                           ID = NA) {
+ExtractFeatures = function(data, classifier = NULL, sf = NULL, epoch = NULL, ID = NA) {
   classifier = tolower(classifier)
   # initialize variables
   fnames = c()
-  enmo = agcounts = LFEcounts = tilt = NULL
-  # Basic features ----------------------------------------------------------
-  # enmo per epoch
-  vm = sqrt(rowSums(data[, 1:3]^2))
-  if (do.enmo) {
-    enmo = vm - 1
-    enmo[which(enmo < 0)] = 0
-    enmo = slide(enmo, width = epoch*sf, FUN = mean)
-    fnames = c(fnames, "enmo")
-  }
-  # activity counts per epoch with default filter
-  if (do.actilifecounts) {
-    agcounts = actilifecounts::get_counts(raw = data[, 1:3], sf = sf, epoch = epoch,
-                                          lfe_select = FALSE, verbose = FALSE)
-    fnames = c(fnames, "agcounts_x", "agcounts_y", "agcounts_z", "agcounts_vm")
-  }
-  # activity counts per epoch with LFE
-  if (do.actilifecountsLFE) {
-    LFEcounts = actilifecounts::get_counts(raw = data[, 1:3], sf = sf, epoch = epoch,
-                                           lfe_select = TRUE, verbose = FALSE)
-    fnames = c(fnames, "LFEcounts_x", "LFEcounts_y", "LFEcounts_z", "LFEcounts_vm")
-  }
-  # tilt
-  tilt = acos(data[,2]/vm)*(180/pi)
-  tilt = slide(tilt, width = epoch*sf, FUN = mean)
-  fnames = c(fnames, "tilt")
-  # z angle variability per 5 seconds
-  az = (atan(data[, 3] / (sqrt(data[, 1]^2 + data[, 2]^2)))) / (pi/180)
-  anglez = slide(x = az, width = 5*sf, FUN = mean)
   # -------------------------------------------------------------------------
   # Extract features needed for each classifier
   classifierAvailable = TRUE
@@ -75,7 +37,7 @@ ExtractFeatures = function(data, classifier = NULL, sf = NULL, epoch = NULL,
     classifierAvailable = FALSE
   } else {
     if (grepl(pattern = "preschool|school age", x = classifier)) {
-      features = featuresTrost2018(data = data[, 1:3], vm = vm,
+      features = featuresTrost2018(data = data[, 1:3], vm = sqrt(rowSums(data[, 1:3]^2)),
                                    epoch = epoch, sf = sf,
                                    overlap = 0, lowerBound = 0.25, upperBound = 5)
       # handle column names to apply classifier later on
@@ -118,9 +80,6 @@ ExtractFeatures = function(data, classifier = NULL, sf = NULL, epoch = NULL,
                 "    - Thigh Decision Tree\n"))
   }
   # merge basic features with features
-  fnames = c(colnames(features), fnames)
-  features = as.data.frame(cbind(features, enmo, agcounts, LFEcounts, tilt))
-  colnames(features) = fnames
   rownames(features) = 1:nrow(features)
-  return(list(features = features, anglez = anglez))
+  return(features)
 }

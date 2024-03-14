@@ -41,6 +41,7 @@
 #' data should be overwritten.
 #' @param boutdur Numeric vector (default = c(10)) indicating the bout durations over which calculate bouts of behaviors
 #' @param boutcriter Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout
+#' @param visualreport Logical (default = FALSE) indicating whether visualizations should be run and stored in the results folder.
 #'
 #' @return Function does not return anything, it only generates the reports and
 #' visualizations in the \code{output_directory}.
@@ -56,10 +57,26 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                          do.enmo = TRUE, do.actilifecounts = FALSE,
                          do.actilifecountsLFE = FALSE,
                          classifier = NULL, boutdur = c(10), boutcriter = 0.8,
+                         visualreport = FALSE,
                          overwrite = FALSE, verbose = TRUE) {
   # Options
   options(digits.secs = 3)
   classifier = tolower(classifier)
+  infoClassifier = GetInfoClassifier(classifier)
+  epoch = infoClassifier$epoch
+  if (do.sleep == TRUE) {
+    classes = c(infoClassifier$classes, "nighttime", "sleep", "nonwear")
+  }
+  # Welcome message
+  if (verbose) {
+    cat('\n')
+    cat(paste0(rep('_', options()$width), collapse = ''))
+    cat(paste0("\n\nWelcome to the actimetric R package!\n",
+               "\nIf you experiment any technical issue or wish to contribute to actimetric,",
+               "\nplease contact the package maintainer at jairo@jhmigueles.com\n\n"))
+    cat(paste0(rep('_', options()$width), collapse = ''))
+    cat("\n")
+  }
   # -------------------------------------------------------------------------
   # Check directories and list files
   if (dir.exists(input_directory)) files = dir(input_directory, recursive = TRUE, full.names = TRUE)
@@ -67,38 +84,34 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
   output_directory = file.path(output_directory, paste0("output_", studyname))
   suppressWarnings({
     dir.create(file.path(output_directory, "time_series"), recursive = TRUE)
-    dir.create(file.path(output_directory, "summary"), recursive = TRUE)
     dir.create(file.path(output_directory, "results"), recursive = TRUE)
   })
   # -------------------------------------------------------------------------
   # -------------------------------------------------------------------------
   # Load files...
   for (file in files) {
+    # file format and ID
+    dot_position = regexpr("\\.([[:alnum:]]+)$", file)
+    format = substr(file, dot_position + 1, nchar(file))
+    ID = gsub(paste0(".", format, "$"), "", basename(file))
     fn2save = file.path(output_directory, "time_series",
-                        paste0(basename(file), ".RData"))
+                        paste0(ID, ".RData"))
     if (overwrite == TRUE | file.exists(fn2save) == FALSE) {
       # load and classify 24 hours of data -------
       if (verbose) {
         cat(paste("\nReading", file, "...\n"))
         cat(paste("File Size:", round(file.info(file)$size/1024^2, 1), "MB"))
+        cat("\n\n")
       }
       # ---------------------------------------------------------------------
       # file information relevant to read file
-      # file format and ID
-      dot_position = regexpr("\\.([[:alnum:]]+)$", file)
-      format = substr(file, dot_position + 1, nchar(file))
-      ID = gsub(paste0(".", format, "$"), "", basename(file))
-      infoClassifier = GetInfoClassifier(classifier)
-      epoch = infoClassifier$epoch; classes = infoClassifier$classes
-      rfmodel = infoClassifier$rfmodel; hmmmodel = infoClassifier$hmmmodel
-      # Extract file information
       I = GGIR::g.inspectfile(file)
       hvars = GGIR::g.extractheadervars(I)
       sf = I$sf
       # Extract parameters for reading file in chunks
       readParams = GGIR::get_nw_clip_block_params(chunksize = 1, dynrange = 8,
-                                                 monc = I$monc, dformat = I$dformc,
-                                                 sf = sf, rmc.dynamic_range = NULL)
+                                                  monc = I$monc, dformat = I$dformc,
+                                                  sf = sf, rmc.dynamic_range = NULL)
       blocksize = readParams$blocksize
       isLastBlock = FALSE
       blocknumber = 1; iteration = 1
@@ -106,8 +119,8 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
       S = matrix(0,0,4) #dummy variable needed to cope with head-tailing succeeding blocks of data
       # ---------------------------------------------------------------------
       # Run Pipeline...
+      nonwear = enmo = agcounts = LFEcounts = tilt = anglez = activity = NULL
       while (isLastBlock == FALSE) {
-        browser()
         # 1 - read and extract calibration coefficients
         accread = ReadAndCalibrate(file = file, sf = sf, blocksize = blocksize,
                                    blocknumber = blocknumber,
@@ -117,129 +130,135 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                                    PreviousLastTime = PreviousLastTime,
                                    do.calibration = do.calibration,
                                    iteration = iteration, epoch = epoch,
-                                   isLastBlock = isLastBlock, S = S, verbose = verbose)
-        data = accread$data; calCoefs = accread$calCoefs; vm.error.st = accread$vm.error.st
-        vm.error.end = accread$vm.error.end; blocknumber = accread$blocknumber
+                                   isLastBlock = isLastBlock, S = S, verbose = FALSE)
+        starttime = accread$starttime; endtime = accread$endtime
+        data = accread$data; blocknumber = accread$blocknumber
         PreviousLastValue = accread$PreviousLastValue
         PreviousLastTime = accread$PreviousLastTime; PreviousEndPage = accread$PreviousEndPage
         isLastBlock = accread$isLastBlock; S = accread$S
         remaining_epochs = accread$remaining_epochs; nHoursRead = accread$nHoursRead
-        if (iteration == 1) starttime = accread$starttime
-        iteration = iteration + 1
+        if (iteration == 1) {
+          calCoefs = accread$calCoefs; vm.error.st = accread$vm.error.st
+          vm.error.end = accread$vm.error.end
+          recording_starttime = starttime
+        }
         rm(accread); gc()
         # 2 - classify and save time series if required (only FALSE when using function within GGIR)
         if (!is.null(data)) {
-          activity = classify(data = data, fn2save = fn2save,
-                              do.calibration = do.calibration,
-                              do.sleep = do.sleep, do.nonwear = do.nonwear,
-                              do.enmo = do.enmo, do.actilifecounts = do.actilifecounts,
-                              do.actilifecountsLFE = do.actilifecounts,
-                              classifier = classifier)
+          if (verbose) {
+            t0 = format(as.POSIXct(starttime, origin = "1970-1-1"), "%Y-%m-%d %H:%M:%S")
+            t1 = format(as.POSIXct(endtime, origin = "1970-1-1"), "%Y-%m-%d %H:%M:%S")
+            cat(paste0("Processing data from ", t0, " to ", t1, "\r"))
+          }
+          # CALIBRATE CHUNK OF DATA
+          if (do.calibration == TRUE) {
+            data[, 1] = calCoefs$scale[1]*(data[,1] - calCoefs$offset[1])
+            data[, 2] = calCoefs$scale[2]*(data[,2] - calCoefs$offset[2])
+            data[, 3] = calCoefs$scale[3]*(data[,3] - calCoefs$offset[3])
+          }
+          # Basic features ----------------------------------------------------------
+          # non-wear
+          nw = rep(0, nrow(data))
+          if (do.nonwear) {
+            if (nrow(data) >= (sf*60*60)) { # at least 1hr of data
+              nw = detectNonWear(data, sf = sf, epoch = epoch)
+              hold = nw[length(nw)]
+            } else { # repeat last value from previous chunk if available
+              if (exists("hold")) {
+                nw = rep(hold, nrow(data) / (epoch*sf))
+              } else { # or set the full time as wear if full recording < 1 hour
+                nw = rep(0, nrow(data) / (epoch*sf))
+              }
+            }
+          }
+          nonwear = c(nonwear, nw)
+          # enmo per epoch
+          vm = sqrt(rowSums(data[, 1:3]^2))
+          enm = NULL
+          if (do.enmo) {
+            enm = vm - 1
+            enm[which(enm < 0)] = 0
+            enm = slide(enm, width = epoch*sf, FUN = mean)
+            enmo = c(enmo, enm)
+          }
+          # activity counts per epoch with default filter
+          AGc = NULL
+          if (do.actilifecounts) {
+            AGc = actilifecounts::get_counts(raw = data[, 1:3], sf = sf, epoch = epoch,
+                                             lfe_select = FALSE, verbose = FALSE)
+            agcounts = rbind(agcounts, AGc)
+            colnames(agcounts) = c("agcounts_x", "agcounts_y", "agcounts_z", "agcounts_vm")
+          }
+          # activity counts per epoch with LFE
+          LFEc = NULL
+          if (do.actilifecountsLFE) {
+            LFEc = actilifecounts::get_counts(raw = data[, 1:3], sf = sf, epoch = epoch,
+                                              lfe_select = TRUE, verbose = FALSE)
+            LFEcounts = rbind(LFEcounts, LFEc)
+            colnames(LFEcounts) = c("LFEcounts_x", "LFEcounts_y", "LFEcounts_z", "LFEcounts_vm")
+          }
+          # tilt
+          tlt = NULL
+          tlt = acos(data[,2]/vm)*(180/pi)
+          tlt = slide(tlt, width = epoch*sf, FUN = mean)
+          tilt = c(tilt, tlt)
+          # z angle variability per 5 seconds
+          az = (atan(data[, 3] / (sqrt(data[, 1]^2 + data[, 2]^2)))) / (pi/180)
+          az = slide(x = az, width = 5*sf, FUN = mean)
+          anglez = c(anglez, az)
+          # Classifier
+          act = classify(data = data, sf = sf,
+                         classifier = classifier, infoClassifier = infoClassifier,
+                         ID = ID, starttime = starttime)
+          activity = c(activity, act)
         }
+        iteration = iteration + 1
       }
-
-      # 3 - store ts
-      while (isLastBlock == FALSE) {}
-      # Now add lag-lead features if needed
-      if (grepl("lag-lead", classifier, ignore.case = TRUE)) {
-        lagsd1 = c(0, ts$vm.sd[1:c(nrow(ts) - 1)])
-        lagsd2 = c(0, 0, ts$vm.sd[1:c(nrow(ts) - 2)])
-        leadsd1 = c(ts$vm.sd[2:nrow(ts)], 0)
-        leadsd2 = c(ts$vm.sd[3:nrow(ts)], 0, 0)
-        combsd = apply(cbind(lagsd1, lagsd2, leadsd1, leadsd2), 1, sd)
-        laglead = cbind(lagsd1, lagsd2, leadsd1, leadsd2, combsd)
-        ts = cbind(ts, laglead)
-      }
-      # 3.5 - derive timestamp and ID
-      timestamp = deriveTimestamps(from = start_time, length = nrow(ts), epoch = epoch)
-      subject = rep(ID, nrow(ts))
-      ts = as.data.frame(cbind(subject, timestamp, ts))
+      # Timestamp and ID
+      timestamp = deriveTimestamps(from = recording_starttime,
+                                   length = length(activity), epoch = epoch)
+      timestamp = as.data.frame(timestamp)
+      subject = rep(ID, length(activity))
+      ts = as.data.frame(cbind(subject, timestamp, tilt, activity, nonwear))
+      if (length(enmo) == nrow(ts)) ts = as.data.frame(cbind(ts, enmo))
+      if (length(agcounts) == nrow(ts)) ts = as.data.frame(cbind(ts, agcounts))
+      if (length(LFEcounts) == nrow(ts)) ts = as.data.frame(cbind(ts, LFEcounts))
       numeric_columns = sapply(ts, mode) == 'numeric'
       ts[numeric_columns] =  round(ts[numeric_columns], 3)
-      ts_anglez = deriveTimestamps(from = start_time, length = length(anglez), epoch = 5)
-      anglez = data.frame(date = ts_anglez[, 1], time = ts_anglez[, 2], anglez = anglez)
-      # 4 - apply classifier
       ts  = do.call(data.frame,lapply(ts, function(x) replace(x, is.infinite(x), NA)))
       ts[is.na(ts)] = 0
-      if (grepl("thigh", classifier, ignore.case = TRUE)) {
-        ts$activity = ts$post = thres = NA
-        sit = which(ts$bfsd.x <= 0.1 & ts$inc.x < 135)
-        ts$activity[sit] = 1
-        e  = apply(ts[, c("bfsd.y", "bfsd.x", "bfsd.z")], 1, max)
-        standMove = which(e > 0.1 & ts$bfsd.x <= 0.1 & abs(ts$inc.x) >= 135)
-        ts$activity[standMove] = 3
-        stand = which(e <= 0.1 & ts$bfsd.x <= 0.1 & ts$inc.x >= 135)
-        ts$activity[stand] = 2
-        ee = which(is.na(ts$activity))
-        bike = which(ts$bfsd.x[ee] > 0.1 & ts$fb.z[ee] > 24)
-        ts$activity[ee[bike]] = 7
-        run = which(ts$bfsd.x[ee] > 0.1 & ts$bfsd.x[ee] > 0.72 & ts$fb.z[ee] < 24)
-        ts$activity[ee[run]] = 5
-        walk = which(ts$bfsd.x[ee] > 0.1 & ts$bfsd.x[ee] < 0.72 & ts$fb.z[ee] < 24)
-        ts$activity[ee[walk]] = 4
-        e = which(ts$activity == 1)
-        if (length(e) > 0) {
-          thres = as.numeric(abs(base::summary(ts$fb.z[e & ts$fb.z[e] < 5 & ts$fb.z[e] > -5])[3]) + 4.5)
-          climbStairs = which(ts$activity %in% c(4:5) & ts$fb.z > thres)
-          ts$activity[climbStairs] = 6
-        }
-        if (length(e) == 0 & !is.na(thres)) {
-          climbStairs = which(ts$activity %in% c(4:5) & ts$fb.z > thres)
-          ts$activity[climbStairs] = 6
-        }
-      } else if (is.null(hmmmodel)) {
-        ts$activity = tryCatch(stats::predict(rfmodel, ts),
-                               error = function(e) caret::predict.train(rfmodel, ts))
-      } else {
-        # For now, only Ellis classifiers
-        testDat = ts[, which(colnames(ts) == "mean"):which(colnames(ts) == "fft14")]
-        testDat = predict(rfmodel$preProcValues, testDat)
-        activity = stats::predict(rfmodel,testDat)
-        ts[, 4:44] = testDat
-        filtered = HMM::viterbi(hmmmodel, activity)
-        ts = cbind(ts, activity, filtered)
-        ts$activity_orig = ts$activity
-        ts$hmm_orig = ts$filtered
-      }
-      ts$activity = as.numeric(ts$activity)
-      # 5 - detect sleep
-      ts$sleep_windows_orig = ts$sleep_periods = ts$sleep = 0
-      if (do.sleep) {
-        sleep_id = length(classes) + 1
-        nonwear_id = length(classes) + 2
-        if (body_attachment_site == "wrist") {
-          ts = detectSleep(ts = ts, anglez = anglez, epoch = 5,
-                           sleep_id = sleep_id, nonwear_id = nonwear_id)
-        } else {
-          warning("Sleep detection only available for wrist and thigh attachment sites.")
-        }
-
+      # classify sleep on complete ts
+      if (do.sleep == TRUE) {
+        activity = classifySleep(anglez = anglez, starttime = recording_starttime,
+                                 classifier = classifier, infoClassifier = infoClassifier,
+                                 ts = ts)
+        ts$activity = activity # overwrite with nighttime, sleep and nonwear information
       }
       # MILESTONE: save features data in features folder
       original_classifier = classifier
-      save(ts, sf, start_time, ID, calCoefs, vm.error.st, vm.error.end,
-           original_classifier, file = fn2save)
-    } else { # if already existed and not overwritting...
-      if (verbose) cat(paste("\nLoading classified time series...\n"))
-      load(fn2save)
-      # reload info for classifier
-      if (classifier != original_classifier) stop("Classifier changed from the previous run, please run with overwrite = TRUE.")
-      infoClassifier = GetInfoClassifier(classifier = classifier)
-      epoch = infoClassifier$epoch; classes = infoClassifier$classes
-      rfmodel = infoClassifier$rfmodel; hmmmodel = infoClassifier$hmmmodel
+      save(ts, original_classifier, file = fn2save)
     }
-
-    # 6 - aggregate per date
-    if (do.sleep) classes = c(classes, "nighttime")
-    if (do.nonwear) classes = c(classes, "nonwear")
-    daysummary = aggregate_per_date(ts = ts, epoch = epoch, classifier = classifier,
-                                    classes = classes, boutdur = boutdur, boutcriter = boutcriter)
-    fn2save = file.path(output_directory, "summary", paste0(basename(file), ".RData"))
-    save(daysummary, file = fn2save)
-    # 7 - visualize (to be done)
+    # blank line before next file
+    if (verbose) cat("\n\n----\n")
   }
-  # 8 - Generate reports
-  files2summarize = dir(file.path(output_directory, "summary"), full.names = TRUE)
-  doReport(files2summarize)
-
+  # 6 - aggregate per date (and visualize)
+  if (verbose) {
+    cat("\n\n")
+    cat("Calculating and exporting the summary statistics per day and per recording...\n")
+  }
+  tsDir = dirname(fn2save)
+  daysummary = aggregate_per_date(tsDir = tsDir, epoch = epoch, classifier = classifier,
+                                  classes = classes, boutdur = boutdur, boutcriter = boutcriter,
+                                  visualreport = visualreport)
+  fn2save = file.path(output_directory, "results", "daylevel_report.csv")
+  data.table::fwrite(daysummary, file = fn2save, na = "", row.names = FALSE)
+  # 7 - aggregate per person
+  personsummary = aggregate_per_person(daysummary = daysummary)
+  fn2save = file.path(output_directory, "results", "personlevel_report.csv")
+  data.table::fwrite(personsummary, file = fn2save, na = "", row.names = FALSE)
+  if (verbose) {
+    cat("\n\n")
+    cat("Done!")
+  }
 }
+

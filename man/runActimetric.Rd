@@ -17,6 +17,7 @@ runActimetric(
   classifier = NULL,
   boutdur = c(10),
   boutcriter = 0.8,
+  visualreport = FALSE,
   overwrite = FALSE,
   verbose = TRUE
 )
@@ -67,6 +68,8 @@ Thigh Decision Tree)}
 \item{boutdur}{Numeric vector (default = c(10)) indicating the bout durations over which calculate bouts of behaviors}
 
 \item{boutcriter}{Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout}
+
+\item{visualreport}{Logical (default = FALSE) indicating whether visualizations should be run and stored in the results folder.}
 
 \item{overwrite}{Logical (default = FALSE) indicating whether the existing milestone
 data should be overwritten.}

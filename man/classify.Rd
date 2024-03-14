@@ -5,52 +5,18 @@
 \title{Classifies Accelerometer Data into Physical Activity Types}
 \usage{
 classify(
-  input_directory = NULL,
-  output_directory = NULL,
-  studyname = "actimetric",
-  do.calibration = TRUE,
-  do.sleep = TRUE,
-  do.nonwear = TRUE,
-  do.enmo = TRUE,
-  do.actilifecounts = FALSE,
-  do.actilifecountsLFE = FALSE,
+  data = NULL,
+  sf = NULL,
   classifier = NULL,
-  boutdur = c(10),
-  boutcriter = 0.8,
-  overwrite = FALSE,
-  verbose = TRUE
+  infoClassifier = NULL,
+  ID = NULL,
+  starttime = NULL
 )
 }
 \arguments{
-\item{input_directory}{Character with full path to directory containing raw
-accelerometer data. At the moment the package accepts ActiGraph gt3x,
-axivity cwa, and GENEActiv bin files. The \code{input_directory} should only
-contain accelerometer files, they can be organized in subdirectories within
-the input directory if needed.}
+\item{data}{Raw data as read by \link{ReadAndCalibrate}}
 
-\item{output_directory}{Character with full path to directory where the reports
-and visualizations are to be stored.}
-
-\item{studyname}{Character (default = "actimetric") defining the name of the study.
-To be used to give a name to the output directory generated.}
-
-\item{do.calibration}{Logical (default = TRUE) indicating whether the accelerometer
-raw signal should be calibrated relative to local gravitational acceleration.}
-
-\item{do.sleep}{Logical (default = TRUE) indicating whether sleep parameters
-should be calculated.}
-
-\item{do.nonwear}{Logical (default = TRUE) indicating whether non-wear time
-should be derived.}
-
-\item{do.enmo}{Logical (default = TRUE) indicating whether ENMO should be
-calculated.}
-
-\item{do.actilifecounts}{Logical (default = FALSE) indicating whether activity
-counts should be calculated.}
-
-\item{do.actilifecountsLFE}{Logical (default = FALSE) indicating whether activity
-counts using the low-frequency extension filter should be calculated.}
+\item{sf}{Number with the sampling frequency in the recording.}
 
 \item{classifier}{Character (default = NULL) indicating the classifier to be used
 (available options are:
@@ -64,15 +30,11 @@ Adult women Wrist RF Ellis,
 Adult women Hip RF Ellis,
 Thigh Decision Tree)}
 
-\item{boutdur}{Numeric vector (default = c(10)) indicating the bout durations over which calculate bouts of behaviors}
+\item{infoClassifier}{Information relative to the classifier as extracted from \link{GetInfoClassifier}}
 
-\item{boutcriter}{Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout}
+\item{ID}{ID for this recording}
 
-\item{overwrite}{Logical (default = FALSE) indicating whether the existing milestone
-data should be overwritten.}
-
-\item{verbose}{Logical (default = TRUE) indicating whether progress messages should
-be printed in the console.}
+\item{starttime}{Start time for the recording as extracted from \link{ReadAndCalibrate}}
 }
 \value{
 Function does not return anything, it only generates the reports and

@@ -4,10 +4,18 @@
 \alias{aggregate_per_date}
 \title{Aggregate Per Date}
 \usage{
-aggregate_per_date(ts, epoch, classifier, classes, boutdur, boutcriter)
+aggregate_per_date(
+  tsDir,
+  epoch,
+  classifier,
+  classes,
+  boutdur,
+  boutcriter,
+  visualreport = FALSE
+)
 }
 \arguments{
-\item{ts}{Data frame with ts object from \link{extractFeatures}}
+\item{tsDir}{Directory with time series files.}
 
 \item{epoch}{Numeric with the epoch length in seconds.}
 
@@ -28,10 +36,12 @@ Thigh Decision Tree)}
 \item{boutdur}{Numeric vector (default = c(1, 10, 30)) indicating the bout durations over which calculate bouts of behaviors}
 
 \item{boutcriter}{Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout}
+
+\item{visualreport}{Logical indicating whether to visualize the time series}
 }
 \value{
 Data frame with aggregates of time spent in classes per calendar date.
 }
 \description{
-Aggregate Per Date
+Generates day-level summary data frame
 }

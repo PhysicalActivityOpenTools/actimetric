@@ -1,18 +1,19 @@
 #' Read Accelerometer Raw Data File and Extract Calibration Coefficients
 #'
-#' @param blocksize
-#' @param blocknumber
-#' @param PreviousEndPage
-#' @param inspectfileobject
-#' @param PreviousLastValue
-#' @param PreviousLastTime
-#' @param file
-#' @param verbose
-#' @param do.calibration
-#' @param iteration
-#' @param sf
-#' @param epochSize
-#' @param epoch
+#' @param blocksize Size of chunk to be read in pages as extracted from \code{GGIR::get_nw_clip_block_params}.
+#' @param blocknumber Number of chunk of data to be read.
+#' @param PreviousEndPage Last page number read in the previous iteration.
+#' @param inspectfileobject Inspect file object extracted from \code{GGIR::g.inspectfile}.
+#' @param PreviousLastValue Last acceleration value(s) read in the previous iteration.
+#' @param PreviousLastTime Last timestamp read in the previous iteration.
+#' @param file Path to the file to be read.
+#' @param verbose Logical indicating whether to print progress messages in the console.
+#' @param do.calibration Logical indicating whether to calibrate the data or not.
+#' @param iteration Number indicating the iteration in the \code{runActimetric} function.
+#' @param sf Number with the sampling frequency in the recording.
+#' @param epoch Number with the desired epoch length for the aggregation in seconds.
+#' @param isLastBlock Logical indicating if this is the last chunk of data to be read in the file.
+#' @param S Leftover data from the previous iteration, to be appended to the current chunk of data being read.
 #'
 #' @description
 #' Function aimed to read accelerometer raw data. At the moment,
@@ -51,14 +52,16 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
     }
     if (length(accread$P) > 0) {
       if (count == 1) data = accread$P$data else data = rbind(data, accread$P$data)
+      nHoursRead = nrow(data) / sf / 3600
+    } else {
+      data = NULL
     }
     rm(accread); gc()
-    nHoursRead = nrow(data) / sf / 3600
   }
 
   # -------------------------------------------------------------------------
   # MODULE 2 - IMPUTE AND FORMAT CHUNK OF DATA ------------------------------
-  if (nrow(data) > 0) { # would be NULL if not sufficient data
+  if (!is.null(data)) { # would be NULL if not sufficient data
     # 2 - Impute time gaps if format is gt3x or csv
     if (inspectfileobject$dformc == GGIR:::FORMAT$CSV ||
         inspectfileobject$dformc == GGIR:::FORMAT$GT3X) {
@@ -75,7 +78,36 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
       }
       rm(P); gc()
     }
-    # 3 - Add leftover data hold from previous loop
+    # 3 - Get start time if this is the first iteration
+    starttime = NULL
+    if (iteration == 1) {
+      starttime = GGIR::g.getstarttime(datafile = file, data = data,
+                                       mon = inspectfileobject$monc,
+                                       dformat = inspectfileobject$dformc,
+                                       desiredtz = "",
+                                       configtz = NULL)
+      trunc_start = !starttime$sec %in% seq(0, 60, by = epoch)
+      if (trunc_start == TRUE) {
+        next_epoch = seq(0, 60, by = epoch)[seq(0, 60, by = epoch) > starttime$sec][1]
+        lookhere = round((next_epoch - starttime$sec)*sf)
+        if (any(grepl("time", colnames(data)))) {
+          tcol = which(grepl("time", colnames(data)))
+          lookhere = (lookhere - 4):(lookhere + 4)
+          starthere = which.min(abs(next_epoch - as.POSIXlt(data[lookhere, tcol])$sec))
+          start = lookhere[starthere]
+          del = 1:(start - 1)
+          data = data[-del,]
+        } else {
+          del = 1:lookhere
+          data = data[-del,]
+        }
+        starttime = starttime + ((next_epoch - starttime$sec))
+      }
+      starttime = as.numeric(starttime)
+    } else {
+      starttime = data[1, "time"]
+    }
+    # 4 - Add leftover data hold from previous loop
     data = as.matrix(data, rownames.force = FALSE)
     if (nrow(S) > 0) {
       if ("remaining_epochs" %in% colnames(data)) {
@@ -93,16 +125,7 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
       }
       data = rbind(S,data)
     }
-    # 4 - Get start time if this is the first iteration
-    starttime = NULL
-    if (iteration == 1) {
-      starttime = GGIR::g.getstarttime(datafile = file, data = data,
-                                       mon = inspectfileobject$monc,
-                                       dformat = inspectfileobject$dformc,
-                                       desiredtz = "",
-                                       configtz = NULL)
-    }
-    # 5 - Store data that  will be added to next block
+    # 4 - Store data that  will be added to next block
     LD = nrow(data)
     if (LD >= (3600*sf)) { # if there is more than 1 hour of data...
       use = (floor(LD / (60*sf))) * (60*sf)
@@ -122,24 +145,33 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
         data = data[, -which(colnames(data) == "remaining_epochs")]
       }
     }
-  }
-  data = data[, c("x", "y", "z")]
-  nHoursRead = nrow(data)/sf/3600
-  # -------------------------------------------------------------------------
-  # MODULE 3 - EXTRACT CALIBRATION COEFFICIENTS -----------------------------
-  calCoefs = vm.error.st = vm.error.end = NULL
-  if (do.calibration == TRUE & iteration == 1) {
-    cal = calibrateRaw(data, sf = sf, verbose = verbose)
-    if (is.list(cal)) {
-      calCoefs = cal$calCoefs; vm.error.st = cal$vm.error.st;
-      vm.error.end = cal$vm.error.end
+
+    endtime = data[nrow(data), "time"]
+    data = data[, c("x", "y", "z")]
+    nHoursRead = nrow(data)/sf/3600
+    # -------------------------------------------------------------------------
+    # MODULE 3 - EXTRACT CALIBRATION COEFFICIENTS -----------------------------
+    calCoefs = vm.error.st = vm.error.end = NULL
+    if (do.calibration == TRUE & iteration == 1) {
+      cal = calibrateRaw(data, sf = sf, verbose = verbose)
+      if (is.list(cal)) {
+        calCoefs = cal$calCoefs; vm.error.st = cal$vm.error.st;
+        vm.error.end = cal$vm.error.end
+      }
     }
+    # -------------------------------------------------------------------------
+    return(list(data = data, calCoefs = calCoefs,
+                vm.error.st = vm.error.st, vm.error.end = vm.error.end,
+                blocknumber = blocknumber, PreviousLastValue = PreviousLastValue,
+                PreviousLastTime = PreviousLastTime, PreviousEndPage = PreviousEndPage,
+                isLastBlock = isLastBlock, S = S, remaining_epochs = remaining_epochs,
+                starttime = starttime, endtime = endtime, nHoursRead = nHoursRead))
+  } else { # no data to be read
+    return(list(data = NULL, calCoefs = NULL,
+                vm.error.st = NULL, vm.error.end = NULL,
+                blocknumber = NULL, PreviousLastValue = NULL,
+                PreviousLastTime = NULL, PreviousEndPage = NULL,
+                isLastBlock = TRUE, S = NULL, remaining_epochs = NULL,
+                starttime = NULL, endtime = NULL, nHoursRead = NULL))
   }
-  # -------------------------------------------------------------------------
-  return(list(data = data, calCoefs = calCoefs,
-              vm.error.st = vm.error.st, vm.error.end = vm.error.end,
-              blocknumber = blocknumber, PreviousLastValue = PreviousLastValue,
-              PreviousLastTime = PreviousLastTime, PreviousEndPage = PreviousEndPage,
-              isLastBlock = isLastBlock, S = S, remaining_epochs = remaining_epochs,
-              starttime = starttime, nHoursRead = nHoursRead))
 }

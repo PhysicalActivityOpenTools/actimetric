@@ -104,9 +104,11 @@ featuresTrost2018 = function(data, vm, epoch, overlap, sf,
   fnames = c(fnames, colnames(td))
   fd = slide(vm, epoch*sf, FUN = function(x) freq.domain(x, sf = sf, lowerBound, upperBound), by = width)
   fnames = c(fnames, colnames(fd))
-  xy = cross.corr(data[,1], data[,2], epoch*sf, by = width)
-  xz = cross.corr(data[,1], data[,3], epoch*sf, by = width)
-  yz = cross.corr(data[,2], data[,3], epoch*sf, by = width)
+  suppressWarnings({
+    xy = cross.corr(data[,1], data[,2], epoch*sf, by = width)
+    xz = cross.corr(data[,1], data[,3], epoch*sf, by = width)
+    yz = cross.corr(data[,2], data[,3], epoch*sf, by = width)
+  })
   fnames = c(fnames, "xy", "xz", "yz")
   # return features
   features = cbind(td, fd, xy, xz, yz)

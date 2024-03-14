@@ -24,7 +24,7 @@ calibrateRaw = function(raw, sf, verbose = TRUE) {
     C <- round(C,3)
     return(list(center = C[1:3], radius = r))
   }
-  GN = function(V) {
+  GN = function(V, verbose = TRUE) {
     # ------
     f0 = function(Vx,Vy,Vz,Mxx,Mxy,Mxz,Myy,Myz,Mzz,Bx,By,Bz) {
       (Mxx*(Bx - Vx) + Mxy*(By - Vy) + Mxz*(Bz - Vz))^2 + (Mxy*(Bx - Vx) + Myy*(By - Vy) + Myz*(Bz - Vz))^2 + (Mxz*(Bx - Vx) + Myz*(By - Vy) + Mzz*(Bz - Vz))^2 - 1
@@ -88,7 +88,7 @@ calibrateRaw = function(raw, sf, verbose = TRUE) {
       if (n > 1) {
         abs(max(2*(v - vold)/(v + vold)))
         if (abs(max(2*(v - vold)/(v + vold))) <= tol) {
-          cat('Convergence achieved\n');
+          if (verbose) cat('\nConvergence achieved in the calibration process\n');
           break
         }
       }
@@ -121,7 +121,7 @@ calibrateRaw = function(raw, sf, verbose = TRUE) {
     # Center and radius of the sphere before calibration
     aa = centerRadius(G)
     # get calibration coeffients (offset and scale)
-    calCoefs = GN(G)
+    calCoefs = GN(G, verbose = verbose)
     # rescale data and calculate error after calibration
     G[,1] = calCoefs$scale[1]*(G[,1] - calCoefs$offset[1])
     G[,2] = calCoefs$scale[2]*(G[,2] - calCoefs$offset[2])

@@ -16,7 +16,7 @@ inbed = function(angle, k = 60, perc = 0.1, inbedthreshold = 15,
     angvar = stats::median(abs(diff(angle)))
     return(angvar)
   }
-  x = slide(angle, width = k, FUN=medabsdi,by=1)
+  x = slide(angle, width = k, FUN = medabsdi, by = 1)
   nomov = rep(0, length(x))
   inbedtime = rep(NA, length(x))
   pp = quantile(x, probs = c(perc)) * inbedthreshold
@@ -61,15 +61,14 @@ inbed = function(angle, k = 60, perc = 0.1, inbedthreshold = 15,
     longestinbed = which(inbeddurations == max(inbeddurations))
     lightsout = s5[longestinbed] - 1
     lightson = e5[longestinbed] - 1
-    if(length(s5)>1){
-    naplightsout<-s5[-longestinbed] - 1
-    naplightson<-e5[-longestinbed] -1
-    }else{
-      naplightsout<-NA
-      naplightson<-NA
+    if (length(s5) > 1) {
+    naplightsout <- s5[-longestinbed] - 1
+    naplightson <- e5[-longestinbed] - 1
+    } else {
+      naplightsout <- NA
+      naplightson <- NA
     }
-  }
-  else {
+  } else {
     lightson = c()
     lightsout = c()
     tib.threshold = c()
