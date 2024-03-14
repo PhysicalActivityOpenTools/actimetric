@@ -12,6 +12,7 @@
 #' @export
 #'
 calibrateRaw = function(raw, sf, verbose = TRUE) {
+  calCoefs = NULL; vm.error.st = NULL; vm.error.end = NULL
   # define internal functions (only used here) -----
   centerRadius <- function(aa) {
     A <- matrix(1,nrow(aa), 4)
@@ -23,7 +24,7 @@ calibrateRaw = function(raw, sf, verbose = TRUE) {
     C <- round(C,3)
     return(list(center = C[1:3], radius = r))
   }
-  GN = function(V) {
+  GN = function(V, verbose = TRUE) {
     # ------
     f0 = function(Vx,Vy,Vz,Mxx,Mxy,Mxz,Myy,Myz,Mzz,Bx,By,Bz) {
       (Mxx*(Bx - Vx) + Mxy*(By - Vy) + Mxz*(Bz - Vz))^2 + (Mxy*(Bx - Vx) + Myy*(By - Vy) + Myz*(Bz - Vz))^2 + (Mxz*(Bx - Vx) + Myz*(By - Vy) + Mzz*(Bz - Vz))^2 - 1
@@ -87,7 +88,7 @@ calibrateRaw = function(raw, sf, verbose = TRUE) {
       if (n > 1) {
         abs(max(2*(v - vold)/(v + vold)))
         if (abs(max(2*(v - vold)/(v + vold))) <= tol) {
-          cat('Convergence achieved\n');
+          if (verbose) cat('\nConvergence achieved in the calibration process\n');
           break
         }
       }
@@ -100,7 +101,6 @@ calibrateRaw = function(raw, sf, verbose = TRUE) {
   if (verbose) cat("\n\nCalibration in Progress\n")
   # use first 72 hours for calibration
   raw_bu = raw # back up of raw
-  if (nrow(raw) > (72*60*60*sf)) raw = raw[1:(72*60*60*sf), ]
   vm = sqrt(rowSums(raw[,1:3]^2))
   # 30-second means/sds per axis
   Gx = slide(raw[,1], 30*sf, FUN = mean)
@@ -121,7 +121,7 @@ calibrateRaw = function(raw, sf, verbose = TRUE) {
     # Center and radius of the sphere before calibration
     aa = centerRadius(G)
     # get calibration coeffients (offset and scale)
-    calCoefs = GN(G)
+    calCoefs = GN(G, verbose = verbose)
     # rescale data and calculate error after calibration
     G[,1] = calCoefs$scale[1]*(G[,1] - calCoefs$offset[1])
     G[,2] = calCoefs$scale[2]*(G[,2] - calCoefs$offset[2])
@@ -143,56 +143,10 @@ calibrateRaw = function(raw, sf, verbose = TRUE) {
                 aa2$center[3],")\n",sep = ""))
       cat(paste("Radius Error: ",aa2$radius,"\n",sep = ""))
     }
+    return(list(calCoefs = calCoefs, vm.error.st = vm.error.st, vm.error.end = vm.error.end))
   } else {
     warning("Device not calibrated because it did not record enough orientation changes")
-    return(list(raw = raw_bu, calCoefs = NULL,
-                vm.error.st = NULL, vm.error.end = NULL))
-  }
-  # Calibrate raw -----------------------------------------------------------
-  if (verbose) cat("\n")
-  if (vm.error.end < vm.error.st & vm.error.end < 50) {
-    raw = raw_bu
-    rm(raw_bu); gc()
-    #variables used to read data in 24 hr increment
-    start = increment = constant = (sf*60*60*24)
-    LD = LD2 = 0
-    count = chunk = 1
-    rawEnd = dim(raw)[1]
-    # read and calibrate raw
-    while (LD < 1) {
-      # print progress in console
-      if (verbose) {
-        from = round((1 + (start * (chunk - 1)))/sf/3600, 2)
-        to = round(increment/sf/3600, 2)
-        total = round(rawEnd/sf/3600, 2)
-        cat(paste("\rCalibrating hours", from, "to", to, "out of", total, "\r"))
-      }
-      # if remaining data is less than 24 hrs, set to end of data
-      if (increment >= rawEnd) {
-        increment = rawEnd;  LD2 = 1
-      }
-      # calibrate current chunk of data
-      select = (1 + (start * (chunk - 1))):(increment)
-      raw[select, 1] = calCoefs$scale[1]*(raw[select,1] - calCoefs$offset[1])
-      raw[select, 2] = calCoefs$scale[2]*(raw[select,2] - calCoefs$offset[2])
-      raw[select, 3] = calCoefs$scale[3]*(raw[select,3] - calCoefs$offset[3])
-      # update indexing for next loop
-      count = count + (increment)
-      increment = increment + constant
-      chunk = chunk + 1
-      # is this the last chunk?
-      if (LD2 == 1) {
-        LD = 1
-        e = which(is.na(raw[,1]))
-        if (length(e) > 0) raw = raw[-e,]
-      }
-    }
-  } else {
-    warning("Calibration not done because error did not decrease")
-    return(list(raw = raw_bu, calCoefs = calCoefs,
-                vm.error.st = vm.error.st, vm.error.end = vm.error.end))
   }
   # return
-  return(list(raw = raw, calCoefs = calCoefs,
-              vm.error.st = vm.error.st, vm.error.end = vm.error.end))
+  return(list(calCoefs = calCoefs, vm.error.st = vm.error.st, vm.error.end = vm.error.end))
 }

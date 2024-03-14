@@ -19,7 +19,7 @@ slide = function(x, width, by = NULL, FUN = NULL, ...) {
   isMatrix = FALSE
   FUN = match.fun(FUN)
   if (is.null(by)) by = width
-  if (is.matrix(x)) {
+  if (is.matrix(x) | is.data.frame(x)) {
     z = x[, 3]; y = x[, 2]; x = x[, 1]
     isMatrix = TRUE
   }
