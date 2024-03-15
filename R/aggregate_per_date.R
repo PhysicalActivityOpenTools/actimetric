@@ -13,8 +13,7 @@
 #' School age Wrist Random Forest, School age Hip Random Forest,
 #' Adult Wrist RF Trost,
 #' Adult women Wrist RF Ellis,
-#' Adult women Hip RF Ellis,
-#' Thigh Decision Tree)
+#' Adult women Hip RF Ellis)
 #' @param classes Character (default = NULL) indicating the behavioural classes estimated by the classifier
 #' @param boutdur Numeric vector (default = c(1, 10, 30)) indicating the bout durations over which calculate bouts of behaviors
 #' @param boutcriter Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout
@@ -61,6 +60,30 @@ aggregate_per_date = function(tsDir, epoch, classifier, classes,
     # aggregate per dates -------------
     min_in_class = function(x, epoch) table(x)*epoch/60
 
+    # windows duration
+    # full day
+    fullday = aggregate(!is.na(activity) ~ date, data = ts, FUN = sum)
+    rows2fill = which(availableDates %in% fullday$date)
+    ds[rows2fill, ci] = fullday[, 2]*epoch/60
+    dsnames[ci] = paste("dur", "total", "fullday", "min", sep = "_")
+    ci = ci + 1
+    #
+    # awake & nighttime
+    if ("nighttime.awake" %in% classes) {
+      # awake
+      awake = aggregate(!grepl("nighttime", activity) ~ date, data = ts, FUN = sum)
+      rows2fill = which(availableDates %in% awake$date)
+      ds[rows2fill, ci] = awake[, 2]*epoch/60
+      dsnames[ci] = paste("dur", "total", "awake", "min", sep = "_")
+      ci = ci + 1
+      # nighttime
+      nighttime = aggregate(grepl("nighttime", activity) ~ date, data = ts, FUN = sum)
+      rows2fill = which(availableDates %in% nighttime$date)
+      ds[rows2fill, ci] = nighttime[, 2]*epoch/60
+      dsnames[ci] = paste("dur", "total", "nighttime", "min", sep = "_")
+      ci = ci + 1
+    }
+
     # total minutes in classes
     ci2 = ci + length(classes) - 1
     time_in_classes = aggregate(activity ~ date, data = ts, FUN = min_in_class, epoch = epoch)
@@ -68,15 +91,6 @@ aggregate_per_date = function(tsDir, epoch, classifier, classes,
     ds[rows2fill, ci:ci2] = time_in_classes[, 2]
     dsnames[ci:ci2] = paste("dur", "total", classes, "min", sep = "_")
     ci = ci2 + 1
-
-    # full nighttime
-    if ("nighttime.awake" %in% classes) {
-      nighttime = aggregate(grepl("nighttime", activity) ~ date, data = ts, FUN = sum)
-      rows2fill = which(availableDates %in% nighttime$date)
-      ds[rows2fill, ci] = nighttime[, 2]
-      dsnames[ci] = paste("dur", "total", "nighttime", "min", sep = "_")
-      ci = ci + 1
-    }
 
     # start and end of nighttime
     find_start_end = function(ts, column, class) {

@@ -26,12 +26,18 @@ for (c in 1:10) {
                 do.actilifecounts = TRUE,
                 do.actilifecountsLFE = FALSE,
                 boutdur = 10, boutcriter = 0.8,
+                n_valid_hours = 22, n_valid_hours_awake = 10,
+                n_valid_hours_nighttime = 2,
                 verbose = TRUE, overwrite = TRUE,
                 visualreport = TRUE)
 }
 
 
-
+files = dir("R", full.names = TRUE)
+for (fi in 1:length(files)) {
+  x = suppressWarnings(readLines(files[fi]))
+  if (any(grepl("thigh", x, ignore.case = T))) print(files[fi])
+}
 # interactive selection of directories: both interactive and via code
 # reading ax3 and ax6
 # sens data
