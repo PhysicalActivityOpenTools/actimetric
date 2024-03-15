@@ -19,4 +19,4 @@ Depends:
 LinkingTo: 
     Rcpp
 Imports: 
-    Rcpp
+    Rcpp, 'caret', 'data.table', 'e1071', 'GGIR', 'HMM', 'randomForest', 'signal'
