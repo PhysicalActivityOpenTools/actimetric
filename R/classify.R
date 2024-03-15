@@ -38,8 +38,8 @@ classify = function(data = NULL, sf = NULL,
   # 1 - EXTRACT FEATURES
   # Features for classifier
   ts = ExtractFeatures(data, classifier = classifier,
-                          epoch = epoch, sf = sf,
-                          ID = ID)
+                       epoch = epoch, sf = sf,
+                       ID = ID)
   ts = as.data.frame(ts)
   rm(data); gc()
   # Lag-lead features if needed
@@ -88,6 +88,7 @@ classify = function(data = NULL, sf = NULL,
       climbStairs = which(ts$activity %in% c(4:5) & ts$fb.z > thres)
       ts$activity[climbStairs] = 6
     }
+    activity = ts$activity
   } else if (is.null(infoClassifier$hmmmodel)) {
     activity = tryCatch(stats::predict(infoClassifier$rfmodel, ts),
                         error = function(e) caret::predict.train(infoClassifier$rfmodel, ts))

@@ -87,6 +87,11 @@ actimetricPlot = function(ts, daysummary, dsnames, classes, epoch) {
     acc = "enmo"
   } else if ("agcounts_vm" %in% colnames(ts)) {
     acc = "agcounts_vm"
+  } else if ("LFEcounts_vm" %in% colnames(ts)) {
+    acc = "LFEcounts_vm"
+  } else {
+    ts$fakeacc = 0
+    acc = "fakeacc"
   }
   # find midnights
   nightsi = which(ts$timestamp$hour == 0 & ts$timestamp$min == 0 & ts$timestamp$sec == 0)

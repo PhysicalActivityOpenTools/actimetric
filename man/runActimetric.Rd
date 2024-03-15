@@ -84,6 +84,3 @@ visualizations in the \code{output_directory}.
 \description{
 This is the central function of the actimetric package.
 }
-\references{
-van hees 2014; neishabouri 2022
-}

@@ -121,7 +121,7 @@ classifySleep = function(anglez, starttime, classifier, infoClassifier, ts) {
     }
     ts = subset(ts, select = -c(nonwear, nighttime, sleep_periods))
   } else {
-    warning("Sleep detection only available for wrist and thigh attachment sites.")
+    warning("Sleep detection only available for wrist attachment site for now.")
   }
   activity = ts$activity
   return(activity)
