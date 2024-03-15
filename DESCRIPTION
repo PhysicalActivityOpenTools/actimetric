@@ -5,8 +5,8 @@ Version: 0.1.0
 Author:Jairo H. Migueles
 Maintainer: Jairo H. Migueles <jairo@jhmigueles.com>
 Description: The goal of actimetric is to apply machine learning-based algorithms 
-to accelerometer data to provide insights in physical activity and sleep behaviors 
-in free-living conditions. 
+                to accelerometer data to provide insights in physical activity and 
+                sleep behaviors in free-living conditions. 
 License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
