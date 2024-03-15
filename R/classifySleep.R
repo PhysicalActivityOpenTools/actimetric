@@ -14,8 +14,7 @@
 #' School age Wrist Random Forest, School age Hip Random Forest,
 #' Adult Wrist RF Trost,
 #' Adult women Wrist RF Ellis,
-#' Adult women Hip RF Ellis,
-#' Thigh Decision Tree)
+#' Adult women Hip RF Ellis)
 #' @param ts Data frame with time series.
 #' @param infoClassifier Information relative to the selected classifier as exported from \link{GetInfoClassifier}
 #'

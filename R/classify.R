@@ -12,8 +12,7 @@
 #' School age Wrist Random Forest, School age Hip Random Forest,
 #' Adult Wrist RF Trost,
 #' Adult women Wrist RF Ellis,
-#' Adult women Hip RF Ellis,
-#' Thigh Decision Tree)
+#' Adult women Hip RF Ellis)
 #' @param sf Number with the sampling frequency in the recording.
 #' @param infoClassifier Information relative to the classifier as extracted from \link{GetInfoClassifier}
 #' @param ID ID for this recording

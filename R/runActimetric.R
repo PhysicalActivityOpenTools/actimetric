@@ -25,8 +25,7 @@
 #' School age Wrist Random Forest, School age Hip Random Forest,
 #' Adult Wrist RF Trost,
 #' Adult women Wrist RF Ellis,
-#' Adult women Hip RF Ellis,
-#' Thigh Decision Tree)
+#' Adult women Hip RF Ellis)
 #' @param studyname Character (default = "actimetric") defining the name of the study.
 #' To be used to give a name to the output directory generated.
 #' @param verbose Logical (default = TRUE) indicating whether progress messages should
@@ -42,6 +41,9 @@
 #' @param boutdur Numeric vector (default = c(10)) indicating the bout durations over which calculate bouts of behaviors
 #' @param boutcriter Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout
 #' @param visualreport Logical (default = FALSE) indicating whether visualizations should be run and stored in the results folder.
+#' @param n_valid_hours Numeric (default = 0) with minimum number of absolute valid hours in the day to consider it a valid day for the person-level aggregates.
+#' @param n_valid_hours_awake Numeric (default = 0) with minimum number of absolute valid awake hours in the day to consider it a valid day for the person-level aggregates.
+#' @param n_valid_hours_nighttime Numeric (default = 0) with minimum number of absolute valid nighttime hours in the day to consider it a valid day for the person-level aggregates.
 #'
 #' @return Function does not return anything, it only generates the reports and
 #' visualizations in the \code{output_directory}.
@@ -56,11 +58,26 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                          do.enmo = TRUE, do.actilifecounts = FALSE,
                          do.actilifecountsLFE = FALSE,
                          classifier = NULL, boutdur = c(10), boutcriter = 0.8,
+                         n_valid_hours = 0,
+                         n_valid_hours_awake = 0, n_valid_hours_nighttime = 0,
                          visualreport = FALSE,
                          overwrite = FALSE, verbose = TRUE) {
   # Options
   options(digits.secs = 3)
-  classifier = tolower(classifier)
+  classifier = check_classifier(classifier)
+  if (is.null(classifier)) {
+    stop(paste0("The defined classifier is not within our current alternatives or probably it is mispelled.\n\n",
+                " Please copy/paste one of the following clasifiers:\n",
+                "    - Preschool Wrist Random Forest Free Living\n",
+                "    - Preschool Hip Random Forest Free Living\n",
+                "    - Preschool Hip Random Forest Free Living Lag-Lead\n",
+                "    - Preschool Wrist Random Forest Free Living Lag-Lead\n",
+                "    - School age Wrist Random Forest\n",
+                "    - School age Hip Random Forest\n",
+                "    - Adult Wrist RF Trost\n",
+                "    - Adult women Wrist RF Ellis\n",
+                "    - Adult women Hip RF Ellis\n"))
+  }
   infoClassifier = GetInfoClassifier(classifier)
   epoch = infoClassifier$epoch
   if (do.sleep == TRUE) {
@@ -74,9 +91,7 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                "\nIf you experiment any technical issue or wish to contribute to actimetric,",
                "\nplease contact the package maintainer at jairo@jhmigueles.com\n\n"))
     cat(paste0(rep('_', options()$width), collapse = ''))
-    cat(paste0("\n\nClassifier: ",
-               paste0(toupper(substr(classifier, 1, 1)), tolower(substr(classifier, 2, nchar(classifier)))),
-               "\n\n"))
+    cat(paste0("\n\nClassifier: ", classifier, "\n\n"))
     cat(paste0(rep('_', options()$width), collapse = ''))
     cat("\n")
   }
@@ -262,7 +277,10 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
   fn2save = file.path(output_directory, "results", "daylevel_report.csv")
   data.table::fwrite(daysummary, file = fn2save, na = "", row.names = FALSE)
   # 7 - aggregate per person
-  personsummary = aggregate_per_person(daysummary = daysummary)
+  personsummary = aggregate_per_person(daysummary = daysummary,
+                                       n_valid_hours = n_valid_hours,
+                                       n_valid_hours_awake = n_valid_hours_awake,
+                                       n_valid_hours_nighttime = n_valid_hours_nighttime)
   fn2save = file.path(output_directory, "results", "personlevel_report.csv")
   data.table::fwrite(personsummary, file = fn2save, na = "", row.names = FALSE)
   if (verbose) {
