@@ -203,9 +203,11 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
           tlt = slide(tlt, width = epoch*sf, FUN = mean)
           tilt = c(tilt, tlt)
           # z angle variability per 5 seconds
-          az = (atan(data[, 3] / (sqrt(data[, 1]^2 + data[, 2]^2)))) / (pi/180)
-          az = slide(x = az, width = 5*sf, FUN = mean)
-          anglez = c(anglez, az)
+          if (do.sleep) {
+            az = (atan(data[, 3] / (sqrt(data[, 1]^2 + data[, 2]^2)))) / (pi/180)
+            az = slide(x = az, width = 5*sf, FUN = mean)
+            anglez = c(anglez, az)
+          }
           # Classifier
           act = classify(data = data, sf = sf,
                          classifier = classifier, infoClassifier = infoClassifier,
@@ -221,8 +223,12 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
       subject = rep(ID, length(activity))
       ts = as.data.frame(cbind(subject, timestamp, tilt, activity, nonwear))
       if (length(enmo) == nrow(ts)) ts = as.data.frame(cbind(ts, enmo))
-      if (length(agcounts) == nrow(ts)) ts = as.data.frame(cbind(ts, agcounts))
-      if (length(LFEcounts) == nrow(ts)) ts = as.data.frame(cbind(ts, LFEcounts))
+      if (!is.null(agcounts)) {
+        if (nrow(agcounts) == nrow(ts)) ts = as.data.frame(cbind(ts, agcounts))
+      }
+      if (!is.null(LFEcounts)) {
+        if (nrow(LFEcounts) == nrow(ts)) ts = as.data.frame(cbind(ts, LFEcounts))
+      }
       numeric_columns = sapply(ts, mode) == 'numeric'
       ts[numeric_columns] =  round(ts[numeric_columns], 3)
       ts  = do.call(data.frame,lapply(ts, function(x) replace(x, is.infinite(x), NA)))
