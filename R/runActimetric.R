@@ -74,6 +74,10 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                "\nIf you experiment any technical issue or wish to contribute to actimetric,",
                "\nplease contact the package maintainer at jairo@jhmigueles.com\n\n"))
     cat(paste0(rep('_', options()$width), collapse = ''))
+    cat(paste0("\n\nClassifier: ",
+               paste0(toupper(substr(classifier, 1, 1)), tolower(substr(classifier, 2, nchar(classifier)))),
+               "\n\n"))
+    cat(paste0(rep('_', options()$width), collapse = ''))
     cat("\n")
   }
   # -------------------------------------------------------------------------
@@ -242,9 +246,9 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
       # MILESTONE: save features data in features folder
       original_classifier = classifier
       save(ts, original_classifier, file = fn2save)
+      # blank line before next file
+      if (verbose) cat("\n\n----\n")
     }
-    # blank line before next file
-    if (verbose) cat("\n\n----\n")
   }
   # 6 - aggregate per date (and visualize)
   if (verbose) {
