@@ -4,6 +4,7 @@
 #' @param daysummary Matrix with the day-level summary for this recording.
 #' @param classes Expected classes classified in the time series.
 #' @param dsnames Names of the columns in the daysummary matrix.
+#' @param epoch Numeric with epoch length in seconds.
 #'
 #' @return Does not return any object, it just draws the plots.
 #' @export

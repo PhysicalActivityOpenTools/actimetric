@@ -2,7 +2,7 @@
 #'
 #' @param x Tick
 #' @param tz Time zone
-#' @param ...
+#' @param ... Additional arguments for as.POSIXct.
 #'
 #' @return POSIXct object
 #' @export
