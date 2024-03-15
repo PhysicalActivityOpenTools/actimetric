@@ -17,6 +17,9 @@ runActimetric(
   classifier = NULL,
   boutdur = c(10),
   boutcriter = 0.8,
+  n_valid_hours = 0,
+  n_valid_hours_awake = 0,
+  n_valid_hours_nighttime = 0,
   visualreport = FALSE,
   overwrite = FALSE,
   verbose = TRUE
@@ -62,12 +65,17 @@ Preschool Wrist Random Forest Free Living Lag-Lead,
 School age Wrist Random Forest, School age Hip Random Forest,
 Adult Wrist RF Trost,
 Adult women Wrist RF Ellis,
-Adult women Hip RF Ellis,
-Thigh Decision Tree)}
+Adult women Hip RF Ellis)}
 
 \item{boutdur}{Numeric vector (default = c(10)) indicating the bout durations over which calculate bouts of behaviors}
 
 \item{boutcriter}{Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout}
+
+\item{n_valid_hours}{Numeric (default = 0) with minimum number of absolute valid hours in the day to consider it a valid day for the person-level aggregates.}
+
+\item{n_valid_hours_awake}{Numeric (default = 0) with minimum number of absolute valid awake hours in the day to consider it a valid day for the person-level aggregates.}
+
+\item{n_valid_hours_nighttime}{Numeric (default = 0) with minimum number of absolute valid nighttime hours in the day to consider it a valid day for the person-level aggregates.}
 
 \item{visualreport}{Logical (default = FALSE) indicating whether visualizations should be run and stored in the results folder.}
 

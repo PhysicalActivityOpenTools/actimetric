@@ -25,8 +25,7 @@
 #' School age Wrist Random Forest, School age Hip Random Forest,
 #' Adult Wrist RF Trost,
 #' Adult women Wrist RF Ellis,
-#' Adult women Hip RF Ellis,
-#' Thigh Decision Tree)
+#' Adult women Hip RF Ellis)
 #' @param studyname Character (default = "actimetric") defining the name of the study.
 #' To be used to give a name to the output directory generated.
 #' @param verbose Logical (default = TRUE) indicating whether progress messages should
@@ -65,7 +64,20 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                          overwrite = FALSE, verbose = TRUE) {
   # Options
   options(digits.secs = 3)
-  classifier = tolower(classifier)
+  classifier = check_classifier(classifier)
+  if (is.null(classifier)) {
+    stop(paste0("The defined classifier is not within our current alternatives or probably it is mispelled.\n\n",
+                " Please copy/paste one of the following clasifiers:\n",
+                "    - Preschool Wrist Random Forest Free Living\n",
+                "    - Preschool Hip Random Forest Free Living\n",
+                "    - Preschool Hip Random Forest Free Living Lag-Lead\n",
+                "    - Preschool Wrist Random Forest Free Living Lag-Lead\n",
+                "    - School age Wrist Random Forest\n",
+                "    - School age Hip Random Forest\n",
+                "    - Adult Wrist RF Trost\n",
+                "    - Adult women Wrist RF Ellis\n",
+                "    - Adult women Hip RF Ellis\n"))
+  }
   infoClassifier = GetInfoClassifier(classifier)
   epoch = infoClassifier$epoch
   if (do.sleep == TRUE) {
@@ -79,9 +91,7 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                "\nIf you experiment any technical issue or wish to contribute to actimetric,",
                "\nplease contact the package maintainer at jairo@jhmigueles.com\n\n"))
     cat(paste0(rep('_', options()$width), collapse = ''))
-    cat(paste0("\n\nClassifier: ",
-               paste0(toupper(substr(classifier, 1, 1)), tolower(substr(classifier, 2, nchar(classifier)))),
-               "\n\n"))
+    cat(paste0("\n\nClassifier: ", classifier, "\n\n"))
     cat(paste0(rep('_', options()$width), collapse = ''))
     cat("\n")
   }

@@ -10,8 +10,7 @@
 #' School age Wrist Random Forest, School age Hip Random Forest,
 #' Adult Wrist RF Trost,
 #' Adult women Wrist RF Ellis,
-#' Adult women Hip RF Ellis,
-#' Thigh Decision Tree)
+#' Adult women Hip RF Ellis)
 #' @param data Matrix with 3 columns containing the raw acceleration for X, Y,
 #' and Z axes in G units.
 #' @param epoch Numeric with the epoch length in seconds.

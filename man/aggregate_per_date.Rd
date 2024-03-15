@@ -28,8 +28,7 @@ Preschool Wrist Random Forest Free Living Lag-Lead,
 School age Wrist Random Forest, School age Hip Random Forest,
 Adult Wrist RF Trost,
 Adult women Wrist RF Ellis,
-Adult women Hip RF Ellis,
-Thigh Decision Tree)}
+Adult women Hip RF Ellis)}
 
 \item{classes}{Character (default = NULL) indicating the behavioural classes estimated by the classifier}
 

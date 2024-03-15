@@ -13,8 +13,7 @@
 #' School age Wrist Random Forest, School age Hip Random Forest,
 #' Adult Wrist RF Trost,
 #' Adult women Wrist RF Ellis,
-#' Adult women Hip RF Ellis,
-#' Thigh Decision Tree)
+#' Adult women Hip RF Ellis)
 #' @param classes Character (default = NULL) indicating the behavioural classes estimated by the classifier
 #' @param boutdur Numeric vector (default = c(1, 10, 30)) indicating the bout durations over which calculate bouts of behaviors
 #' @param boutcriter Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout
