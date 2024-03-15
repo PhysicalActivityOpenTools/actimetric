@@ -42,6 +42,9 @@
 #' @param boutdur Numeric vector (default = c(10)) indicating the bout durations over which calculate bouts of behaviors
 #' @param boutcriter Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout
 #' @param visualreport Logical (default = FALSE) indicating whether visualizations should be run and stored in the results folder.
+#' @param n_valid_hours Numeric (default = 0) with minimum number of absolute valid hours in the day to consider it a valid day for the person-level aggregates.
+#' @param n_valid_hours_awake Numeric (default = 0) with minimum number of absolute valid awake hours in the day to consider it a valid day for the person-level aggregates.
+#' @param n_valid_hours_nighttime Numeric (default = 0) with minimum number of absolute valid nighttime hours in the day to consider it a valid day for the person-level aggregates.
 #'
 #' @return Function does not return anything, it only generates the reports and
 #' visualizations in the \code{output_directory}.
@@ -56,6 +59,8 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                          do.enmo = TRUE, do.actilifecounts = FALSE,
                          do.actilifecountsLFE = FALSE,
                          classifier = NULL, boutdur = c(10), boutcriter = 0.8,
+                         n_valid_hours = 0,
+                         n_valid_hours_awake = 0, n_valid_hours_nighttime = 0,
                          visualreport = FALSE,
                          overwrite = FALSE, verbose = TRUE) {
   # Options
@@ -262,7 +267,10 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
   fn2save = file.path(output_directory, "results", "daylevel_report.csv")
   data.table::fwrite(daysummary, file = fn2save, na = "", row.names = FALSE)
   # 7 - aggregate per person
-  personsummary = aggregate_per_person(daysummary = daysummary)
+  personsummary = aggregate_per_person(daysummary = daysummary,
+                                       n_valid_hours = n_valid_hours,
+                                       n_valid_hours_awake = n_valid_hours_awake,
+                                       n_valid_hours_nighttime = n_valid_hours_nighttime)
   fn2save = file.path(output_directory, "results", "personlevel_report.csv")
   data.table::fwrite(personsummary, file = fn2save, na = "", row.names = FALSE)
   if (verbose) {

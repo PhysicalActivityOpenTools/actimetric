@@ -26,7 +26,9 @@ for (c in 1:10) {
                 do.actilifecounts = TRUE,
                 do.actilifecountsLFE = FALSE,
                 boutdur = 10, boutcriter = 0.8,
-                verbose = TRUE, overwrite = TRUE,
+                n_valid_hours = 22, n_valid_hours_awake = 10,
+                n_valid_hours_nighttime = 2,
+                verbose = TRUE, overwrite = FALSE,
                 visualreport = TRUE)
 }
 
