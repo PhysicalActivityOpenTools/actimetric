@@ -33,23 +33,23 @@ runActimetric(input_directory = "G:/directory_containing/the_input_files/",
 
 The `actimetric` R package supports the use of 10 different classifiers for now:
 
--   Preschool Wrist Random Forest Free Living
+-   [Preschool Wrist Random Forest Free Living](https://pubmed.ncbi.nlm.nih.gov/29059107/)
 
--   Preschool Hip Random Forest Free Living
+-   [Preschool Hip Random Forest Free Living](https://pubmed.ncbi.nlm.nih.gov/29059107/)
 
--   Preschool Hip Random Forest Free Living Lag-Lead
+-   [Preschool Hip Random Forest Free Living Lag-Lead](https://pubmed.ncbi.nlm.nih.gov/29059107/)
 
--   Preschool Wrist Random Forest Free Living Lag-Lead
+-   [Preschool Wrist Random Forest Free Living Lag-Lead](https://pubmed.ncbi.nlm.nih.gov/29059107/)
 
--   School age Wrist Random Forest
+-   [School age Wrist Random Forest](https://pubmed.ncbi.nlm.nih.gov/25340887/)
 
--   School age Hip Random Forest
+-   [School age Hip Random Forest](https://pubmed.ncbi.nlm.nih.gov/25340887/)
 
--   Adult Wrist RF Trost
+-   [Adult Wrist RF Trost](https://pubmed.ncbi.nlm.nih.gov/27372275/)
 
--   Adult women Wrist RF Ellis
+-   [Adult women Wrist RF Ellis](https://pubmed.ncbi.nlm.nih.gov/26673126/)
 
--   Adult women Hip RF Ellis
+-   [Adult women Hip RF Ellis](https://pubmed.ncbi.nlm.nih.gov/26673126/)
 
 -   Thigh Decision Tree
 
