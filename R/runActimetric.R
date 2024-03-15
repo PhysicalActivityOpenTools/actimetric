@@ -46,7 +46,6 @@
 #' @return Function does not return anything, it only generates the reports and
 #' visualizations in the \code{output_directory}.
 #' @export
-#' @references van hees 2014; neishabouri 2022
 #' @importFrom caret predict.train
 #' @importFrom stats predict
 #' @import randomForest
