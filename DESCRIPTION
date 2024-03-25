@@ -2,7 +2,15 @@ Package: actimetric
 Type: Package
 Title: Classifies Accelerometer Data Into Physical Activity Types
 Version: 0.1.0
-Author:Jairo H. Migueles
+Authors@R: c(person("Jairo H","Migueles", role = c("aut","cre"),
+                    email = "jairo@jhmigueles.com",
+                    comment = c(ORCID = "0000-0003-0366-6935")),
+             person("Matthew","Ahmadi", role = c("aut"),
+                    email = "matthew.ahmadi@sydney.edu.au",
+                    comment = c(ORCID = "0000-0002-3115-338X")),
+             person("Stewart","Trost", role = c("aut"),
+                    email = "s.trost@uq.edu.au",
+                    comment = c(ORCID = "0000-0001-9587-3944")))
 Maintainer: Jairo H. Migueles <jairo@jhmigueles.com>
 Description: The goal of actimetric is to apply machine learning-based algorithms 
                 to accelerometer data to provide insights in physical activity and 
@@ -15,7 +23,7 @@ Suggests:
 Config/testthat/edition: 3
 RoxygenNote: 7.2.3
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10), rattle
 LinkingTo: 
     Rcpp
 Imports: 

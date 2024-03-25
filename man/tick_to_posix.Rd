@@ -11,7 +11,7 @@ tick_to_posix(x, tz = "UTC", ...)
 
 \item{tz}{Time zone}
 
-\item{...}{}
+\item{...}{Additional arguments for as.POSIXct.}
 }
 \value{
 POSIXct object

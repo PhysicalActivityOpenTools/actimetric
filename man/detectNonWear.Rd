@@ -13,6 +13,8 @@ and Z axes in G units.}
 \item{sf}{Numeric indicating the sampling frequency in Hertz.}
 
 \item{epoch}{Numeric with the epoch length in seconds.}
+
+\item{sdThreshold}{Threshold to define nonwear time in g units (default 13 mgs).}
 }
 \value{
 Numeric vector of length = nrow(data) indicating wear (0) and nonwear (1).
