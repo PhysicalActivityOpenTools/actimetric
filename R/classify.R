@@ -25,7 +25,6 @@
 #' @references van hees 2014; neishabouri 2022
 #' @importFrom caret predict.train
 #' @importFrom stats predict
-#' @import randomForest
 #' @importFrom HMM viterbi
 #'
 #' @author Jairo H. Migueles <jairo@jhmigueles.com>

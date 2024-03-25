@@ -23,7 +23,8 @@
 #' @return List containing header info, accelerometer raw data, start time and ID
 #' for the file.
 #' @export
-#' @import Rcpp
+#' @import GGIR
+#' @import GGIRread
 ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
                             PreviousEndPage, PreviousLastValue, PreviousLastTime,
                             isLastBlock, do.calibration, iteration, epoch, S,
@@ -63,8 +64,8 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
   # MODULE 2 - IMPUTE AND FORMAT CHUNK OF DATA ------------------------------
   if (!is.null(data)) { # would be NULL if not sufficient data
     # 2 - Impute time gaps if format is gt3x or csv
-    if (inspectfileobject$dformc == GGIR:::FORMAT$CSV ||
-        inspectfileobject$dformc == GGIR:::FORMAT$GT3X) {
+    if (inspectfileobject$dformc == 2 ||
+        inspectfileobject$dformc == 6) {
       P = GGIR::g.imputeTimegaps(data, sf = sf, k = 0.25,
                                  PreviousLastValue = PreviousLastValue,
                                  PreviousLastTime = PreviousLastTime,

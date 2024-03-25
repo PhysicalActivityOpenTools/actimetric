@@ -23,6 +23,7 @@
 #' @return Data frame with aggregates of time spent in classes per calendar date.
 #'
 #' @importFrom GGIR g.getbout
+#' @importFrom grDevices pdf dev.off
 #'
 #' @export
 aggregate_per_date = function(tsDir, epoch, classifier, classes,
@@ -253,11 +254,11 @@ aggregate_per_date = function(tsDir, epoch, classifier, classes,
       fnDir = gsub("time_series", "results", tsDir)
       fnDir = file.path(fnDir, "visualizations")
       suppressWarnings(dir.create(fnDir, recursive = TRUE))
-      pdf(file.path(fnDir, paste0(unique(ts$subject), ".pdf")),
-          paper = "a4", width = 0, height = 0)
+      grDevices::pdf(file.path(fnDir, paste0(unique(ts$subject), ".pdf")),
+                     paper = "a4", width = 0, height = 0)
       actimetricPlot(ts = ts, daysummary = ds, dsnames = dsnames,
                      classes = classes, epoch = epoch)
-      dev.off()
+      grDevices::dev.off()
     }
     # store information in daysummary and next file
     if (fi == 1) daysummary = ds else daysummary = rbind(daysummary, ds)

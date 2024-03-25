@@ -118,7 +118,7 @@ classifySleep = function(anglez, starttime, classifier, infoClassifier, ts) {
     if (sum(ts$sleep_periods == 1) > 0) {
       ts$activity[which(ts$sleep_periods == 1)] = sleep_id
     }
-    ts = subset(ts, select = -c(nonwear, nighttime, sleep_periods))
+    # ts = subset(ts, select = -c(nonwear, nighttime, sleep_periods))
   } else {
     warning("Sleep detection only available for wrist attachment site for now.")
   }
