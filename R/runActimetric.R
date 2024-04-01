@@ -77,8 +77,21 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                 "    - Adult women Wrist RF Ellis\n",
                 "    - Adult women Hip RF Ellis\n"))
   }
+  # info for classifier
   infoClassifier = GetInfoClassifier(classifier)
-  epoch = infoClassifier$epoch
+  epoch = infoClassifier$epoch; classes = infoClassifier$classes
+  # body attachment site
+  body_attachment_site = NULL
+  if (grepl("wrist", classifier)) body_attachment_site = "wrist"
+  if (grepl("hip|waist", classifier)) body_attachment_site = "hip"
+  if (grepl("thigh", classifier)) body_attachment_site = "thigh"
+  # check on do.sleep and body attachment site
+  if (do.sleep == TRUE & body_attachment_site != "wrist") {
+    warning("Sleep detection only available for wrist attachment site for now.\n
+            Setting do.sleep to FALSE and n_valid_hours_nighttime = 0")
+    do.sleep = FALSE
+    n_valid_hours_nighttime = 0
+  }
   if (do.sleep == TRUE) {
     classes = c(infoClassifier$classes, "nighttime", "sleep", "nonwear")
   }
@@ -281,7 +294,11 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                                        n_valid_hours_awake = n_valid_hours_awake,
                                        n_valid_hours_nighttime = n_valid_hours_nighttime)
   fn2save = file.path(output_directory, "results", "personlevel_report.csv")
-  data.table::fwrite(personsummary, file = fn2save, na = "", row.names = FALSE)
+  if (!is.null(personsummary)) {
+    data.table::fwrite(personsummary, file = fn2save, na = "", row.names = FALSE)
+  } else {
+    warning("No valid days in recording, no person-level output generated")
+  }
   if (verbose) {
     cat("\n\n")
     cat("Done!")
