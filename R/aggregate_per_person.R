@@ -40,24 +40,31 @@ aggregate_per_person = function(daysummary, n_valid_hours = 0,
     colnames(PS) = gsub("^date", "start_date", colnames(PS))
     colnames(PS) = gsub("^weekday", "start_weekday", colnames(PS))
     # weekday average
-    weekdays = daysummary[which(daysummary$is_weekend == 0),]
-    WD = tryCatch(aggregate(weekdays, by = list(weekdays$ID), FUN = mean, na.rm = TRUE),
-                  warning = function(e) aggregate(weekdays, by = list(weekdays$ID), FUN = takeFirst))
-    d = grep("timestamp_|is_weekend", colnames(WD))
-    WD = WD[, -d]
-    colnames(WD) = gsub("^date", "start_date", colnames(WD))
-    colnames(WD) = gsub("^weekday", "start_weekday", colnames(WD))
+    if (any(daysummary$is_weekend == 0)) {
+      weekdays = daysummary[which(daysummary$is_weekend == 0),]
+      WD = tryCatch(aggregate(weekdays, by = list(weekdays$ID), FUN = mean, na.rm = TRUE),
+                    warning = function(e) aggregate(weekdays, by = list(weekdays$ID), FUN = takeFirst))
+      d = grep("timestamp_|is_weekend", colnames(WD))
+      WD = WD[, -d]
+      colnames(WD) = gsub("^date", "start_date", colnames(WD))
+      colnames(WD) = gsub("^weekday", "start_weekday", colnames(WD))
+    }
     # weekend average
-    weekends = daysummary[which(daysummary$is_weekend == 1),]
-    WE = tryCatch(aggregate(weekends, by = list(weekends$ID), FUN = mean, na.rm = TRUE),
-                  warning = function(e) aggregate(weekends, by = list(weekends$ID), FUN = takeFirst))
-    d = grep("Group|timestamp_|is_weekend", colnames(WE))
-    WE = WE[, -d]
-    colnames(WE) = gsub("^date", "start_date", colnames(WE))
-    colnames(WE) = gsub("^weekday", "start_weekday", colnames(WE))
+    if (any(daysummary$is_weekend == 1)) {
+      weekends = daysummary[which(daysummary$is_weekend == 1),]
+      WE = tryCatch(aggregate(weekends, by = list(weekends$ID), FUN = mean, na.rm = TRUE),
+                    warning = function(e) aggregate(weekends, by = list(weekends$ID), FUN = takeFirst))
+      d = grep("Group|timestamp_|is_weekend", colnames(WE))
+      WE = WE[, -d]
+      colnames(WE) = gsub("^date", "start_date", colnames(WE))
+      colnames(WE) = gsub("^weekday", "start_weekday", colnames(WE))
+    }
     # merge
-    WDWE = merge(WD, WE, by = "ID", suffixes = c("_WD", "_WE"), all = TRUE)
-    PS = merge(PS, WDWE, by = "ID", all = TRUE)
+    if (exists("WD") & exists("WE")) {
+      WDWE = merge(WD, WE, by = "ID", suffixes = c("_WD", "_WE"), all = TRUE)
+      PS = merge(PS, WDWE, by = "ID", all = TRUE)
+      rm(WE, WD)
+    }
     # add total and valid days
     total_wdwe = merge(total_wd, total_we, by = "ID", all = TRUE)
     total_days = merge(total_days, total_wdwe, by = "ID")
