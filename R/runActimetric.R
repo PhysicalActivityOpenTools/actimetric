@@ -79,6 +79,9 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
   }
   # info for classifier
   infoClassifier = GetInfoClassifier(classifier)
+  suppressWarnings(rm("preschooltest", "preschool_hipfl_15s", "PS.RF.FL.Hip15.LagLead",
+                      "PS.RF.FL.Wrist15.LagLead", "LVAY.RF.Wrist5.1", "LVAY.RF.Hip10",
+                      "trostRF_7112014", "Ellis.Hip.RF.HMM", "Ellis.Wrist.RF.HMM"))
   epoch = infoClassifier$epoch; classes = infoClassifier$classes
   # body attachment site
   body_attachment_site = NULL
