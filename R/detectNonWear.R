@@ -12,6 +12,7 @@
 #' and Z axes in G units.
 #' @param sf Numeric indicating the sampling frequency in Hertz.
 #' @param epoch Numeric with the epoch length in seconds.
+#' @param sdThreshold Threshold to define nonwear time in g units (default 13 mgs).
 #'
 #' @return Numeric vector of length = nrow(data) indicating wear (0) and nonwear (1).
 #' @export

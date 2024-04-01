@@ -2,6 +2,7 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/PhysicalActivityOpenTools/actimetric/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PhysicalActivityOpenTools/actimetric/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of `actimetric` is to apply machine learning-based algorithms to accelerometer data to provide insights in physical activity and sleep behaviors in free-living conditions.

@@ -14,6 +14,8 @@ actimetricPlot(ts, daysummary, dsnames, classes, epoch)
 \item{dsnames}{Names of the columns in the daysummary matrix.}
 
 \item{classes}{Expected classes classified in the time series.}
+
+\item{epoch}{Numeric with epoch length in seconds.}
 }
 \value{
 Does not return any object, it just draws the plots.

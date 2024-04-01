@@ -4,9 +4,11 @@
 #' @param daysummary Matrix with the day-level summary for this recording.
 #' @param classes Expected classes classified in the time series.
 #' @param dsnames Names of the columns in the daysummary matrix.
+#' @param epoch Numeric with epoch length in seconds.
 #'
 #' @return Does not return any object, it just draws the plots.
 #' @export
+#' @import graphics
 actimetricPlot = function(ts, daysummary, dsnames, classes, epoch) {
   # internal functions
   find_start_end = function(ts, column, class) {
@@ -40,21 +42,21 @@ actimetricPlot = function(ts, daysummary, dsnames, classes, epoch) {
   descTotals = paste0(names, ": ",
                       round(meanTotals), " (SD = ",
                       format(round(sdTotals, 1), nsmall = 1), ") min/day")
-  par(las = 1,
-      omi = c(0, 0, 0.2, 0), mar = c(3, 3, 2, 2) + 0.1)
-  plot(1:20, 1:20, type = "n", axes = FALSE)
-  title(main = paste0("ID: ", id), cex.main = 2, adj = 0)
-  text(0.2, 19.6, font = 3, pos = 4,
-       labels = paste0("Note these values come without any cleaning of the data. Incomplete days may\n",
-                       "hightly affect the estimates, please find clean data sets in the results folder."))
-  text(0.2, 18.6, font = 3, pos = 4,
-       labels = paste0("Classifier: ", classifier))
+  graphics::par(las = 1,
+                omi = c(0, 0, 0.2, 0), mar = c(3, 3, 2, 2) + 0.1)
+  graphics::plot(1:20, 1:20, type = "n", axes = FALSE)
+  graphics::title(main = paste0("ID: ", id), cex.main = 2, adj = 0)
+  graphics::text(0.2, 19.6, font = 3, pos = 4,
+                 labels = paste0("Note these values come without any cleaning of the data. Incomplete days may\n",
+                                 "hightly affect the estimates, please find clean data sets in the results folder."))
+  graphics::text(0.2, 18.6, font = 3, pos = 4,
+                 labels = paste0("Classifier: ", classifier))
 
-  text(0.2, 17.6:(17.6 - length(descTotals) + 1), labels = descTotals, font = 1, pos = 4)
+  graphics::text(0.2, 17.6:(17.6 - length(descTotals) + 1), labels = descTotals, font = 1, pos = 4)
 
   # Page 2: totals
-  par(mfrow = c(5, 2), las = 1,
-      omi = c(0, 0, 0.2, 0), mar = c(3, 3, 2, 2) + 0.1)
+  graphics::par(mfrow = c(5, 2), las = 1,
+                omi = c(0, 0, 0.2, 0), mar = c(3, 3, 2, 2) + 0.1)
   for (classi in 1:nClasses) {
     # stacked barplot for nighttime awake and sleep
     if (grepl("nighttime.sleep", classes[classi])) next
@@ -71,17 +73,17 @@ actimetricPlot = function(ts, daysummary, dsnames, classes, epoch) {
     ylim = c(0, ceiling(max(colSums(heights))*1.3))
     if (ylim[2] == 0) ylim[2] = 60
     # plot
-    b = barplot(height = heights, names.arg = xnames,
-                col = color, ylim = ylim, cex.names = 0.9,
-                main = gsub(".awake$", "", classes[classi]))
-    abline(h = 0)
-    text(x = b, y = colSums(heights), pos = 3, labels = round(colSums(heights)))
+    b = graphics::barplot(height = heights, names.arg = xnames,
+                          col = color, ylim = ylim, cex.names = 0.9,
+                          main = gsub(".awake$", "", classes[classi]))
+    graphics::abline(h = 0)
+    graphics::text(x = b, y = colSums(heights), pos = 3, labels = round(colSums(heights)))
   }
   # plot 2: time series
-  layout(matrix(c(1,1,2,3,3,4,5,5,6,7,7,8,9,9,10,11,11,12,13,13,14),
-                nrow = 7*3, ncol = 1))
-  par(mar = c(0, 0.5, 1, 0.5) + 0.1, omi = c(0, 0, 0.1, 0),
-      mgp = c(0, 0.8, 0), las = 1)
+  graphics::layout(matrix(c(1,1,2,3,3,4,5,5,6,7,7,8,9,9,10,11,11,12,13,13,14),
+                          nrow = 7*3, ncol = 1))
+  graphics::par(mar = c(0, 0.5, 1, 0.5) + 0.1, omi = c(0, 0, 0.1, 0),
+                mgp = c(0, 0.8, 0), las = 1)
   # identify variables to plot
   if ("enmo" %in% colnames(ts)) {
     acc = "enmo"
@@ -141,19 +143,19 @@ actimetricPlot = function(ts, daysummary, dsnames, classes, epoch) {
     xticks = grep(paste(look4times, collapse = "|"), day$time)
     xnames = c(substr(look4times, 1, 2), "00")
     # plot
-    par(mar = c(0, 0.5, 1, 0.5) + 0.1)
-    plot(day[, "tilt"], type = "l", ylim = ylim_tilt,
-         ylab = "", xlab = "", axes = F, bty = "n", col = "grey")
-    title(main = as.character(day[1, "date"]), adj = 0)
-    par(new = TRUE)
-    plot(day[, acc], type = "l", ylim = ylim,
-         ylab = "", xlab = "", axes = F, bty = "n")
+    graphics::par(mar = c(0, 0.5, 1, 0.5) + 0.1)
+    graphics::plot(day[, "tilt"], type = "l", ylim = ylim_tilt,
+                   ylab = "", xlab = "", axes = F, bty = "n", col = "grey")
+    graphics::title(main = as.character(day[1, "date"]), adj = 0)
+    graphics::par(new = TRUE)
+    graphics::plot(day[, acc], type = "l", ylim = ylim,
+                   ylab = "", xlab = "", axes = F, bty = "n")
     potential_sleepOnsetN1 = potential_sleepOnsetN2 = c()
     potential_sleepEndN1 = potential_sleepEndN2 = c()
     # mark classes
-    par(mar = c(2, 0.5, 0, 0.5) + 0.1)
-    plot(day[, acc], type = "n", ylim = c(0,2),
-         ylab = "", xlab = "", axes = F, bty = "n")
+    graphics::par(mar = c(2, 0.5, 0, 0.5) + 0.1)
+    graphics::plot(day[, acc], type = "n", ylim = c(0,2),
+                   ylab = "", xlab = "", axes = F, bty = "n")
     for (classi in 1:length(classes)) {
       st_en = find_start_end(ts = day, column = "activity", class = classes[classi])
       st = st_en$starts; en = st_en$ends
@@ -183,13 +185,13 @@ actimetricPlot = function(ts, daysummary, dsnames, classes, epoch) {
               }
             }
             if (length(st) > 0) {
-              rect(xleft = st, xright = en, ybottom = 0, ytop = 1,
-                   col = colors[classi], border = NA)
+              graphics::rect(xleft = st, xright = en, ybottom = 0, ytop = 1,
+                             col = colors[classi], border = NA)
             }
           }
         } else {
-          rect(xleft = st, xright = en, ybottom = 0, ytop = 1,
-               col = colors[classi], border = NA)
+          graphics::rect(xleft = st, xright = en, ybottom = 0, ytop = 1,
+                         col = colors[classi], border = NA)
         }
       }
     }
@@ -208,7 +210,7 @@ actimetricPlot = function(ts, daysummary, dsnames, classes, epoch) {
     if (length(st) > 0) {
       if (st[1] == 1) st = st[-1]
       if (max(en) > nrow(day)) en = en[-which.max(en)]
-      abline(v = c(st, en), lwd = 2)
+      graphics::abline(v = c(st, en), lwd = 2)
     }
   }
 }

@@ -50,9 +50,8 @@
 #' @export
 #' @importFrom caret predict.train
 #' @importFrom stats predict
-#' @import randomForest
 #' @importFrom HMM viterbi
-#'
+#' @import actilifecounts
 runActimetric = function(input_directory = NULL, output_directory = NULL, studyname = "actimetric",
                          do.calibration = TRUE, do.sleep = TRUE, do.nonwear = TRUE,
                          do.enmo = TRUE, do.actilifecounts = FALSE,
