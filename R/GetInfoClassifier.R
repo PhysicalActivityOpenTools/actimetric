@@ -14,6 +14,8 @@
 #' Adult women Hip RF Ellis)
 #'
 #' @return List containing epoch, rfmodel, and hmmmodel
+#' @import actimetricModels
+#' @importFrom utils data
 #' @export
 GetInfoClassifier = function(classifier) {
   # initiate objects to return
@@ -32,36 +34,54 @@ GetInfoClassifier = function(classifier) {
     }
     if (grepl("preschool hip", classifier)) {
       if (classifier == "preschool hip random forest free living") {
+        utils::data("preschool_hipfl_15s", package = "actimetricModels")
+        rfmodel = force(preschool_hipfl_15s)
         rfmodel = preschool_hipfl_15s
       } else if (classifier == "preschool hip random forest free living lag-lead") {
+        utils::data("PS.RF.FL.Hip15.LagLead", package = "actimetricModels")
+        rfmodel = force(PS.RF.FL.Hip15.LagLead)
         rfmodel = PS.RF.FL.Hip15.LagLead
       }
     } else if (grepl("preschool wrist", classifier)) {
       if (classifier == "preschool wrist random forest free living") {
+        utils::data("preschooltest", package = "actimetricModels")
+        rfmodel = force(preschooltest)
         rfmodel = preschooltest
       } else if (classifier == "preschool wrist random forest free living lag-lead") {
+        utils::data("PS.RF.FL.Wrist15.LagLead", package = "actimetricModels")
+        rfmodel = force(PS.RF.FL.Wrist15.LagLead)
         rfmodel = PS.RF.FL.Wrist15.LagLead
       }
     } else if (classifier == "school age wrist random forest") {
+      utils::data("LVAY.RF.Wrist5.1", package = "actimetricModels")
+      rfmodel = force(LVAY.RF.Wrist5.1)
       rfmodel = LVAY.RF.Wrist5.1
     } else if (classifier == "school age hip random forest") {
+      utils::data("LVAY.RF.Hip10", package = "actimetricModels")
+      rfmodel = force(LVAY.RF.Hip10)
       rfmodel = LVAY.RF.Hip10
     }
     # 2 - Adult Trost (Wrist)
   } else if (classifier == "adult wrist rf trost") {
     classes = c("sedentary", "stationary", "walk", "run")
     epoch = 10
+    utils::data("trostRF_7112014", package = "actimetricModels")
+    rfmodel = force(trostRF_7112014)
     rfmodel = trostRF_7112014
     # 3 - Adult women Ellis
   } else if (grepl(pattern = "ellis", x = classifier)) {
     classes = c("biking", "sedentary", "standMoving", "standStill", "vehicle","walk")
     epoch = 60
     if (classifier == "adult women wrist rf ellis") {
-      rfmodel = Ellis.Wrist.RF.HMM$rf
-      hmmmodel = Ellis.Wrist.RF.HMM$hmm
+      utils::data("Ellis.Wrist.RF.HMM", package = "actimetricModels")
+      Ellis = force(Ellis.Wrist.RF.HMM)
+      rfmodel = Ellis$rf
+      hmmmodel = Ellis$hmm
     } else if (classifier == "adult women hip rf ellis") {
-      rfmodel = Ellis.Hip.RF.HMM$rf
-      hmmmodel = Ellis.Hip.RF.HMM$hmm
+      utils::data("Ellis.Hip.RF.HMM", package = "actimetricModels")
+      Ellis = force(Ellis.Hip.RF.HMM)
+      rfmodel = Ellis$rf
+      hmmmodel = Ellis$hmm
     }
     # 4 - Thigh
   } else if (classifier == "thigh decision tree") {
