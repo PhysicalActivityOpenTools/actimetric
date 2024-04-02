@@ -104,7 +104,7 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
     cat(paste0(rep('_', options()$width), collapse = ''))
     cat(paste0("\n\nWelcome to the actimetric R package!\n",
                "\nIf you experiment any technical issue or wish to contribute to actimetric,",
-               "\nplease contact the package maintainer at jairo@jhmigueles.com\n\n"))
+               "\nplease contact Jairo at jairo@jhmigueles.com or Matthew at matthew.ahmadi@sydney.edu.au\n\n"))
     cat(paste0(rep('_', options()$width), collapse = ''))
     cat(paste0("\n\nClassifier: ", classifier, "\n\n"))
     cat(paste0(rep('_', options()$width), collapse = ''))
