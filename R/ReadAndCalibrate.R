@@ -54,7 +54,7 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
     if (length(accread$P) > 0) {
       if (count == 1) data = accread$P$data else data = rbind(data, accread$P$data)
       nHoursRead = nrow(data) / sf / 3600
-    } else {
+    } else if (!exists("data")) {
       data = NULL
     }
     rm(accread); gc()
