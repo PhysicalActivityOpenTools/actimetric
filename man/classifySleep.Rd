@@ -4,7 +4,15 @@
 \alias{classifySleep}
 \title{Classifies nighttime and sleep in the time series}
 \usage{
-classifySleep(anglez, starttime, classifier, infoClassifier, ts)
+classifySleep(
+  anglez,
+  starttime,
+  classifier,
+  infoClassifier,
+  ts,
+  do.sleep,
+  do.nonwear
+)
 }
 \arguments{
 \item{anglez}{Angle for the z axis relative to the horizontal plane.}
@@ -25,6 +33,10 @@ Adult women Hip RF Ellis)}
 \item{infoClassifier}{Information relative to the selected classifier as exported from \link{GetInfoClassifier}}
 
 \item{ts}{Data frame with time series.}
+
+\item{do.sleep}{Logical (default = TRUE) indicating if sleep should be calculated}
+
+\item{do.nonwear}{Logical (default = TRUE) indicating if nonwear should be calculated}
 }
 \value{
 Numeric vector with classified activities including nighttime and sleep.

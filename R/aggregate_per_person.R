@@ -16,11 +16,14 @@ aggregate_per_person = function(daysummary, n_valid_hours = 0,
   takeFirst = function(x) x[1]
   # valid rows
   dur_valid_day = (daysummary$dur_total_fullday_min - daysummary$dur_total_nonwear_min) / 60
-  dur_valid_awake = (daysummary$dur_total_awake_min - daysummary$dur_total_nonwear_min) / 60
-  dur_valid_nighttime = daysummary$dur_total_nighttime_min / 60
-  valid = which(dur_valid_day >= n_valid_hours &
-                  dur_valid_awake >= n_valid_hours_awake &
-                  dur_valid_nighttime >= n_valid_hours_nighttime)
+  valid = which(dur_valid_day >= n_valid_hours)
+  if ("dur_total_awake_min" %in% colnames(daysummary)) {
+    dur_valid_awake = (daysummary$dur_total_awake_min - daysummary$dur_total_nonwear_min) / 60
+    dur_valid_nighttime = daysummary$dur_total_nighttime_min / 60
+    valid = which(dur_valid_day >= n_valid_hours &
+                    dur_valid_awake >= n_valid_hours_awake &
+                    dur_valid_nighttime >= n_valid_hours_nighttime)
+  }
   # subset daysummary
   PS = NULL
   if (length(valid) > 0) {

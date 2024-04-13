@@ -79,6 +79,7 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
   }
   # info for classifier
   infoClassifier = GetInfoClassifier(classifier)
+  classes = infoClassifier$classes
   suppressWarnings(rm("preschooltest", "preschool_hipfl_15s", "PS.RF.FL.Hip15.LagLead",
                       "PS.RF.FL.Wrist15.LagLead", "LVAY.RF.Wrist5.1", "LVAY.RF.Hip10",
                       "trostRF_7112014", "Ellis.Hip.RF.HMM", "Ellis.Wrist.RF.HMM"))
@@ -96,7 +97,10 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
     n_valid_hours_nighttime = 0
   }
   if (do.sleep == TRUE) {
-    classes = c(infoClassifier$classes, "nighttime", "sleep", "nonwear")
+    classes = c(classes, "nighttime", "sleep")
+  }
+  if (do.nonwear == TRUE) {
+    classes = c(classes, "nonwear")
   }
   # Welcome message
   if (verbose) {
@@ -266,11 +270,11 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
       ts[numeric_columns] =  round(ts[numeric_columns], 3)
       ts  = do.call(data.frame,lapply(ts, function(x) replace(x, is.infinite(x), NA)))
       ts[is.na(ts)] = 0
-      # classify sleep on complete ts
-      if (do.sleep == TRUE) {
+      # classify sleep and nonwear and add them to ts$activity
+      if (do.sleep == TRUE | do.nonwear == TRUE) {
         activity = classifySleep(anglez = anglez, starttime = recording_starttime,
                                  classifier = classifier, infoClassifier = infoClassifier,
-                                 ts = ts)
+                                 ts = ts, do.sleep = do.sleep, do.nonwear = do.nonwear)
         ts$activity = activity # overwrite with nighttime, sleep and nonwear information
       }
       # MILESTONE: save features data in features folder
