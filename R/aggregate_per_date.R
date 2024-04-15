@@ -19,15 +19,16 @@
 #' @param boutcriter Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout
 #' @param tsDir Directory with time series files.
 #' @param visualreport Logical indicating whether to visualize the time series
+#' @param boutmaxgap Integer (default = 1) with maximum consecutive gap length allowed in bout calculation.
 #'
 #' @return Data frame with aggregates of time spent in classes per calendar date.
 #'
-#' @importFrom GGIR g.getbout
 #' @importFrom grDevices pdf dev.off
 #'
 #' @export
 aggregate_per_date = function(tsDir, epoch, classifier, classes,
-                              boutdur, boutcriter, visualreport = FALSE) {
+                              boutdur, boutcriter, boutmaxgap = boutmaxgap,
+                              visualreport = FALSE) {
   # readjust classes
   if ("nighttime" %in% classes) {
     classes = gsub("nighttime", "nighttime.awake", classes)
@@ -198,10 +199,11 @@ aggregate_per_date = function(tsDir, epoch, classifier, classes,
       if (grepl("^nighttime|^nonwear", classes[classi])) break
       for (boutduri in 1:length(boutdur)) {
         look4bouts = ifelse(ts$activity == classi, 1, 0)
-        bouts = GGIR::g.getbout(x = look4bouts, boutduration = boutdur[boutduri]*(60/epoch),
-                                boutcriter = boutcriter, ws3 = epoch)
+        bouts = getBout(x = look4bouts, boutduration = boutdur[boutduri]*(60/epoch),
+                        boutcriter = boutcriter, epoch = epoch, boutmaxgap = boutmaxgap)
+        timeInBouts = ifelse(look4bouts == 1 & bouts == 1, 1, 0)
         # bout indicators
-        bout_min = aggregate(bouts ~ ts$date, FUN = sum)
+        bout_min = aggregate(timeInBouts ~ ts$date, FUN = sum)
         bout_count = aggregate(bouts ~ ts$date, FUN = function(x) sum(rle(x)$values))
         bout_longest_min = aggregate(bouts ~ ts$date,
                                      FUN = function(x) {

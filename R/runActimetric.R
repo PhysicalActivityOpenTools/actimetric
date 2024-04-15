@@ -44,6 +44,7 @@
 #' @param n_valid_hours Numeric (default = 0) with minimum number of absolute valid hours in the day to consider it a valid day for the person-level aggregates.
 #' @param n_valid_hours_awake Numeric (default = 0) with minimum number of absolute valid awake hours in the day to consider it a valid day for the person-level aggregates.
 #' @param n_valid_hours_nighttime Numeric (default = 0) with minimum number of absolute valid nighttime hours in the day to consider it a valid day for the person-level aggregates.
+#' @param boutmaxgap Integer (default = 1) with maximum consecutive gap length allowed in bout calculation.
 #'
 #' @return Function does not return anything, it only generates the reports and
 #' visualizations in the \code{output_directory}.
@@ -56,7 +57,8 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                          do.calibration = TRUE, do.sleep = TRUE, do.nonwear = TRUE,
                          do.enmo = TRUE, do.actilifecounts = FALSE,
                          do.actilifecountsLFE = FALSE,
-                         classifier = NULL, boutdur = c(10), boutcriter = 0.8,
+                         classifier = NULL,
+                         boutdur = c(10), boutcriter = 0.8, boutmaxgap = 1,
                          n_valid_hours = 0,
                          n_valid_hours_awake = 0, n_valid_hours_nighttime = 0,
                          visualreport = FALSE,
@@ -292,6 +294,7 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
   tsDir = dirname(fn2save)
   daysummary = aggregate_per_date(tsDir = tsDir, epoch = epoch, classifier = classifier,
                                   classes = classes, boutdur = boutdur, boutcriter = boutcriter,
+                                  boutmaxgap = boutmaxgap,
                                   visualreport = visualreport)
   fn2save = file.path(output_directory, "results", "daylevel_report.csv")
   data.table::fwrite(daysummary, file = fn2save, na = "", row.names = FALSE)
