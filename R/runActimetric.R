@@ -120,6 +120,7 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
   # Check directories and list files
   if (dir.exists(input_directory)) files = dir(input_directory, recursive = TRUE, full.names = TRUE)
   if (!dir.exists(input_directory)) files = input_directory
+  files = grep("gt3x$|cwa$|bin$", files, value = TRUE)
   output_directory = file.path(output_directory, paste0("output_", studyname))
   suppressWarnings({
     dir.create(file.path(output_directory, "time_series"), recursive = TRUE)
