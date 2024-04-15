@@ -11,6 +11,7 @@ aggregate_per_date(
   classes,
   boutdur,
   boutcriter,
+  boutmaxgap = boutmaxgap,
   visualreport = FALSE
 )
 }
@@ -35,6 +36,8 @@ Adult women Hip RF Ellis)}
 \item{boutdur}{Numeric vector (default = c(1, 10, 30)) indicating the bout durations over which calculate bouts of behaviors}
 
 \item{boutcriter}{Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout}
+
+\item{boutmaxgap}{Integer (default = 1) with maximum consecutive gap length allowed in bout calculation.}
 
 \item{visualreport}{Logical indicating whether to visualize the time series}
 }

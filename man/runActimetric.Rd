@@ -17,6 +17,7 @@ runActimetric(
   classifier = NULL,
   boutdur = c(10),
   boutcriter = 0.8,
+  boutmaxgap = 1,
   n_valid_hours = 0,
   n_valid_hours_awake = 0,
   n_valid_hours_nighttime = 0,
@@ -70,6 +71,8 @@ Adult women Hip RF Ellis)}
 \item{boutdur}{Numeric vector (default = c(10)) indicating the bout durations over which calculate bouts of behaviors}
 
 \item{boutcriter}{Numeric (default = 0.8) indicating the proportion of the bout duration that should be classified in a given behavior to consider a bout}
+
+\item{boutmaxgap}{Integer (default = 1) with maximum consecutive gap length allowed in bout calculation.}
 
 \item{n_valid_hours}{Numeric (default = 0) with minimum number of absolute valid hours in the day to consider it a valid day for the person-level aggregates.}
 
