@@ -54,7 +54,7 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
     if (length(accread$P) > 0) {
       if (count == 1) data = accread$P$data else data = rbind(data, accread$P$data)
       nHoursRead = nrow(data) / sf / 3600
-    } else if (!exists("data")) {
+    } else {
       data = NULL
     }
     rm(accread); gc()
@@ -79,6 +79,17 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
       }
       rm(P); gc()
     }
+    # -------------------------------------------------------------------------
+    # MODULE 3 - EXTRACT CALIBRATION COEFFICIENTS -----------------------------
+    calCoefs = vm.error.st = vm.error.end = NULL
+    if (do.calibration == TRUE & iteration == 1) {
+      cal = calibrateRaw(data, sf = sf, verbose = verbose)
+      if (is.list(cal)) {
+        calCoefs = cal$calCoefs; vm.error.st = cal$vm.error.st;
+        vm.error.end = cal$vm.error.end
+      }
+    }
+    # -------------------------------------------------------------------------
     # 3 - Get start time if this is the first iteration
     starttime = NULL
     if (iteration == 1) {
@@ -150,16 +161,6 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
     endtime = data[nrow(data), "time"]
     data = data[, c("x", "y", "z")]
     nHoursRead = nrow(data)/sf/3600
-    # -------------------------------------------------------------------------
-    # MODULE 3 - EXTRACT CALIBRATION COEFFICIENTS -----------------------------
-    calCoefs = vm.error.st = vm.error.end = NULL
-    if (do.calibration == TRUE & iteration == 1) {
-      cal = calibrateRaw(data, sf = sf, verbose = verbose)
-      if (is.list(cal)) {
-        calCoefs = cal$calCoefs; vm.error.st = cal$vm.error.st;
-        vm.error.end = cal$vm.error.end
-      }
-    }
     # -------------------------------------------------------------------------
     return(list(data = data, calCoefs = calCoefs,
                 vm.error.st = vm.error.st, vm.error.end = vm.error.end,
