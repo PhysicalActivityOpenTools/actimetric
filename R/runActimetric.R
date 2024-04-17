@@ -259,34 +259,36 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
         iteration = iteration + 1
       }
       # Timestamp and ID
-      timestamp = deriveTimestamps(from = recording_starttime,
-                                   length = length(activity), epoch = epoch)
-      timestamp = as.data.frame(timestamp)
-      subject = rep(ID, length(activity))
-      ts = as.data.frame(cbind(subject, timestamp, tilt, activity, nonwear))
-      if (length(enmo) == nrow(ts)) ts = as.data.frame(cbind(ts, enmo))
-      if (!is.null(agcounts)) {
-        if (nrow(agcounts) == nrow(ts)) ts = as.data.frame(cbind(ts, agcounts))
+      if (!is.null(activity)) {
+        timestamp = deriveTimestamps(from = recording_starttime,
+                                     length = length(activity), epoch = epoch)
+        timestamp = as.data.frame(timestamp)
+        subject = rep(ID, length(activity))
+        ts = as.data.frame(cbind(subject, timestamp, tilt, activity, nonwear))
+        if (length(enmo) == nrow(ts)) ts = as.data.frame(cbind(ts, enmo))
+        if (!is.null(agcounts)) {
+          if (nrow(agcounts) == nrow(ts)) ts = as.data.frame(cbind(ts, agcounts))
+        }
+        if (!is.null(LFEcounts)) {
+          if (nrow(LFEcounts) == nrow(ts)) ts = as.data.frame(cbind(ts, LFEcounts))
+        }
+        numeric_columns = sapply(ts, mode) == 'numeric'
+        ts[numeric_columns] =  round(ts[numeric_columns], 3)
+        ts  = do.call(data.frame,lapply(ts, function(x) replace(x, is.infinite(x), NA)))
+        ts[is.na(ts)] = 0
+        # classify sleep and nonwear and add them to ts$activity
+        if (do.sleep == TRUE | do.nonwear == TRUE) {
+          activity = classifySleep(anglez = anglez, starttime = recording_starttime,
+                                   classifier = classifier, infoClassifier = infoClassifier,
+                                   ts = ts, do.sleep = do.sleep, do.nonwear = do.nonwear)
+          ts$activity = activity # overwrite with nighttime, sleep and nonwear information
+        }
+        # MILESTONE: save features data in features folder
+        original_classifier = classifier
+        save(ts, original_classifier, file = fn2save)
+        # blank line before next file
+        if (verbose) cat("\n\n----\n")
       }
-      if (!is.null(LFEcounts)) {
-        if (nrow(LFEcounts) == nrow(ts)) ts = as.data.frame(cbind(ts, LFEcounts))
-      }
-      numeric_columns = sapply(ts, mode) == 'numeric'
-      ts[numeric_columns] =  round(ts[numeric_columns], 3)
-      ts  = do.call(data.frame,lapply(ts, function(x) replace(x, is.infinite(x), NA)))
-      ts[is.na(ts)] = 0
-      # classify sleep and nonwear and add them to ts$activity
-      if (do.sleep == TRUE | do.nonwear == TRUE) {
-        activity = classifySleep(anglez = anglez, starttime = recording_starttime,
-                                 classifier = classifier, infoClassifier = infoClassifier,
-                                 ts = ts, do.sleep = do.sleep, do.nonwear = do.nonwear)
-        ts$activity = activity # overwrite with nighttime, sleep and nonwear information
-      }
-      # MILESTONE: save features data in features folder
-      original_classifier = classifier
-      save(ts, original_classifier, file = fn2save)
-      # blank line before next file
-      if (verbose) cat("\n\n----\n")
     }
   }
   # 6 - aggregate per date (and visualize)
