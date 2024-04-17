@@ -196,6 +196,10 @@ actimetricPlot = function(ts, daysummary, dsnames, classes, epoch) {
       }
     }
     # x axis
+    if (length(xticks) != length(xnames)) {
+      if (length(xticks) < length(xnames)) xnames = xnames[1:length(xticks)]
+      if (length(xnames) < length(xticks)) xticks = xticks[1:length(xnames)]
+    }
     axis(side = 1, at = xticks, labels = xnames, tick = FALSE, line = 0)
     # start_end night
     st = en = NULL
