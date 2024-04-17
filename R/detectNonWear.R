@@ -38,38 +38,30 @@ detectNonWear = function(data, sf, epoch, sdThreshold = 13/1000) {
   run = rle(check)
   run = as.matrix(list2DF(run))
   # Create a table with row length equal to wear periods
-  wear = matrix(0, length(which(run[,2] == 0)), 3,
-                dimnames = list(1:length(which(run[,2] == 0)),
-                                c("before", "current", "after")))
-  i = 1; ii = 1
-  while (i <= nrow(run)) {
-    if (run[i, 2] == 0) {
-      # for each wear period...
-      if (i > 1) wear[ii, 1] = run[i - 1, 1] # before period
-      wear[ii, 2] = run[i, 1] # current period
-      if (i < nrow(run)) wear[ii, 3] = run[i + 1, 1] # after period
-      # if wear period < 30 min and less than 30% of bordering nonwear, convert to nonwear
-      nwBordering = (wear[ii,2]/(wear[ii, 1] + wear[ii, 3]))
-      if (wear[ii, 2] < epochs_in_30min & nwBordering < 0.3) run[i,2] = 1
-      # next iteration
-      ii = ii + 1
+  if (any(run[,2] == 0)) {
+    wear = matrix(0, length(which(run[,2] == 0)), 3,
+                  dimnames = list(1:length(which(run[,2] == 0)),
+                                  c("before", "current", "after")))
+    i = 1; ii = 1
+    while (i <= nrow(run)) {
+      if (run[i, 2] == 0) {
+        # for each wear period...
+        if (i > 1) wear[ii, 1] = run[i - 1, 1] # before period
+        wear[ii, 2] = run[i, 1] # current period
+        if (i < nrow(run)) wear[ii, 3] = run[i + 1, 1] # after period
+        # if wear period < 30 min and less than 30% of bordering nonwear, convert to nonwear
+        nwBordering = (wear[ii,2]/(wear[ii, 1] + wear[ii, 3]))
+        if (wear[ii, 2] < epochs_in_30min & nwBordering < 0.3) run[i,2] = 1
+        # next iteration
+        ii = ii + 1
+      }
+      i = i + 1
     }
-    i = i + 1
+    check = rep(run[,2], run[,1])
+    # sum original nonwear plus additional nonwear
+    nonwear = nonwear + check
+    # any nonwear >= 1 is nonwear and make all values 1 to make binary outcome; 0/1
+    nonwear[nonwear >= 1] = 1
   }
-  check = rep(run[,2], run[,1])
-  # sum original nonwear plus additional nonwear
-  nonwear = nonwear + check
-  # any nonwear >= 1 is nonwear and make all values 1 to make binary outcome; 0/1
-  nonwear[nonwear >= 1] = 1
-  # # return nonwear in sampling frequency resolution
-  # nonwear = rep(nonwear, each = epoch*sf)
-  # # make sure nonwear is of the same length as nrow(data)
-  # if (length(nonwear) < nrow(data)) {
-  #   z = abs(as.numeric(length(nonwear) - nrow(data)))
-  #   z = rep(nonwear[length(nonwear)], z)
-  #   nonwear = c(nonwear,z)
-  # } else if (length(nonwear) > nrow(data)) {
-  #   nonwear = nonwear[1:nrow(data)]
-  # }
   return(nonwear)
 }
