@@ -26,6 +26,7 @@
 #' @importFrom caret predict.train
 #' @importFrom stats predict
 #' @importFrom HMM viterbi
+#' @import randomForest
 #'
 #' @author Jairo H. Migueles <jairo@jhmigueles.com>
 classify = function(data = NULL, sf = NULL,
