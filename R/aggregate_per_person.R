@@ -13,7 +13,10 @@
 aggregate_per_person = function(daysummary, n_valid_hours = 0,
                                 n_valid_hours_awake = 0, n_valid_hours_nighttime = 0) {
   # internal function
-  takeFirst = function(x) x[1]
+  meanOrFirst = function(x) {
+    numX = suppressWarnings(as.numeric(x))
+    if (all(is.na(numX))) x[1] else mean(numX, na.rm = TRUE)
+  }
   # valid rows
   dur_valid_day = (daysummary$dur_total_fullday_min - daysummary$dur_total_nonwear_min) / 60
   valid = which(dur_valid_day >= n_valid_hours)
@@ -36,8 +39,7 @@ aggregate_per_person = function(daysummary, n_valid_hours = 0,
     valid_wd = aggregate(is_weekend == 0 ~ ID, data = daysummary, FUN = sum)
     valid_we = aggregate(is_weekend == 1 ~ ID, data = daysummary, FUN = sum)
     # aggregate dataset
-    PS = tryCatch(aggregate(daysummary, by = list(daysummary$ID), FUN = mean, na.rm = TRUE),
-                  warning = function(e) aggregate(daysummary, by = list(daysummary$ID), FUN = takeFirst))
+    PS = aggregate(daysummary, by = list(daysummary$ID), FUN = meanOrFirst)
     d = grep("timestamp_|is_weekend", colnames(PS))
     PS = PS[, -d]
     colnames(PS) = gsub("^date", "start_date", colnames(PS))
@@ -45,8 +47,7 @@ aggregate_per_person = function(daysummary, n_valid_hours = 0,
     # weekday average
     if (any(daysummary$is_weekend == 0)) {
       weekdays = daysummary[which(daysummary$is_weekend == 0),]
-      WD = tryCatch(aggregate(weekdays, by = list(weekdays$ID), FUN = mean, na.rm = TRUE),
-                    warning = function(e) aggregate(weekdays, by = list(weekdays$ID), FUN = takeFirst))
+      WD = aggregate(weekdays, by = list(weekdays$ID), FUN = meanOrFirst)
       d = grep("timestamp_|is_weekend", colnames(WD))
       WD = WD[, -d]
       colnames(WD) = gsub("^date", "start_date", colnames(WD))
@@ -55,8 +56,7 @@ aggregate_per_person = function(daysummary, n_valid_hours = 0,
     # weekend average
     if (any(daysummary$is_weekend == 1)) {
       weekends = daysummary[which(daysummary$is_weekend == 1),]
-      WE = tryCatch(aggregate(weekends, by = list(weekends$ID), FUN = mean, na.rm = TRUE),
-                    warning = function(e) aggregate(weekends, by = list(weekends$ID), FUN = takeFirst))
+      WE = aggregate(weekends, by = list(weekends$ID), FUN = meanOrFirst)
       d = grep("Group|timestamp_|is_weekend", colnames(WE))
       WE = WE[, -d]
       colnames(WE) = gsub("^date", "start_date", colnames(WE))
@@ -82,6 +82,7 @@ aggregate_per_person = function(daysummary, n_valid_hours = 0,
                   "nRecordedDays", "nRecordedWD", "nRecordedWE",
                   "nValidDays", "nValidWD", "nValidWE")
     rest = colnames(PS)[which(!colnames(PS) %in% firstCols)]
+    rest = rest[-grep("^Group", rest)]
     PS = PS[, c(firstCols, rest)]
   }
   return(PS)
