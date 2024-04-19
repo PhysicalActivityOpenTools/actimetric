@@ -52,6 +52,8 @@
 #' @importFrom caret predict.train
 #' @importFrom stats predict
 #' @importFrom HMM viterbi
+#' @importFrom utils installed.packages packageVersion
+#' @importFrom data.table fwrite
 #' @import actilifecounts
 runActimetric = function(input_directory = NULL, output_directory = NULL, studyname = "actimetric",
                          do.calibration = TRUE, do.sleep = TRUE, do.nonwear = TRUE,
@@ -63,6 +65,8 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                          n_valid_hours_awake = 0, n_valid_hours_nighttime = 0,
                          visualreport = FALSE,
                          overwrite = FALSE, verbose = TRUE) {
+  # get input
+  LS = mget(ls())
   # Options
   options(digits.secs = 3)
   classifier = check_classifier(classifier)
@@ -98,6 +102,7 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
     do.sleep = FALSE
     n_valid_hours_nighttime = 0
   }
+  # redefine classes
   if (do.sleep == TRUE) {
     classes = c(classes, "nighttime", "sleep")
   }
@@ -127,6 +132,39 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
     dir.create(file.path(output_directory, "results"), recursive = TRUE)
   })
   # -------------------------------------------------------------------------
+  # store configuration
+  installedPackages = utils::installed.packages()[,1]
+  GGIRversion = GGIRreadversion = actilifecountsversion = "not used"
+  actimetricversion = as.character(utils::packageVersion("actimetric"))
+  actimetricModelsversion = as.character(utils::packageVersion("actimetricModels"))
+  if ("GGIR" %in% installedPackages) {
+    GGIRversion = as.character(utils::packageVersion("GGIR"))
+  }
+  if ("GGIRread" %in% installedPackages) {
+    GGIRreadversion = as.character(utils::packageVersion("GGIRread"))
+  }
+  if ("actilifecounts" %in% installedPackages & (do.actilifecounts == T | do.actilifecountsLFE == T)) {
+    actilifecountsversion = as.character(utils::packageVersion("actilifecounts"))
+  }
+  Rversion = R.Version()$version.string
+  OS = paste(Sys.info()[c("sysname", "release")], collapse = " ")
+  analyses_starttime = format(Sys.time(), format = "%Y-%m-%d %H:%M:%S")
+  LSnew = mget(ls())
+  LSnew = LSnew[which(names(LSnew) %in% names(LS))]
+  LSnew = t(list2DF(LSnew))
+  config = data.frame(configuration = c("analyses_start_time", "OS", "Rversion",
+                                        "actimetric_version",
+                                        "actimetricModels_version",
+                                        "GGIR_version", "GGIRread_version",
+                                        "actilifecountsversion",
+                                        rownames(LSnew)),
+                      setting = c(analyses_starttime, OS, Rversion,
+                                  actimetricversion, actimetricModelsversion,
+                                  GGIRversion, GGIRreadversion,
+                                  actilifecountsversion,
+                                  LSnew[,1]))
+  data.table::fwrite(config, file = file.path(output_directory, "configuration.csv"),
+                     na = "", row.names = FALSE)
   # -------------------------------------------------------------------------
   # Load files...
   for (file in files) {
