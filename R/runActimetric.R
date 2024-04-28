@@ -49,6 +49,7 @@
 #' @return Function does not return anything, it only generates the reports and
 #' visualizations in the \code{output_directory}.
 #' @export
+#' @references GGIR R Package. doi: 10.1123/jmpb.2018-0063
 #' @importFrom caret predict.train
 #' @importFrom stats predict
 #' @importFrom HMM viterbi
@@ -186,7 +187,7 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
       I = GGIR::g.inspectfile(file)
       hvars = GGIR::g.extractheadervars(I)
       sf = I$sf
-      # Extract parameters for reading file in chunks
+      # Extract parameters for reading file in chunks as in GGIR R package
       readParams = GGIR::get_nw_clip_block_params(chunksize = 1, dynrange = 8,
                                                   monc = I$monc, dformat = I$dformc,
                                                   sf = sf, rmc.dynamic_range = NULL)

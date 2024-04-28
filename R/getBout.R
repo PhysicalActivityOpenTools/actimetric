@@ -12,7 +12,11 @@
 #'
 #' @return
 #' @export
+#' @references GGIR R Package. doi: 10.1123/jmpb.2018-0063
 getBout = function(x, boutduration = 10, boutcriter = 0.8, boutmaxgap = 1, epoch = 5) {
+  # just testing code for now, this is a copy of the g.getbout in the GGIR R package by van Hees et al.
+  # in this copy, there is a minor addition to test the option of allowing for
+  # boutcriter provided in absolut number of minutes.
   # define max absolute gap
   if (boutcriter >= 1) {
     boutmaxgap = ifelse(test = boutmaxgap < boutcriter, yes = boutcriter, no = boutmaxgap)

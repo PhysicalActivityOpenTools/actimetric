@@ -23,6 +23,7 @@
 #' @return List containing header info, accelerometer raw data, start time and ID
 #' for the file.
 #' @export
+#' @references GGIR R Package. doi: 10.1123/jmpb.2018-0063
 #' @import GGIR
 #' @import GGIRread
 ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
@@ -37,6 +38,7 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
   nHoursRead = 0
   count = 0
   while (nHoursRead <= minHours2load & isLastBlock == FALSE) {
+    # We use reading functionality from GGIR / GGIRread
     accread = GGIR::g.readaccfile(filename = file, blocksize = blocksize, blocknumber = blocknumber,
                                   filequality = filequality, ws = 3600,
                                   PreviousEndPage = PreviousEndPage,

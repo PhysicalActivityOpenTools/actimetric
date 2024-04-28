@@ -16,7 +16,9 @@
 #'
 #' @return Numeric vector of length = nrow(data) indicating wear (0) and nonwear (1).
 #' @export
+#' @references GGIR R Package. doi: 10.1123/jmpb.2018-0063
 detectNonWear = function(data, sf, epoch, sdThreshold = 13/1000) {
+  # look for windows with sd lower thatn sdThreshold, similar to GGIR.
   # vector magnitude
   vm = sqrt(rowSums(data[, 1:3]^2))
   # 1 - NONWEAR BASED ON SD THRESHOLD -----------

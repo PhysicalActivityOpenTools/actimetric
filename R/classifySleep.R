@@ -22,10 +22,13 @@
 #'
 #' @return Numeric vector with classified activities including nighttime and sleep.
 #' @export
+#' @references GGIR R Package. doi: 10.1123/jmpb.2018-0063
+
 classifySleep = function(anglez, starttime, classifier, infoClassifier, ts, do.sleep, do.nonwear) {
   epoch = infoClassifier$epoch
   classes = infoClassifier$classes
   # DETECT SLEEP -----------------------
+  # Using variability of angle z as in GGIR.
   if (do.sleep == TRUE) {
     # derive timestamp for anglez
     ts_anglez = deriveTimestamps(from = starttime, length = length(anglez), epoch = 5)
