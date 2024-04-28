@@ -95,3 +95,6 @@ visualizations in the \code{output_directory}.
 \description{
 This is the central function of the actimetric package.
 }
+\references{
+GGIR R Package. doi: 10.1123/jmpb.2018-0063
+}

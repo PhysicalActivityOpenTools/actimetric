@@ -27,3 +27,6 @@ units). Additionally, if short non-wear periods (max 30 min) are surrounded with
 at least 30% of their duration by non-wear periods, then these short wear periods
 are converted to non-wear (additional non-wear).
 }
+\references{
+GGIR R Package. doi: 10.1123/jmpb.2018-0063
+}

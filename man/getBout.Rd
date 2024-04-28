@@ -22,3 +22,6 @@ If 1 or larger, then the gap is interpreted in absolute number of minutes (e.g.,
 \description{
 Calculates bouts of the different behaviors provided by the classifier
 }
+\references{
+GGIR R Package. doi: 10.1123/jmpb.2018-0063
+}

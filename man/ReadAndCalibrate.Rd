@@ -59,3 +59,6 @@ Function aimed to read accelerometer raw data. At the moment,
 the function supports ActiGraph gt3x and csv data, GENEActiv bin
 and csv data
 }
+\references{
+GGIR R Package. doi: 10.1123/jmpb.2018-0063
+}

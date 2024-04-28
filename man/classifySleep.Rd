@@ -44,3 +44,6 @@ Numeric vector with classified activities including nighttime and sleep.
 \description{
 Function to classify nighttime and sleep in the time series.
 }
+\references{
+GGIR R Package. doi: 10.1123/jmpb.2018-0063
+}
