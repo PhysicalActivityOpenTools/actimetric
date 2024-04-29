@@ -40,17 +40,17 @@ runActimetric(input_directory = "G:/directory_containing/the_input_files/",
 
 The `actimetric` R package supports the use of 9 different classifiers for now:
 
--   [Preschool Wrist Random Forest Free Living](https://pubmed.ncbi.nlm.nih.gov/29059107/)
+-   [Preschool Wrist Random Forest Free Living](https://pubmed.ncbi.nlm.nih.gov/32764316/)
 
--   [Preschool Hip Random Forest Free Living](https://pubmed.ncbi.nlm.nih.gov/29059107/)
+-   [Preschool Hip Random Forest Free Living](https://pubmed.ncbi.nlm.nih.gov/32764316/)
 
--   [Preschool Hip Random Forest Free Living Lag-Lead](https://pubmed.ncbi.nlm.nih.gov/29059107/)
+-   [Preschool Hip Random Forest Free Living Lag-Lead](https://pubmed.ncbi.nlm.nih.gov/32764316/)
 
--   [Preschool Wrist Random Forest Free Living Lag-Lead](https://pubmed.ncbi.nlm.nih.gov/29059107/)
+-   [Preschool Wrist Random Forest Free Living Lag-Lead](https://pubmed.ncbi.nlm.nih.gov/32764316/)
 
--   [School age Wrist Random Forest](https://pubmed.ncbi.nlm.nih.gov/25340887/)
+-   [School age Wrist Random Forest](https://pubmed.ncbi.nlm.nih.gov/28419025/)
 
--   [School age Hip Random Forest](https://pubmed.ncbi.nlm.nih.gov/25340887/)
+-   [School age Hip Random Forest](https://www.tandfonline.com/doi/full/10.1080/1091367X.2020.1716768)
 
 -   [Adult Wrist RF Trost](https://pubmed.ncbi.nlm.nih.gov/27372275/)
 
