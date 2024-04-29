@@ -16,6 +16,26 @@
 #' @return List containing epoch, rfmodel, and hmmmodel
 #' @import actimetricModels
 #' @importFrom utils data
+#' @references Preschool models: Ahmadi MN, Pavey TG, Trost SG. Machine Learning
+#' Models for Classifying Physical Activity in Free-Living Preschool Children.
+#' Sensors (Basel). 2020 Aug 5;20(16):4364. doi: 10.3390/s20164364
+#' @references School age Wrist Random Forest: Chowdhury AK, Tjondronegoro D,
+#' Chandran V, Trost SG. Ensemble Methods for Classification of Physical Activities
+#' from Wrist Accelerometry. Med Sci Sports Exerc. 2017 Sep;49(9):1965-1973.
+#' doi: 10.1249/MSS.0000000000001291
+#' @references School age Hip Random Forest: Ahmadi MN, Pfeiffer KA, Trost SG.
+#' Physical Activity Classification in Youth Using Raw Accelerometer Data from
+#' the Hip. Meas Phys Edu Exerc Sci. 2020; 24(2):129-136. doi: 10.1080/1091367X.2020.1716768
+#' @references Adult Wrist RF Trost: Pavey TG, Gilson ND, Gomersall SR, Clark B,
+#' Trost SG. Field evaluation of a random forest activity classifier for wrist-worn
+#' accelerometer data. J Sci Med Sport. 2017 Jan;20(1):75-80.
+#' doi: 10.1016/j.jsams.2016.06.003
+#' @references Adult women Wrist and Hip RF Ellis: Ellis K, Kerr J, Godbole S,
+#' Staudenmayer J, Lanckriet G. Hip and Wrist Accelerometer Algorithms for
+#' Free-Living Behavior Classification. Med Sci Sports Exerc. 2016 May;48(5):933-40.
+#' doi: 10.1249/MSS.0000000000000840
+#'
+#' @author Jairo H. Migueles <jairo@jhmigueles.com>
 #' @export
 GetInfoClassifier = function(classifier) {
   # initiate objects to return

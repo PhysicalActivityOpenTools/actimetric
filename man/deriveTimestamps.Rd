@@ -19,3 +19,8 @@ Timestamp in "%Y-%m-%d %H:%M:%OS" format
 \description{
 Derives timestamps by epoch
 }
+\author{
+Jairo H. Migueles <jairo@jhmigueles.com>
+
+Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+}

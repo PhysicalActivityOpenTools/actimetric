@@ -5,6 +5,7 @@
 #' @return Numeric with shanon entropy
 #' @export
 #'
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 shannon.entropy <- function(p)
 {
   if (any(is.na(p)) || any(is.nan(p)))

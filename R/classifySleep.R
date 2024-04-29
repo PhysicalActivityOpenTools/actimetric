@@ -23,8 +23,10 @@
 #' @return Numeric vector with classified activities including nighttime and sleep.
 #' @export
 #' @references GGIR R Package. doi: 10.1123/jmpb.2018-0063
-
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 classifySleep = function(anglez, starttime, classifier, infoClassifier, ts, do.sleep, do.nonwear) {
+  # original code provided by Matthew N. Ahmadi
+  # minor clean up conducted by Jairo H. Migueles
   epoch = infoClassifier$epoch
   classes = infoClassifier$classes
   # DETECT SLEEP -----------------------

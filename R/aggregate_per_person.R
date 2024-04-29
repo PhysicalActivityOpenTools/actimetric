@@ -10,6 +10,7 @@
 #'
 #' @return Data frame with aggregates of time spent in classes per recording.
 #' @export
+#' @author Jairo H. Migueles <jairo@jhmigueles.com>
 aggregate_per_person = function(daysummary, n_valid_hours = 0,
                                 n_valid_hours_awake = 0, n_valid_hours_nighttime = 0) {
   # internal function

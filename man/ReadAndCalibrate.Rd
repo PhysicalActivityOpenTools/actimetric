@@ -62,3 +62,8 @@ and csv data
 \references{
 GGIR R Package. doi: 10.1123/jmpb.2018-0063
 }
+\author{
+Jairo H. Migueles <jairo@jhmigueles.com>
+
+Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+}

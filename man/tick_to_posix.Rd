@@ -19,3 +19,6 @@ POSIXct object
 \description{
 Converts tick to posix
 }
+\author{
+Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+}

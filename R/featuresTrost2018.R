@@ -11,10 +11,23 @@
 #'
 #' @return Matrix with features per epoch as proposed in Trost 2018.
 #' @export
-#' @references Trost et al., Medicine and Science in Sport and Exercise 2018;50(3): 634-641
+#' @references Trost SG, Cliff DP, Ahmadi MN, Tuc NV, Hagenbuchner M.
+#' Sensor-enabled Activity Class Recognition in Preschoolers: Hip versus Wrist
+#' Data. Med Sci Sports Exerc. 2018 Mar;50(3):634-641. doi: 10.1249/MSS.0000000000001460
+#' @references Preschool models: Ahmadi MN, Pavey TG, Trost SG. Machine Learning
+#' Models for Classifying Physical Activity in Free-Living Preschool Children.
+#' Sensors (Basel). 2020 Aug 5;20(16):4364. doi: 10.3390/s20164364
+#' @references School age Wrist Random Forest: Chowdhury AK, Tjondronegoro D,
+#' Chandran V, Trost SG. Ensemble Methods for Classification of Physical Activities
+#' from Wrist Accelerometry. Med Sci Sports Exerc. 2017 Sep;49(9):1965-1973.
+#' doi: 10.1249/MSS.0000000000001291
+#' @references School age Hip Random Forest: Ahmadi MN, Pfeiffer KA, Trost SG.
+#' Physical Activity Classification in Youth Using Raw Accelerometer Data from
+#' the Hip. Meas Phys Edu Exerc Sci. 2020; 24(2):129-136. doi: 10.1080/1091367X.2020.1716768
 #'
 #' @import stats
 #' @importFrom e1071 skewness kurtosis
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 featuresTrost2018 = function(data, vm, epoch, overlap, sf,
                              lowerBound = 0.25, upperBound = 5) {
   # INTERNAL FUNCTIONS (only used here) -------------------------------------

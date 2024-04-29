@@ -10,7 +10,9 @@
 #'
 #' @return Indices to be read in current iteration
 #' @export
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 chunkIndexing = function(prevChunk = 0, sf = NULL, rawEnd = NULL) {
+  # Original code provided by Matthew N. Ahmadi
   #variables used to read data in 24 hr increment
   constant = (sf*60*60*24)
   lastChunk = FALSE

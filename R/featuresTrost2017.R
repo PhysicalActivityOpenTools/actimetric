@@ -7,8 +7,16 @@
 #'
 #' @return Matrix with features per epoch as proposed in Trost 2018.
 #' @export
-#' @references Pavey et al., Journal of Science and Medicine in Sport 2017;20(1): 75-80
+#' @references Pavey TG, Gilson ND, Gomersall SR, Clark B, Trost SG. Field
+#' evaluation of a random forest activity classifier for wrist-worn accelerometer
+#' data. J Sci Med Sport. 2017 Jan;20(1):75-80. doi: 10.1016/j.jsams.2016.06.003
+#' @references Adult Wrist RF Trost: Pavey TG, Gilson ND, Gomersall SR, Clark B,
+#' Trost SG. Field evaluation of a random forest activity classifier for wrist-worn
+#' accelerometer data. J Sci Med Sport. 2017 Jan;20(1):75-80.
+#' doi: 10.1016/j.jsams.2016.06.003
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 featuresTrost2017 = function(data, epoch, sf) {
+  # original code provided by Matthew N. Ahmadi
   window = epoch * sf
   l = floor(nrow(data)/window)
   k = matrix(0, nrow = l, ncol = 16*3)

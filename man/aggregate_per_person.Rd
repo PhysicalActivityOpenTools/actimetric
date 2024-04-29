@@ -26,3 +26,6 @@ Data frame with aggregates of time spent in classes per recording.
 \description{
 Generates person/recording-level reports
 }
+\author{
+Jairo H. Migueles <jairo@jhmigueles.com>
+}

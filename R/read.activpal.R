@@ -5,6 +5,7 @@
 #' @return Data frame with acceleration data
 #' @export
 #' @importFrom data.table fread
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 read.activpal = function(file) {
   data = data.table::fread(file, data.table = F)
   data = data[,c(-2)]

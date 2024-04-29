@@ -15,6 +15,7 @@
 #'
 #' @return Numeric vector withe the computed summary statistics.
 #' @export
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 slide = function(x, width, by = NULL, FUN = NULL, ...) {
   isMatrix = FALSE
   FUN = match.fun(FUN)

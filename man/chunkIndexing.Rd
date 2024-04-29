@@ -20,3 +20,6 @@ Indices to be read in current iteration
 \description{
 Function used to derive indices to read raw data in 24-hour chunks.
 }
+\author{
+Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+}

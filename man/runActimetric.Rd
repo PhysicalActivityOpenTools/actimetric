@@ -97,4 +97,43 @@ This is the central function of the actimetric package.
 }
 \references{
 GGIR R Package. doi: 10.1123/jmpb.2018-0063
+
+Preschool models: Ahmadi MN, Pavey TG, Trost SG. Machine Learning
+Models for Classifying Physical Activity in Free-Living Preschool Children.
+Sensors (Basel). 2020 Aug 5;20(16):4364. doi: 10.3390/s20164364
+
+School age Wrist Random Forest: Chowdhury AK, Tjondronegoro D,
+Chandran V, Trost SG. Ensemble Methods for Classification of Physical Activities
+from Wrist Accelerometry. Med Sci Sports Exerc. 2017 Sep;49(9):1965-1973.
+doi: 10.1249/MSS.0000000000001291
+
+School age Hip Random Forest: Ahmadi MN, Pfeiffer KA, Trost SG.
+Physical Activity Classification in Youth Using Raw Accelerometer Data from
+the Hip. Meas Phys Edu Exerc Sci. 2020; 24(2):129-136. doi: 10.1080/1091367X.2020.1716768
+
+Adult Wrist RF Trost: Pavey TG, Gilson ND, Gomersall SR, Clark B,
+Trost SG. Field evaluation of a random forest activity classifier for wrist-worn
+accelerometer data. J Sci Med Sport. 2017 Jan;20(1):75-80.
+doi: 10.1016/j.jsams.2016.06.003
+
+Adult women Wrist and Hip RF Ellis: Ellis K, Kerr J, Godbole S,
+Staudenmayer J, Lanckriet G. Hip and Wrist Accelerometer Algorithms for
+Free-Living Behavior Classification. Med Sci Sports Exerc. 2016 May;48(5):933-40.
+doi: 10.1249/MSS.0000000000000840
+
+van Hees VT, Gorzelniak L, Dean León EC, Eder M, Pias M, Taherian S,
+Ekelund U, Renström F, Franks PW, Horsch A, Brage S. Separating movement and
+gravity components in an acceleration signal and implications for the assessment
+of human daily physical activity. PLoS One. 2013 Apr 23;8(4):e61691.
+doi: 10.1371/journal.pone.0061691
+
+Neishabouri A, Nguyen J, Samuelsson J, Guthrie T, Biggs M, Wyatt J,
+Cross D, Karas M, Migueles JH, Khan S, Guo CC. Quantification of acceleration
+as activity counts in ActiGraph wearable. Sci Rep. 2022 Jul 13;12(1):11958.
+doi: 10.1038/s41598-022-16003-x
+}
+\author{
+Jairo H. Migueles <jairo@jhmigueles.com>
+
+Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 }

@@ -23,6 +23,6 @@ Matrix with features per epoch as proposed in Ellis 2016.
 \description{
 Calculates Features for Thigh classifier
 }
-\references{
-Ellis et al., Medicine and Science in Sport and Exercise 2016;48(5): 933-940
+\author{
+Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 }

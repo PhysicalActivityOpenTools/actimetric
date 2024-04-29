@@ -47,3 +47,6 @@ Data frame with aggregates of time spent in classes per calendar date.
 \description{
 Generates day-level summary data frame
 }
+\author{
+Jairo H. Migueles <jairo@jhmigueles.com>
+}
