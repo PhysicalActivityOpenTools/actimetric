@@ -61,7 +61,7 @@ The `actimetric` R package supports the use of 9 different classifiers for now:
 
 ## Additional parameters
 
-Additionally, you can control a number of extra parameters in `actimetric` . For example, you can decide on calibrating the data with argument `do.calibration`, on the acceleration metrics you would like to calculate with options for ENMO, Actilife Counts, and Actilife LFE counts, or whether to detect non-wear and sleep periods.
+Additionally, you can control a number of extra parameters in `actimetric`. For example, you can decide on calibrating the data with argument `do.calibration`, on the acceleration metrics you would like to calculate with options for ENMO, ActiLife Counts, and ActiLife LFE counts, or whether to detect non-wear and sleep periods.
 
 Here a function call with all potential arguments you may use in `actimetric`, all of them defined with their default values:
 
