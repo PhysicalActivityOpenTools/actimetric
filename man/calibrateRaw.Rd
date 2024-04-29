@@ -21,3 +21,6 @@ List with calibration coefficients and calibrated raw data
 Calibrates the raw accelerometer signal based on the algorithm published
 in
 }
+\author{
+Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+}

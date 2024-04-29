@@ -15,3 +15,6 @@ Data frame with acceleration data
 \description{
 Reads activPAL raw acceleration files
 }
+\author{
+Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+}

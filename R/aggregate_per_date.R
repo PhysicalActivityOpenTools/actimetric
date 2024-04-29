@@ -25,6 +25,7 @@
 #'
 #' @importFrom grDevices pdf dev.off
 #'
+#' @author Jairo H. Migueles <jairo@jhmigueles.com>
 #' @export
 aggregate_per_date = function(tsDir, epoch, classifier, classes,
                               boutdur, boutcriter, boutmaxgap = boutmaxgap,
@@ -111,94 +112,15 @@ aggregate_per_date = function(tsDir, epoch, classifier, classes,
       ci = ci + 2
     }
 
-    # sleep status during nighttime
-    # sleep_status = cut(ts$enmo*1000, breaks = c(-Inf, 63.3, Inf), right = FALSE,
-    #                    labels = c("l", "r"))
-    # sleep_status = factor(sleep_status, levels = c("l", "r", "m"))
-    # post = which(ts$vm.sd > 0.013)
-    # q1 = which(diff(post) > ((60/epoch)*5))
-    # if (length(q1) > 0) {
-    #   for (iii in 1:length(q1)) {
-    #     sleep_status[post[q1[iii]]:post[q1[iii] + 1]] = "m"
-    #   }
-    # }
-    # sleep_status[which(ts$activity != "nighttime")] = NA
-    # ci2 = ci + 2
-    # time_in_sleepStatus = aggregate(sleep_status ~ ts$date,
-    #                                 FUN = min_in_class, epoch = epoch)
-    # rows2fill = which(availableDates %in% start_end_nighttime_dates)
-    # ds[rows2fill, ci:ci2] = time_in_sleepStatus[, 2]
-    # dsnames[ci:ci2] = paste("dur", "nighttime", c("motionless", "lightSleep", "restless"), "min", sep = "_")
-    # ci = ci2 + 1
-
-    # mean acceleration per class
-    # if ("enmo" %in% colnames(ts)) {
-    #   for (classi in classes) {
-    #     acc_in_class = tryCatch(aggregate(enmo ~ date, data = ts, FUN = mean,
-    #                                       subset = activity == classi),
-    #                             error = function(e) matrix())
-    #     if (ncol(acc_in_class) > 1) { # if no time is classified in a given activity in the whole recording, then ncol == 1
-    #       rows2fill = which(availableDates %in% acc_in_class$date)
-    #       ds[rows2fill, ci] = round(acc_in_class[, 2]*1000, 3)
-    #     }
-    #     dsnames[ci] = paste("ENMO.mean", "total", "class", classi, "mg", sep = "_")
-    #     ci = ci + 1
-    #   }
-    # }
-    # if ("vm.mean" %in% colnames(ts)) {
-    #   for (classi in classes) {
-    #     acc_in_class = tryCatch(aggregate(enmo ~ date, data = ts, FUN = mean,
-    #                                       subset = activity == classi),
-    #                             error = function(e) matrix())
-    #     if (ncol(acc_in_class) > 1) { # if no time is classified in a given activity in the whole recording, then ncol == 1
-    #       rows2fill = which(availableDates %in% acc_in_class$date)
-    #       ds[rows2fill, ci] = round(acc_in_class[, 2]*1000, 3)
-    #     }
-    #     dsnames[ci] = paste("VM.mean", "total", "class", classi, "mg", sep = "_")
-    #     ci = ci + 1
-    #   }
-    # }
-    # if (any(grepl("agcounts", colnames(ts)))) {
-    #   for (classi in classes) {
-    #     for (axis in c("x", "y", "z", "vm")) {
-    #       ax = paste("agcounts", axis, sep = "_")
-    #       acc_in_class = tryCatch(aggregate(ts[, ax] ~ ts$date, FUN = mean,
-    #                                         subset = ts$activity == classi),
-    #                               error = function(e) matrix())
-    #       if (ncol(acc_in_class) > 1) { # if no time is classified in a given activity in the whole recording, then ncol == 1
-    #         rows2fill = which(availableDates %in% acc_in_class[,1])
-    #         ds[rows2fill, ci] = round(acc_in_class[, 2], 3)
-    #       }
-    #       dsnames[ci] = paste(paste0("countsPer", epoch, "s"), "total", "class", classi,
-    #                           sep = "_")
-    #       ci = ci + 1
-    #     }
-    #   }
-    # }
-    # if (any(grepl("LFEcounts", colnames(ts)))) {
-    #   for (classi in classes) {
-    #     for (axis in c("x", "y", "z", "vm")) {
-    #       ax = paste("LFEcounts", axis, sep = "_")
-    #       acc_in_class = tryCatch(aggregate(ts[, ax] ~ ts$date, FUN = mean,
-    #                                         subset = ts$activity == classi),
-    #                               error = function(e) matrix())
-    #       if (ncol(acc_in_class) > 1) { # if no time is classified in a given activity in the whole recording, then ncol == 1
-    #         rows2fill = which(availableDates %in% acc_in_class[,1])
-    #         ds[rows2fill, ci] = round(acc_in_class[, 2], 3)
-    #       }
-    #       dsnames[ci] = paste(paste0("LFEcountsPer", epoch, "s"), "total", "class", classi,
-    #                           sep = "_")
-    #       ci = ci + 1
-    #     }
-    #   }
-    # }
-
     # bouts of behaviors
     boutdur = sort(boutdur, decreasing = TRUE)
     for (classi in classes) {
       if (grepl("^nighttime|^nonwear", classes[classi])) break
       for (boutduri in 1:length(boutdur)) {
         look4bouts = ifelse(ts$activity == classi, 1, 0)
+        # getBout is a copy of GGIR::g.getbout with which we are experimenting
+        # to obtain slightly different version of bouts, e.g., allowing for
+        # relative and absolute boutcriter
         bouts = getBout(x = look4bouts, boutduration = boutdur[boutduri]*(60/epoch),
                         boutcriter = boutcriter, epoch = epoch, boutmaxgap = boutmaxgap)
         timeInBouts = ifelse(look4bouts == 1 & bouts == 1, 1, 0)

@@ -24,5 +24,10 @@ Matrix with features per epoch as proposed in Ellis 2016.
 Calculates Features Proposed By Ellis 2016
 }
 \references{
-Ellis et al., Medicine and Science in Sport and Exercise 2016;48(5): 933-940
+Ellis K, Kerr J, Godbole S, Staudenmayer J, Lanckriet G. Hip and
+Wrist Accelerometer Algorithms for Free-Living Behavior Classification.
+Med Sci Sports Exerc. 2016 May;48(5):933-40. doi: 10.1249/MSS.0000000000000840
+}
+\author{
+Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 }

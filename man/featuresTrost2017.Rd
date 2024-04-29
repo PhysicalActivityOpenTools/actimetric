@@ -21,5 +21,15 @@ Matrix with features per epoch as proposed in Trost 2018.
 Calculates Features Proposed By Trost 2017
 }
 \references{
-Pavey et al., Journal of Science and Medicine in Sport 2017;20(1): 75-80
+Pavey TG, Gilson ND, Gomersall SR, Clark B, Trost SG. Field
+evaluation of a random forest activity classifier for wrist-worn accelerometer
+data. J Sci Med Sport. 2017 Jan;20(1):75-80. doi: 10.1016/j.jsams.2016.06.003
+
+Adult Wrist RF Trost: Pavey TG, Gilson ND, Gomersall SR, Clark B,
+Trost SG. Field evaluation of a random forest activity classifier for wrist-worn
+accelerometer data. J Sci Med Sport. 2017 Jan;20(1):75-80.
+doi: 10.1016/j.jsams.2016.06.003
+}
+\author{
+Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 }

@@ -9,6 +9,7 @@
 #' @return Does not return any object, it just draws the plots.
 #' @export
 #' @import graphics
+#' @author Jairo H. Migueles <jairo@jhmigueles.com>
 actimetricPlot = function(ts, daysummary, dsnames, classes, epoch) {
   # internal functions
   find_start_end = function(ts, column, class) {

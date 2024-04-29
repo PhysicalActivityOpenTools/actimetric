@@ -11,6 +11,7 @@
 #' @export
 #'
 #' @examples
+#' @author Jairo H. Migueles <jairo@jhmigueles.com>
 #' check_classifier("Adult wrist Trost")
 check_classifier = function(classifier) {
   # lowercase classifier to facilitate matching

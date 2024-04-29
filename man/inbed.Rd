@@ -35,3 +35,6 @@ List with identificators of inbed time.
 \description{
 Calculates inbed times.
 }
+\author{
+Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+}

@@ -23,3 +23,6 @@ Does not return any object, it just draws the plots.
 \description{
 Generates plots from the time series classified
 }
+\author{
+Jairo H. Migueles <jairo@jhmigueles.com>
+}

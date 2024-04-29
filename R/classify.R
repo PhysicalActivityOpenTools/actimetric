@@ -22,16 +22,18 @@
 #' @return Function does not return anything, it only generates the reports and
 #' visualizations in the \code{output_directory}.
 #' @export
-#' @references van hees 2014; neishabouri 2022
 #' @importFrom caret predict.train
 #' @importFrom stats predict
 #' @importFrom HMM viterbi
 #' @import randomForest
 #'
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 #' @author Jairo H. Migueles <jairo@jhmigueles.com>
 classify = function(data = NULL, sf = NULL,
                     classifier = NULL, infoClassifier = NULL,
                     ID = NULL, starttime = NULL) {
+  # Original code provided by Matthew N. Ahmadi
+  # Jairo H. Migueles cleaned the code and isolated the classify function here
   epoch = infoClassifier$epoch
   # -------------------------------------------------------------------------
   # 1 - EXTRACT FEATURES

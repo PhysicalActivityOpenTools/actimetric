@@ -8,10 +8,13 @@
 #'
 #' @return Matrix with features per epoch as proposed in Ellis 2016.
 #' @export
-#' @references Ellis et al., Medicine and Science in Sport and Exercise 2016;48(5): 933-940
+#' @references Ellis K, Kerr J, Godbole S, Staudenmayer J, Lanckriet G. Hip and
+#' Wrist Accelerometer Algorithms for Free-Living Behavior Classification.
+#' Med Sci Sports Exerc. 2016 May;48(5):933-40. doi: 10.1249/MSS.0000000000000840
 #'
 #' @importFrom signal specgram
 #' @import stats
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 featuresEllis2016 = function(x, y, z, epoch, sf) {
   data = cbind(x, y, z)
   g = matrix(0, nrow(data), 3)

@@ -15,3 +15,6 @@ Numeric with shanon entropy
 \description{
 Function to compute entropy
 }
+\author{
+Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+}

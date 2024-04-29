@@ -26,3 +26,6 @@ Numeric vector withe the computed summary statistics.
 Splits the data into subsets, computes summary statistics for each, and
 returns the result in a convenient form.
 }
+\author{
+Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+}

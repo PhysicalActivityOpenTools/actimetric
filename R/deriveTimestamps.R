@@ -7,6 +7,8 @@
 #'
 #' @return Timestamp in "%Y-%m-%d %H:%M:%OS" format
 #' @export
+#' @author Jairo H. Migueles <jairo@jhmigueles.com>
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 #'
 deriveTimestamps = function(from, length, epoch) {
   s.t2 = from + epoch*(0:(length - 1))

@@ -26,6 +26,8 @@
 #' @references GGIR R Package. doi: 10.1123/jmpb.2018-0063
 #' @import GGIR
 #' @import GGIRread
+#' @author Jairo H. Migueles <jairo@jhmigueles.com>
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
                             PreviousEndPage, PreviousLastValue, PreviousLastTime,
                             isLastBlock, do.calibration, iteration, epoch, S,

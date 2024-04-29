@@ -38,3 +38,8 @@ This is a central function to calculate features from the acceleration signal.
 If any of the implemented classifiers is to be used, then the function
 automatically calculates the features needed for such classifier.
 }
+\author{
+Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+
+Jairo H. Migueles <jairo@jhmigueles.com>
+}

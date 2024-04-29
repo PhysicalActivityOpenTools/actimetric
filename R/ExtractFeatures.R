@@ -25,6 +25,8 @@
 #'
 #' @importFrom signal specgram
 #' @import stats
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+#' @author Jairo H. Migueles <jairo@jhmigueles.com>
 ExtractFeatures = function(data, classifier = NULL, sf = NULL, epoch = NULL, ID = NA) {
   classifier = tolower(classifier)
   # initialize variables

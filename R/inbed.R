@@ -10,6 +10,7 @@
 #'
 #' @return List with identificators of inbed time.
 #' @export
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 inbed = function(angle, k = 60, perc = 0.1, inbedthreshold = 15,
                  bedblocksize = 30, outofbedsize = 60, ws3 = 5) {
   medabsdi = function(angle) {

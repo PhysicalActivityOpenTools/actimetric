@@ -16,6 +16,7 @@ Character with the definitive classifier
 Tries to match the classifier specified by the user with one of the
 supported options in the package. If not successful returns NULL.
 }
-\examples{
+\author{
+Jairo H. Migueles <jairo@jhmigueles.com>
 check_classifier("Adult wrist Trost")
 }

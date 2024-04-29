@@ -8,10 +8,11 @@
 #'
 #' @return Matrix with features per epoch as proposed in Ellis 2016.
 #' @export
-#' @references Ellis et al., Medicine and Science in Sport and Exercise 2016;48(5): 933-940
 #'
 #' @import stats
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 featuresThigh = function(x, y, z, epoch, sf) {
+  # thigh models are only experimental and disabled for now.
   # Internal functions ------------------------------------------------------
   medianCrossing = function(x) {
     q = as.numeric(quantile(x, p = 0.5))

@@ -10,8 +10,10 @@
 #'
 #' @return List with calibration coefficients and calibrated raw data
 #' @export
+#' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 #'
 calibrateRaw = function(raw, sf, verbose = TRUE) {
+  # Original code provided by Matthew N. Ahmadi
   calCoefs = NULL; vm.error.st = NULL; vm.error.end = NULL
   # define internal functions (only used here) -----
   centerRadius <- function(aa) {
