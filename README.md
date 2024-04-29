@@ -40,17 +40,17 @@ runActimetric(input_directory = "G:/directory_containing/the_input_files/",
 
 The `actimetric` R package supports the use of 9 different classifiers for now:
 
--   [Preschool Wrist Random Forest Free Living](https://pubmed.ncbi.nlm.nih.gov/29059107/)
+-   [Preschool Wrist Random Forest Free Living](https://pubmed.ncbi.nlm.nih.gov/32764316/)
 
--   [Preschool Hip Random Forest Free Living](https://pubmed.ncbi.nlm.nih.gov/29059107/)
+-   [Preschool Hip Random Forest Free Living](https://pubmed.ncbi.nlm.nih.gov/32764316/)
 
--   [Preschool Hip Random Forest Free Living Lag-Lead](https://pubmed.ncbi.nlm.nih.gov/29059107/)
+-   [Preschool Hip Random Forest Free Living Lag-Lead](https://pubmed.ncbi.nlm.nih.gov/32764316/)
 
--   [Preschool Wrist Random Forest Free Living Lag-Lead](https://pubmed.ncbi.nlm.nih.gov/29059107/)
+-   [Preschool Wrist Random Forest Free Living Lag-Lead](https://pubmed.ncbi.nlm.nih.gov/32764316/)
 
--   [School age Wrist Random Forest](https://pubmed.ncbi.nlm.nih.gov/25340887/)
+-   [School age Wrist Random Forest](https://pubmed.ncbi.nlm.nih.gov/28419025/)
 
--   [School age Hip Random Forest](https://pubmed.ncbi.nlm.nih.gov/25340887/)
+-   [School age Hip Random Forest](https://www.tandfonline.com/doi/full/10.1080/1091367X.2020.1716768)
 
 -   [Adult Wrist RF Trost](https://pubmed.ncbi.nlm.nih.gov/27372275/)
 
@@ -61,7 +61,7 @@ The `actimetric` R package supports the use of 9 different classifiers for now:
 
 ## Additional parameters
 
-Additionally, you can control a number of extra parameters in `actimetric` . For example, you can decide on calibrating the data with argument `do.calibration`, on the acceleration metrics you would like to calculate with options for ENMO, Actilife Counts, and Actilife LFE counts, or whether to detect non-wear and sleep periods.
+Additionally, you can control a number of extra parameters in `actimetric`. For example, you can decide on calibrating the data with argument `do.calibration`, on the acceleration metrics you would like to calculate with options for ENMO, ActiLife Counts, and ActiLife LFE counts, or whether to detect non-wear and sleep periods.
 
 Here a function call with all potential arguments you may use in `actimetric`, all of them defined with their default values:
 
