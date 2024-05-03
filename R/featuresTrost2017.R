@@ -15,6 +15,7 @@
 #' accelerometer data. J Sci Med Sport. 2017 Jan;20(1):75-80.
 #' doi: 10.1016/j.jsams.2016.06.003
 #' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+#' @author Stewart G. Trost <s.trost@uq.edu.au>
 featuresTrost2017 = function(data, epoch, sf) {
   # original code provided by Matthew N. Ahmadi
   window = epoch * sf
