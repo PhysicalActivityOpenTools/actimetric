@@ -1,3 +1,7 @@
+# actimetric 0.1.2
+
+* Documentation: include references to papers, other pieces of code, packages, and authorships #41
+
 # actimetric 0.1.1
 
 * Data reading: fix minor bug when reading short files #25

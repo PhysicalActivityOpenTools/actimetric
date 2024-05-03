@@ -28,6 +28,7 @@
 #' @import stats
 #' @importFrom e1071 skewness kurtosis
 #' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+#' @author Stewart G. Trost <s.trost@uq.edu.au>
 featuresTrost2018 = function(data, vm, epoch, overlap, sf,
                              lowerBound = 0.25, upperBound = 5) {
   # INTERNAL FUNCTIONS (only used here) -------------------------------------
