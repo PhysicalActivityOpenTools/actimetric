@@ -10,6 +10,14 @@
 #'
 #' @return List with identificators of inbed time.
 #' @export
+#' @references GGIR R Package. doi: 10.1123/jmpb.2018-0063
+#' @references van Hees VT, Sabia S, Jones SE, Wood AR, Anderson KN, Kivimäki M,
+#' Frayling TM, Pack AI, Bucan M, Trenell MI, Mazzotti DR, Gehrman PR, Singh-Manoux BA,
+#' Weedon MN. Estimating sleep parameters using an accelerometer without sleep diary.
+#' Sci Rep. 2018 Aug 28;8(1):12975. doi: 10.1038/s41598-018-31266-z.
+#' @references Ahmadi MN, Nathan N, Sutherland R, Wolfenden L, Trost SG. Non-wear
+#' or sleep? Evaluation of five non-wear detection algorithms for raw accelerometer
+#' data. J Sports Sci. 2020 Feb;38(4):399-404. doi: 10.1080/02640414.2019.1703301
 #' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 inbed = function(angle, k = 60, perc = 0.1, inbedthreshold = 15,
                  bedblocksize = 30, outofbedsize = 60, ws3 = 5) {
@@ -27,8 +35,7 @@ inbed = function(angle, k = 60, perc = 0.1, inbedthreshold = 15,
   nomov = c(0, nomov, 0)
   s1 = which(diff(nomov) == 1)
   e1 = which(diff(nomov) == -1)
-  bedblock = which((e1 - s1) > ((60/ws3) * bedblocksize *
-                                  1))
+  bedblock = which((e1 - s1) > ((60/ws3) * bedblocksize * 1))
   if (length(bedblock) > 0) {
     s2 = s1[bedblock]
     e2 = e1[bedblock]

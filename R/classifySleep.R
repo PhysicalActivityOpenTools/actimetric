@@ -23,6 +23,9 @@
 #' @return Numeric vector with classified activities including nighttime and sleep.
 #' @export
 #' @references GGIR R Package. doi: 10.1123/jmpb.2018-0063
+#' @references Ahmadi MN, Nathan N, Sutherland R, Wolfenden L, Trost SG. Non-wear
+#' or sleep? Evaluation of five non-wear detection algorithms for raw accelerometer
+#' data. J Sports Sci. 2020 Feb;38(4):399-404. doi: 10.1080/02640414.2019.1703301
 #' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 classifySleep = function(anglez, starttime, classifier, infoClassifier, ts, do.sleep, do.nonwear) {
   # original code provided by Matthew N. Ahmadi
@@ -95,7 +98,6 @@ classifySleep = function(anglez, starttime, classifier, infoClassifier, ts, do.s
     e = which(ts$nonwear == 2)
     if (length(e) > 0) ts$activity[e] = nighttime_id
     # DETECT SLEEP WITHIN THE NIGHTTIME
-
     ts$sleep_windows_orig = ts$nighttime
     ts$sleep_periods = rep(0,nrow(ts))
     if (any(ts$activity == nighttime_id)) {
