@@ -30,11 +30,9 @@ are converted to non-wear (additional non-wear).
 \references{
 GGIR R Package. doi: 10.1123/jmpb.2018-0063
 
-van Hees VT, Renström F, Wright A, Gradmark A, Catt M, Chen KY,
-Löf M, Bluck L, Pomeroy J, Wareham NJ, Ekelund U, Brage S, Franks PW.
-Estimation of daily energy expenditure in pregnant and non-pregnant women
-using a wrist-worn tri-axial accelerometer. PLoS One. 2011;6(7):e22922.
-doi: 10.1371/journal.pone.0022922
+Ahmadi MN, Nathan N, Sutherland R, Wolfenden L, Trost SG. Non-wear
+or sleep? Evaluation of five non-wear detection algorithms for raw accelerometer
+data. J Sports Sci. 2020 Feb;38(4):399-404. doi: 10.1080/02640414.2019.1703301
 }
 \author{
 Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>

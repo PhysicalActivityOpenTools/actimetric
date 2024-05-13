@@ -18,6 +18,7 @@
 #' @param ID ID for this recording
 #' @param starttime Start time for the recording as extracted from \link{ReadAndCalibrate}
 #' @param data Raw data as read by \link{ReadAndCalibrate}
+#' @param parameters List with the definition of the parameters of the function.
 #'
 #' @return Function does not return anything, it only generates the reports and
 #' visualizations in the \code{output_directory}.
@@ -29,11 +30,23 @@
 #'
 #' @author Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 #' @author Jairo H. Migueles <jairo@jhmigueles.com>
-classify = function(data = NULL, sf = NULL,
+classify = function(data = NULL, parameters = NULL, sf = NULL,
                     classifier = NULL, infoClassifier = NULL,
                     ID = NULL, starttime = NULL) {
+  # -------------------------------------------------------------------------
   # Original code provided by Matthew N. Ahmadi
   # Jairo H. Migueles cleaned the code and isolated the classify function here
+  # -------------------------------------------------------------------------
+  # get parameters
+  if (!is.null(parameters)) {
+    if (!"infoClassifier" %in% names(parameters)) {
+      parameters$infoClassifier = GetInfoClassifier(parameters$classifier)
+    }
+    sf = parameters$sf
+    classifier = parameters$classifier
+    infoClassifier = parameters$infoClassifier
+    epoch = parameters$infoClassifier
+  }
   epoch = infoClassifier$epoch
   # -------------------------------------------------------------------------
   # 1 - EXTRACT FEATURES
@@ -54,9 +67,12 @@ classify = function(data = NULL, sf = NULL,
     ts = as.data.frame(cbind(ts, laglead))
   }
   # Timestamp and ID
-  timestamp = deriveTimestamps(from = starttime, length = nrow(ts), epoch = epoch)
-  subject = rep(ID, nrow(ts))
-  ts = as.data.frame(cbind(subject, timestamp, ts))
+  if (!is.null(starttime)) {
+    timestamp = deriveTimestamps(from = starttime, length = nrow(ts), epoch = epoch)
+    if (!is.null(ID)) subject = rep(ID, nrow(ts)) else subject = NA
+    ts = as.data.frame(cbind(subject, timestamp, ts))
+  }
+  # round numeric columns
   numeric_columns = sapply(ts, mode) == 'numeric'
   ts[numeric_columns] =  round(ts[numeric_columns], 3)
   ts  = do.call(data.frame,lapply(ts, function(x) replace(x, is.infinite(x), NA)))

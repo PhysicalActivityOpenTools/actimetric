@@ -46,6 +46,10 @@ Function to classify nighttime and sleep in the time series.
 }
 \references{
 GGIR R Package. doi: 10.1123/jmpb.2018-0063
+
+Ahmadi MN, Nathan N, Sutherland R, Wolfenden L, Trost SG. Non-wear
+or sleep? Evaluation of five non-wear detection algorithms for raw accelerometer
+data. J Sports Sci. 2020 Feb;38(4):399-404. doi: 10.1080/02640414.2019.1703301
 }
 \author{
 Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>

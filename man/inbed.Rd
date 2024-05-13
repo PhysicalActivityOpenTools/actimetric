@@ -35,6 +35,18 @@ List with identificators of inbed time.
 \description{
 Calculates inbed times.
 }
+\references{
+GGIR R Package. doi: 10.1123/jmpb.2018-0063
+
+van Hees VT, Sabia S, Jones SE, Wood AR, Anderson KN, Kivimäki M,
+Frayling TM, Pack AI, Bucan M, Trenell MI, Mazzotti DR, Gehrman PR, Singh-Manoux BA,
+Weedon MN. Estimating sleep parameters using an accelerometer without sleep diary.
+Sci Rep. 2018 Aug 28;8(1):12975. doi: 10.1038/s41598-018-31266-z.
+
+Ahmadi MN, Nathan N, Sutherland R, Wolfenden L, Trost SG. Non-wear
+or sleep? Evaluation of five non-wear detection algorithms for raw accelerometer
+data. J Sports Sci. 2020 Feb;38(4):399-404. doi: 10.1080/02640414.2019.1703301
+}
 \author{
 Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
 }
