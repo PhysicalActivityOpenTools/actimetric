@@ -56,4 +56,6 @@ the Hip. Meas Phys Edu Exerc Sci. 2020; 24(2):129-136. doi: 10.1080/1091367X.202
 }
 \author{
 Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+
+Stewart G. Trost <s.trost@uq.edu.au>
 }

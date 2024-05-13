@@ -32,4 +32,6 @@ doi: 10.1016/j.jsams.2016.06.003
 }
 \author{
 Matthew N. Ahmadi <matthew.ahmadi@sydney.edu.au>
+
+Stewart G. Trost <s.trost@uq.edu.au>
 }

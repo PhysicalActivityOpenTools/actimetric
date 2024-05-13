@@ -6,6 +6,7 @@
 \usage{
 classify(
   data = NULL,
+  parameters = NULL,
   sf = NULL,
   classifier = NULL,
   infoClassifier = NULL,
@@ -15,6 +16,8 @@ classify(
 }
 \arguments{
 \item{data}{Raw data as read by \link{ReadAndCalibrate}}
+
+\item{parameters}{List with the definition of the parameters of the function.}
 
 \item{sf}{Number with the sampling frequency in the recording.}
 
