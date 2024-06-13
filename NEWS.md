@@ -1,3 +1,7 @@
+# actimetric 0.1.3
+
+* Calibration: fix minor bug by which calibration procedure was using time column instead of acceleration columns in data #49
+
 # actimetric 0.1.2
 
 * Documentation: include references to papers, other pieces of code, packages, and authorships #41
