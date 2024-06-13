@@ -87,7 +87,8 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
     # MODULE 3 - EXTRACT CALIBRATION COEFFICIENTS -----------------------------
     calCoefs = vm.error.st = vm.error.end = NULL
     if (do.calibration == TRUE & iteration == 1) {
-      cal = calibrateRaw(data, sf = sf, verbose = verbose)
+      accCols = which(colnames(data) %in% c("x","y","z"))
+      cal = calibrateRaw(data[, accCols], sf = sf, verbose = verbose)
       if (is.list(cal)) {
         calCoefs = cal$calCoefs; vm.error.st = cal$vm.error.st;
         vm.error.end = cal$vm.error.end
