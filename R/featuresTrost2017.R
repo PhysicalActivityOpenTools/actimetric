@@ -43,7 +43,11 @@ featuresTrost2017 = function(data, epoch, sf) {
       k[i, column + 4] = mean(A, trim = 0.05, na.rm = TRUE)
       k[i, column + 5] = sd(A, na.rm = TRUE)
       k[i, column + 6] = sum((A*A), na.rm = TRUE)
-      k[i, column + 7] = cor(Axis[from:(to - 1)], Axis[(from + 1):to], use = "pairwise.complete.obs")
+      if (sd(A, na.rm = TRUE) != 0) { #this avoids warning when no variability (e.g., idle sleep mode in actigraph)
+        k[i, column + 7] = cor(Axis[from:(to - 1)], Axis[(from + 1):to], use = "pairwise.complete.obs")
+      } else {
+        k[i, column + 7] = NA
+      }
       k[i, column + 8] = median(A, na.rm = TRUE)
       k[i, column + 9] = mad(abs(A), na.rm = TRUE)
       k[i, column + 10] = as.vector(quantile(A, c(.10), na.rm = TRUE))
