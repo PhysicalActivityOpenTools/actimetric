@@ -19,6 +19,9 @@ If 1 or larger, then the gap is interpreted in absolute number of minutes (e.g.,
 
 \item{epoch}{Integer (default = 5) indicating the epoch length in seconds.}
 }
+\value{
+Vector with 0's and 1's indicating bout occurrences.
+}
 \description{
 Calculates bouts of the different behaviors provided by the classifier
 }
