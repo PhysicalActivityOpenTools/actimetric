@@ -10,7 +10,7 @@
 #' @param epoch Integer (default = 5) indicating the epoch length in seconds.
 #' @param boutmaxgap Integer (default = 1) with maximum consecutive gap length allowed in bout calculation.
 #'
-#' @return
+#' @return Vector with 0's and 1's indicating bout occurrences.
 #' @export
 #' @references GGIR R Package. doi: 10.1123/jmpb.2018-0063
 getBout = function(x, boutduration = 10, boutcriter = 0.8, boutmaxgap = 1, epoch = 5) {

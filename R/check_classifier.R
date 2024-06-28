@@ -9,8 +9,6 @@
 #'
 #' @return Character with the definitive classifier
 #' @export
-#'
-#' @examples
 #' @author Jairo H. Migueles <jairo@jhmigueles.com>
 #' check_classifier("Adult wrist Trost")
 check_classifier = function(classifier) {

@@ -76,6 +76,7 @@ classifySleep = function(anglez, starttime, classifier, infoClassifier, ts, do.s
     }
   }
   # add nonwear to ts
+  ts$activity = as.numeric(ts$activity)
   nonwear_id = length(classes) + 1
   classes = c(classes, "nonwear")
   ts$nonwear_orig = ts$nonwear
@@ -128,6 +129,6 @@ classifySleep = function(anglez, starttime, classifier, infoClassifier, ts, do.s
       ts$activity[which(ts$sleep_periods == 1)] = sleep_id
     }
   }
-  activity = ts$activity
+  activity = factor(x = ts$activity, levels = 1:length(classes), labels = classes)
   return(activity)
 }

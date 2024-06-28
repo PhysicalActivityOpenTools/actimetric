@@ -1,3 +1,8 @@
+# actimetric 0.1.4
+
+* Time series: stores classes as factor in time series to ease interpretation #51
+* Documentation: minor revision of documentation for functions check_classifier and getBout #41
+
 # actimetric 0.1.3
 
 * Calibration: fix minor bug by which calibration procedure was using time column instead of acceleration columns in data #49
