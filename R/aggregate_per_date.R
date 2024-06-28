@@ -42,7 +42,9 @@ aggregate_per_date = function(tsDir, epoch, classifier, classes,
     # format timestamp to ease calculations
     ts$timestamp = strptime(paste(ts$date, ts$time), format = "%Y-%m-%d %H:%M:%OS", tz = "")
     ts$time = format(ts$timestamp, "%H:%M:%S")
-    ts$activity = factor(ts$activity, levels = 1:length(classes), labels = classes)
+    if (is.numeric(ts$activity)) { # ensures compatibility with versions <0.1.4
+      ts$activity = factor(ts$activity, levels = 1:length(classes), labels = classes)
+    }
     # Day of the week, used for summarizing per day
     availableDates = unique(ts$date)
     # matrix to store the results

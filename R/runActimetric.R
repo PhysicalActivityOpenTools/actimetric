@@ -227,7 +227,8 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
       S = matrix(0,0,4) #dummy variable needed to cope with head-tailing succeeding blocks of data
       # ---------------------------------------------------------------------
       # Run Pipeline...
-      nonwear = enmo = agcounts = LFEcounts = tilt = anglez = activity = NULL
+      nonwear = enmo = agcounts = LFEcounts = tilt = anglez = NULL
+      activity = factor()
       while (isLastBlock == FALSE) {
         # 1 - read and extract calibration coefficients
         accread = ReadAndCalibrate(file = file, sf = sf, blocksize = blocksize,
@@ -340,7 +341,7 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
         if (!is.null(LFEcounts)) {
           if (nrow(LFEcounts) == nrow(ts)) ts = as.data.frame(cbind(ts, LFEcounts))
         }
-        numeric_columns = sapply(ts, mode) == 'numeric'
+        numeric_columns = sapply(ts, class) == 'numeric'
         ts[numeric_columns] =  round(ts[numeric_columns], 3)
         ts  = do.call(data.frame,lapply(ts, function(x) replace(x, is.infinite(x), NA)))
         ts[is.na(ts)] = 0
