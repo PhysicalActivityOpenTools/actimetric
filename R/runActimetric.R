@@ -217,9 +217,8 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
       hvars = GGIR::g.extractheadervars(I)
       sf = I$sf
       # Extract parameters for reading file in chunks as in GGIR R package
-      readParams = GGIR::get_nw_clip_block_params(chunksize = 1, dynrange = 8,
-                                                  monc = I$monc, dformat = I$dformc,
-                                                  sf = sf, rmc.dynamic_range = NULL)
+      readParams = GGIR::get_nw_clip_block_params(monc = I$monc, dformat = I$dformc,
+                                                  sf = sf, params_rawdata = GGIR::load_params()$params_rawdata)
       blocksize = readParams$blocksize
       isLastBlock = FALSE
       blocknumber = 1; iteration = 1
