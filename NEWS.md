@@ -2,6 +2,7 @@
 
 * Time series: stores classes as factor in time series to ease interpretation #51
 * Documentation: minor revision of documentation for functions check_classifier and getBout #41
+* Reading data: minor revision of ReadAndCalibrate when reading ActiGraph devices with the Idle Sleep Mode activated #58
 
 # actimetric 0.1.3
 
