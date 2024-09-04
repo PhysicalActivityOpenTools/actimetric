@@ -104,9 +104,15 @@ aggregate_per_date = function(tsDir, epoch, classifier, classes,
       return(list(starts = starts, ends = ends))
     }
     if ("nighttime.awake" %in% classes) {
+      noons = which(ts$time == "12:00:00")
       start_end_nighttime = find_start_end(ts, column = "activity",
                                            class = c("nighttime.awake", "nighttime.sleep"))
-      start_end_nighttime_dates = ts$date[start_end_nighttime$ends] # dates based on wakeup
+      start_end_nighttime_dates = NULL
+      for (ni in 1:length(start_end_nighttime$ends)) {
+        next_noon = which(noons > start_end_nighttime$ends[ni])[1]
+        start_end_nighttime_dates[ni] = ts$date[noons[next_noon]]
+      }
+      # start_end_nighttime_dates = ts$date[start_end_nighttime$ends] # dates based on wakeup
       rows2fill = which(availableDates %in% start_end_nighttime_dates)
       ds[rows2fill, ci] = as.character(ts$timestamp[start_end_nighttime$starts])
       ds[rows2fill, ci + 1] = as.character(ts$timestamp[start_end_nighttime$ends])

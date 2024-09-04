@@ -1,6 +1,8 @@
 # actimetric 0.1.4
 
-* Time series: stores classes as factor in time series to ease interpretation #51
+* Time series: 
+    - stores classes as factor in time series to ease interpretation #51
+    - fixed minor bug related to assignation of date to sleep periods #60
 * Documentation: minor revision of documentation for functions check_classifier and getBout #41
 * Reading data: minor revision of ReadAndCalibrate when reading ActiGraph devices with the Idle Sleep Mode activated #58
 
