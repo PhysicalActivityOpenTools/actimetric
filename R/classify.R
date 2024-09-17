@@ -73,8 +73,6 @@ classify = function(data = NULL, parameters = NULL, sf = NULL,
     ts = as.data.frame(cbind(subject, timestamp, ts))
   }
   # round numeric columns
-  numeric_columns = sapply(ts, mode) == 'numeric'
-  ts[numeric_columns] =  round(ts[numeric_columns], 3)
   ts  = do.call(data.frame,lapply(ts, function(x) replace(x, is.infinite(x), NA)))
   ts[is.na(ts)] = 0
   # -------------------------------------------------------------------------

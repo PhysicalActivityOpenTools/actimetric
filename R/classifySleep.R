@@ -129,6 +129,9 @@ classifySleep = function(anglez, starttime, classifier, infoClassifier, ts, do.s
       ts$activity[which(ts$sleep_periods == 1)] = sleep_id
     }
   }
+  # recode nighttime as nighttime.awake and sleep as nighttime.sleep
+  classes = gsub("nighttime", "nighttime.awake", classes)
+  classes = gsub("sleep", "nighttime.sleep", classes)
   activity = factor(x = ts$activity, levels = 1:length(classes), labels = classes)
   return(activity)
 }

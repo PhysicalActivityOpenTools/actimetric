@@ -217,9 +217,15 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
       hvars = GGIR::g.extractheadervars(I)
       sf = I$sf
       # Extract parameters for reading file in chunks as in GGIR R package
-      readParams = GGIR::get_nw_clip_block_params(chunksize = 1, dynrange = 8,
-                                                  monc = I$monc, dformat = I$dformc,
-                                                  sf = sf, rmc.dynamic_range = NULL)
+      # the if statement makes this flexible to adapt to different GGIR versions
+      if ("chunksize" %in% names(as.list(args(GGIR::get_nw_clip_block_params)))) {
+        readParams = GGIR::get_nw_clip_block_params(chunksize = 1, dynrange = 8,
+                                                    monc = I$monc, dformat = I$dformc,
+                                                    sf = sf, rmc.dynamic_range = NULL)
+      } else {
+        readParams = GGIR::get_nw_clip_block_params(monc = I$monc, dformat = I$dformc,
+                                                    sf = sf, params_rawdata = GGIR::load_params()$params_rawdata)
+      }
       blocksize = readParams$blocksize
       isLastBlock = FALSE
       blocknumber = 1; iteration = 1
@@ -281,6 +287,8 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                 nw = rep(0, nrow(data) / (epoch*sf))
               }
             }
+          } else {
+            nw = rep(0, nrow(data) / (epoch*sf))
           }
           nonwear = c(nonwear, nw)
           # enmo per epoch

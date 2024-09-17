@@ -131,7 +131,7 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
         if (ncol(S) == (ncol(data) - 1)) {
           # this block has time gaps while the previous block did not
           S = cbind(S, 1)
-          colnames(S)[4] = "remaining_epochs"
+          colnames(S)[ncol(S)] = "remaining_epochs"
         }
       } else if ("remaining_epochs" %in% colnames(S)) {
         if ((ncol(S) - 1) == ncol(data)) {
