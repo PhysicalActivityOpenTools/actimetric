@@ -287,6 +287,8 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                 nw = rep(0, nrow(data) / (epoch*sf))
               }
             }
+          } else {
+            nw = rep(0, nrow(data) / (epoch*sf))
           }
           nonwear = c(nonwear, nw)
           # enmo per epoch
