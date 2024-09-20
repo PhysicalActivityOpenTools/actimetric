@@ -88,10 +88,13 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
     calCoefs = vm.error.st = vm.error.end = NULL
     if (do.calibration == TRUE & iteration == 1) {
       accCols = which(colnames(data) %in% c("x","y","z"))
-      cal = calibrateRaw(data[, accCols], sf = sf, verbose = verbose)
+      cal = try(calibrateRaw(data[, accCols], sf = sf, verbose = verbose),silent = T)
+
       if (is.list(cal)) {
         calCoefs = cal$calCoefs; vm.error.st = cal$vm.error.st;
         vm.error.end = cal$vm.error.end
+      } else{
+        calCoefs = list(offset = c(0,0,0), scale = c(1, 1, 1))
       }
     }
     # -------------------------------------------------------------------------
