@@ -6,6 +6,7 @@
 * Documentation: minor revision of documentation for functions check_classifier and getBout #41
 * Reading data: minor revision of ReadAndCalibrate when reading ActiGraph devices with the Idle Sleep Mode activated #58
 * Feature extraction: numeric features are no longer rounded to 3 decimal places #61
+* Calibration: trycatch function applied to calibration routine for cases in which coefficients cannot be retrieved #63
 
 # actimetric 0.1.3
 
