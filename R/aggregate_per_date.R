@@ -110,7 +110,14 @@ aggregate_per_date = function(tsDir, epoch, classifier, classes,
       start_end_nighttime_dates = NULL
       for (ni in 1:length(start_end_nighttime$ends)) {
         next_noon = which(noons > start_end_nighttime$ends[ni])[1]
-        start_end_nighttime_dates[ni] = ts$date[noons[next_noon]]
+        if (is.na(next_noon)) {
+          # if there is not a next_noon, meaning that recording finished before 12pm
+          # following the last wake up
+          prev_noon = max(which(noons < start_end_nighttime$ends[ni]))
+          start_end_nighttime_dates[ni] = as.character(as.Date(ts$date[noons[prev_noon]]) + 1)
+        } else {
+          start_end_nighttime_dates[ni] = ts$date[noons[next_noon]]
+        }
       }
       # start_end_nighttime_dates = ts$date[start_end_nighttime$ends] # dates based on wakeup
       rows2fill = which(availableDates %in% start_end_nighttime_dates)

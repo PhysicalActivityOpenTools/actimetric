@@ -7,6 +7,7 @@
 * Reading data: minor revision of ReadAndCalibrate when reading ActiGraph devices with the Idle Sleep Mode activated #58
 * Feature extraction: numeric features are no longer rounded to 3 decimal places #61
 * Calibration: trycatch function applied to calibration routine for cases in which coefficients cannot be retrieved #63
+* Aggregation per date: fixed minor bug that broke data aggregation in the last sleep period when recording ends before noon #65
 
 # actimetric 0.1.3
 
