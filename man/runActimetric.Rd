@@ -23,6 +23,7 @@ runActimetric(
   n_valid_hours_nighttime = 0,
   visualreport = FALSE,
   overwrite = FALSE,
+  tz = "",
   verbose = TRUE
 )
 }
@@ -84,6 +85,13 @@ Adult women Hip RF Ellis)}
 
 \item{overwrite}{Logical (default = FALSE) indicating whether the existing milestone
 data should be overwritten.}
+
+\item{tz}{A character string specifying the time zone to be used for the conversion.
+Examples include `"UTC"`, `"America/New_York"`, or `"Europe/Berlin"`.
+If not specified, the system's default time zone is used. Time zone handling affects
+how character or numeric inputs are interpreted and displayed.
+A full list of time zone identifiers can be found on
+[Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).}
 
 \item{verbose}{Logical (default = TRUE) indicating whether progress messages should
 be printed in the console.}

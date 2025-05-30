@@ -19,6 +19,13 @@
 #' @param starttime Start time for the recording as extracted from \link{ReadAndCalibrate}
 #' @param data Raw data as read by \link{ReadAndCalibrate}
 #' @param parameters List with the definition of the parameters of the function.
+#' @param remaining_epochs Vector of lenght nrow(data) with information about the epochs that are to be imputed at epoch level.
+#' @param tz A character string specifying the time zone to be used for the conversion.
+#'   Examples include `"UTC"`, `"America/New_York"`, or `"Europe/Berlin"`.
+#'   If not specified, the system's default time zone is used. Time zone handling affects
+#'   how character or numeric inputs are interpreted and displayed.
+#'   A full list of time zone identifiers can be found on
+#'   [Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 #'
 #' @return Function does not return anything, it only generates the reports and
 #' visualizations in the \code{output_directory}.
@@ -32,7 +39,8 @@
 #' @author Jairo H. Migueles <jairo@jhmigueles.com>
 classify = function(data = NULL, parameters = NULL, sf = NULL,
                     classifier = NULL, infoClassifier = NULL,
-                    ID = NULL, starttime = NULL) {
+                    ID = NULL, starttime = NULL,
+                    remaining_epochs = NULL, tz = "") {
   # -------------------------------------------------------------------------
   # Original code provided by Matthew N. Ahmadi
   # Jairo H. Migueles cleaned the code and isolated the classify function here
@@ -54,21 +62,16 @@ classify = function(data = NULL, parameters = NULL, sf = NULL,
   ts = ExtractFeatures(data, classifier = classifier,
                        epoch = epoch, sf = sf,
                        ID = ID)
-  ts = as.data.frame(ts)
   rm(data); gc()
-  # Lag-lead features if needed
-  if (grepl("lag-lead", classifier, ignore.case = TRUE)) {
-    lagsd1 = c(0, ts$vm.sd[1:c(nrow(ts) - 1)])
-    lagsd2 = c(0, 0, ts$vm.sd[1:c(nrow(ts) - 2)])
-    leadsd1 = c(ts$vm.sd[2:nrow(ts)], 0)
-    leadsd2 = c(ts$vm.sd[3:nrow(ts)], 0, 0)
-    combsd = apply(cbind(lagsd1, lagsd2, leadsd1, leadsd2), 1, sd)
-    laglead = cbind(lagsd1, lagsd2, leadsd1, leadsd2, combsd)
-    ts = as.data.frame(cbind(ts, laglead))
+  # impute long gaps, if any
+  longgaps2fill = which(remaining_epochs > 1)
+  if (length(longgaps2fill) > 0) { # there are periods of the signal to impute
+    # last observation carried forward applied by default
+    ts = impute_gaps_epoch_level(ts, remaining_epochs = remaining_epochs)
   }
   # Timestamp and ID
   if (!is.null(starttime)) {
-    timestamp = deriveTimestamps(from = starttime, length = nrow(ts), epoch = epoch)
+    timestamp = deriveTimestamps(from = starttime, length = nrow(ts), epoch = epoch, tz = tz)
     if (!is.null(ID)) subject = rep(ID, nrow(ts)) else subject = NA
     ts = as.data.frame(cbind(subject, timestamp, ts))
   }

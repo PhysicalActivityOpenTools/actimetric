@@ -14,6 +14,12 @@
 #' @param epoch Number with the desired epoch length for the aggregation in seconds.
 #' @param isLastBlock Logical indicating if this is the last chunk of data to be read in the file.
 #' @param S Leftover data from the previous iteration, to be appended to the current chunk of data being read.
+#' @param tz A character string specifying the time zone to be used for the conversion.
+#'   Examples include `"UTC"`, `"America/New_York"`, or `"Europe/Berlin"`.
+#'   If not specified, the system's default time zone is used. Time zone handling affects
+#'   how character or numeric inputs are interpreted and displayed.
+#'   A full list of time zone identifiers can be found on
+#'   [Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 #'
 #' @description
 #' Function aimed to read accelerometer raw data. At the moment,
@@ -31,7 +37,7 @@
 ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
                             PreviousEndPage, PreviousLastValue, PreviousLastTime,
                             isLastBlock, do.calibration, iteration, epoch, S,
-                            verbose) {
+                            tz = "", verbose) {
   remaining_epochs = NULL
   # -------------------------------------------------------------------------
   # MODULE 1 - READ CHUNK OF DATA -------------------------------------------
@@ -46,7 +52,8 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
                                   PreviousEndPage = PreviousEndPage,
                                   inspectfileobject = inspectfileobject,
                                   PreviousLastValue = PreviousLastValue,
-                                  PreviousLastTime = PreviousLastTime)
+                                  PreviousLastTime = PreviousLastTime,
+                                  desiredtz = tz)
     # information for next iteration
     blocknumber = blocknumber + 1; count = count + 1
     isLastBlock = accread$isLastBlock
@@ -103,7 +110,7 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
       starttime = GGIR::g.getstarttime(datafile = file, data = data,
                                        mon = inspectfileobject$monc,
                                        dformat = inspectfileobject$dformc,
-                                       desiredtz = "",
+                                       desiredtz = tz,
                                        configtz = NULL)
       trunc_start = !starttime$sec %in% seq(0, 60, by = epoch)
       if (trunc_start == TRUE) {
@@ -144,6 +151,7 @@ ReadAndCalibrate = function(file, sf, blocksize, blocknumber, inspectfileobject,
       }
       data = rbind(S,data)
     }
+    # ----- End of handle time gaps between chunks -----
     # 4 - Store data that  will be added to next block
     LD = nrow(data)
     if (LD >= (3600*sf)) { # if there is more than 1 hour of data...

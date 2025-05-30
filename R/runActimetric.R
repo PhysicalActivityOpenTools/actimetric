@@ -45,6 +45,12 @@
 #' @param n_valid_hours_awake Numeric (default = 0) with minimum number of absolute valid awake hours in the day to consider it a valid day for the person-level aggregates.
 #' @param n_valid_hours_nighttime Numeric (default = 0) with minimum number of absolute valid nighttime hours in the day to consider it a valid day for the person-level aggregates.
 #' @param boutmaxgap Integer (default = 1) with maximum consecutive gap length allowed in bout calculation.
+#' @param tz A character string specifying the time zone to be used for the conversion.
+#'   Examples include `"UTC"`, `"America/New_York"`, or `"Europe/Berlin"`.
+#'   If not specified, the system's default time zone is used. Time zone handling affects
+#'   how character or numeric inputs are interpreted and displayed.
+#'   A full list of time zone identifiers can be found on
+#'   [Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 #'
 #' @return Function does not return anything, it only generates the reports and
 #' visualizations in the \code{output_directory}.
@@ -94,7 +100,7 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                          n_valid_hours = 0,
                          n_valid_hours_awake = 0, n_valid_hours_nighttime = 0,
                          visualreport = FALSE,
-                         overwrite = FALSE, verbose = TRUE) {
+                         overwrite = FALSE, tz = "", verbose = TRUE) {
   # get input
   LS = mget(ls())
   # Options
@@ -245,13 +251,44 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                                    PreviousLastTime = PreviousLastTime,
                                    do.calibration = do.calibration,
                                    iteration = iteration, epoch = epoch,
-                                   isLastBlock = isLastBlock, S = S, verbose = FALSE)
+                                   isLastBlock = isLastBlock, S = S, tz = tz, verbose = FALSE)
         starttime = accread$starttime; endtime = accread$endtime
         data = accread$data; blocknumber = accread$blocknumber
         PreviousLastValue = accread$PreviousLastValue
         PreviousLastTime = accread$PreviousLastTime; PreviousEndPage = accread$PreviousEndPage
         isLastBlock = accread$isLastBlock; S = accread$S
-        remaining_epochs = accread$remaining_epochs; nHoursRead = accread$nHoursRead
+        remaining_epochs_raw = accread$remaining_epochs; nHoursRead = accread$nHoursRead
+        if (!is.null(remaining_epochs_raw)) {
+          # Aggregate remaining_epochs to match epoch-level windows
+          remaining_epochs = remaining_epochs_sleep = vapply(
+            seq(1, length(remaining_epochs_raw) - (epoch*sf) + 1, by = (epoch*sf)),
+            function(i) {
+              window = remaining_epochs_raw[i:(i + (epoch*sf) - 1)]
+              if (all(window == 1)) 1 else window[which(window > 1)[1]]
+            },
+            numeric(1)
+          )
+          if (do.sleep && epoch != 5) {
+            remaining_epochs_sleep = vapply(
+              seq(1, length(remaining_epochs_raw) - (5*sf) + 1, by = (5*sf)),
+              function(i) {
+                window = remaining_epochs_raw[i:(i + (5*sf) - 1)]
+                if (all(window == 1)) 1 else window[which(window > 1)[1]]
+              },
+              numeric(1)
+            )
+            # also adjust number of epochs (rows) to impute
+            remaining_epochs_sleep[remaining_epochs_sleep > 1] = round(remaining_epochs_sleep[remaining_epochs_sleep > 1] * epoch / 5)
+          }
+        } else {
+          if (!is.null(data)) {
+            # if remaining_epochs = NULL, no need of imputation,
+            # create a vector of expected length of time series with ones
+            # (where 1 == not to impute)
+            remaining_epochs = rep(1, floor(nrow(data) / (epoch * sf)))
+            remaining_epochs_sleep = rep(1, floor(nrow(data) / (5 * sf)))
+          }
+        }
         if (iteration == 1) {
           calCoefs = accread$calCoefs; vm.error.st = accread$vm.error.st
           vm.error.end = accread$vm.error.end
@@ -261,8 +298,8 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
         # 2 - classify and save time series if required (only FALSE when using function within GGIR)
         if (!is.null(data)) {
           if (verbose) {
-            t0 = format(as.POSIXct(starttime, origin = "1970-1-1"), "%Y-%m-%d %H:%M:%S")
-            t1 = format(as.POSIXct(endtime, origin = "1970-1-1"), "%Y-%m-%d %H:%M:%S")
+            t0 = format(as.POSIXct(starttime, origin = "1970-1-1", tz = tz), "%Y-%m-%d %H:%M:%S")
+            t1 = format(as.POSIXct(endtime, origin = "1970-1-1", tz = tz), "%Y-%m-%d %H:%M:%S")
             cat(paste0("Processing data from ", t0, " to ", t1, "\r"))
           }
           # CALIBRATE CHUNK OF DATA
@@ -274,6 +311,7 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
             }
           }
           # Basic features ----------------------------------------------------------
+          longgaps2fill = which(remaining_epochs > 1)
           # non-wear
           nw = rep(0, nrow(data))
           if (do.nonwear) {
@@ -290,6 +328,12 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
           } else {
             nw = rep(0, nrow(data) / (epoch*sf))
           }
+          if (length(longgaps2fill) > 0) {
+            # long-gaps are considered non-wear time (==1)
+            nw = impute_gaps_epoch_level(nw, remaining_epochs = remaining_epochs,
+                                         impute_strategy = 'set-value',
+                                         value = 1)
+          }
           nonwear = c(nonwear, nw)
           # enmo per epoch
           vm = sqrt(rowSums(data[, 1:3]^2))
@@ -298,6 +342,12 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
             enm = vm - 1
             enm[which(enm < 0)] = 0
             enm = slide(enm, width = epoch*sf, FUN = mean)
+            if (length(longgaps2fill) > 0) {
+              # long-gaps -> enmo == 0
+              enm = impute_gaps_epoch_level(enm, remaining_epochs = remaining_epochs,
+                                            impute_strategy = 'set-value',
+                                            value = 0)
+            }
             enmo = c(enmo, enm)
           }
           # activity counts per epoch with default filter
@@ -305,6 +355,12 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
           if (do.actilifecounts) {
             AGc = actilifecounts::get_counts(raw = data[, 1:3], sf = sf, epoch = epoch,
                                              lfe_select = FALSE, verbose = FALSE)
+            if (length(longgaps2fill) > 0) {
+              # long-gaps -> counts == 0
+              AGc = impute_gaps_epoch_level(AGc, remaining_epochs = remaining_epochs,
+                                            impute_strategy = 'set-value',
+                                            value = 0)
+            }
             agcounts = rbind(agcounts, AGc)
             colnames(agcounts) = c("agcounts_x", "agcounts_y", "agcounts_z", "agcounts_vm")
           }
@@ -313,24 +369,43 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
           if (do.actilifecountsLFE) {
             LFEc = actilifecounts::get_counts(raw = data[, 1:3], sf = sf, epoch = epoch,
                                               lfe_select = TRUE, verbose = FALSE)
+            if (length(longgaps2fill) > 0) {
+              # long-gaps -> counts == 0
+              LFEc = impute_gaps_epoch_level(LFEc, remaining_epochs = remaining_epochs,
+                                             impute_strategy = 'set-value',
+                                             value = 0)
+            }
             LFEcounts = rbind(LFEcounts, LFEc)
             colnames(LFEcounts) = c("LFEcounts_x", "LFEcounts_y", "LFEcounts_z", "LFEcounts_vm")
+
           }
           # tilt
           tlt = NULL
           tlt = acos(data[,2]/vm)*(180/pi)
           tlt = slide(tlt, width = epoch*sf, FUN = mean)
+          if (length(longgaps2fill) > 0) {
+            # long-gaps -> angle last observation carried forward
+            tlt = impute_gaps_epoch_level(tlt, remaining_epochs = remaining_epochs,
+                                          impute_strategy = 'locf')
+          }
           tilt = c(tilt, tlt)
           # z angle variability per 5 seconds
           if (do.sleep) {
             az = (atan(data[, 3] / (sqrt(data[, 1]^2 + data[, 2]^2)))) / (pi/180)
             az = slide(x = az, width = 5*sf, FUN = mean)
+            if (length(longgaps2fill) > 0) {
+              # long-gaps -> angle last observation carried forward
+              az = impute_gaps_epoch_level(az, remaining_epochs = remaining_epochs_sleep,
+                                           impute_strategy = 'locf')
+            }
             anglez = c(anglez, az)
           }
           # Classifier
           act = classify(data = data, sf = sf,
                          classifier = classifier, infoClassifier = infoClassifier,
-                         ID = ID, starttime = starttime)
+                         ID = ID, starttime = starttime,
+                         remaining_epochs = remaining_epochs,
+                         tz = tz)
           activity = c(activity, act)
         }
         iteration = iteration + 1
@@ -338,7 +413,8 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
       # Timestamp and ID
       if (!is.null(activity)) {
         timestamp = deriveTimestamps(from = recording_starttime,
-                                     length = length(activity), epoch = epoch)
+                                     length = length(activity), epoch = epoch,
+                                     tz = tz)
         timestamp = as.data.frame(timestamp)
         subject = rep(ID, length(activity))
         ts = as.data.frame(cbind(subject, timestamp, tilt, activity, nonwear))
@@ -355,7 +431,12 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
         ts[is.na(ts)] = 0
         # classify sleep and nonwear and add them to ts$activity
         if (do.sleep == TRUE | do.nonwear == TRUE) {
-          activity = classifySleep(anglez = anglez, starttime = recording_starttime,
+          browser()
+          # derive timestamp for anglez
+          ts_sleep = deriveTimestamps(from = recording_starttime, length = length(anglez),
+                                      epoch = 5, tz = tz)
+          anglez_df = data.frame(date = ts_sleep[, 1], time = ts_sleep[, 2], anglez = anglez)
+          activity = classifySleep(anglez = anglez_df, starttime = recording_starttime,
                                    classifier = classifier, infoClassifier = infoClassifier,
                                    ts = ts, do.sleep = do.sleep, do.nonwear = do.nonwear)
           ts$activity = activity # overwrite with nighttime, sleep and nonwear information

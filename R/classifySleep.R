@@ -3,8 +3,7 @@
 #' @description
 #' Function to classify nighttime and sleep in the time series.
 #'
-#' @param anglez Angle for the z axis relative to the horizontal plane.
-#' @param starttime Start time as exported from \link{ReadAndCalibrate}
+#' @param anglez Data frame with 3 columns: date, time, and angle for the z axis relative to the horizontal plane.
 #' @param classifier Character (default = NULL) indicating the classifier to be used
 #' (available options are:
 #' Preschool Wrist Random Forest Free Living,
@@ -35,9 +34,6 @@ classifySleep = function(anglez, starttime, classifier, infoClassifier, ts, do.s
   # DETECT SLEEP -----------------------
   # Using variability of angle z as in GGIR.
   if (do.sleep == TRUE) {
-    # derive timestamp for anglez
-    ts_anglez = deriveTimestamps(from = starttime, length = length(anglez), epoch = 5)
-    anglez = data.frame(date = ts_anglez[, 1], time = ts_anglez[, 2], anglez = anglez)
     # get classes information
     ts$sleep_windows_orig = ts$sleep_periods = ts$nighttime = 0
     nighttime_id = length(classes) + 1
