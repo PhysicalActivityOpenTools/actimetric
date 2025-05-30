@@ -1,3 +1,8 @@
+# actimetric 0.1.5
+
+* Time zone consideration for building the time stamps (new argument: tz). #69
+* Gaps in raw data longer than 90 minutes are now imputed once the data have been aggregated. #69
+
 # actimetric 0.1.4
 
 * Time series: 
