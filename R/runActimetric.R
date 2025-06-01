@@ -431,7 +431,6 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
         ts[is.na(ts)] = 0
         # classify sleep and nonwear and add them to ts$activity
         if (do.sleep == TRUE | do.nonwear == TRUE) {
-          browser()
           # derive timestamp for anglez
           ts_sleep = deriveTimestamps(from = recording_starttime, length = length(anglez),
                                       epoch = 5, tz = tz)
