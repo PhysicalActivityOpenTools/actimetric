@@ -239,7 +239,7 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
       S = matrix(0,0,4) #dummy variable needed to cope with head-tailing succeeding blocks of data
       # ---------------------------------------------------------------------
       # Run Pipeline...
-      nonwear = enmo = agcounts = LFEcounts = tilt = anglez = NULL
+      nonwear = enmo = agcounts = LFEcounts = tilt = anglez = anglez_df = NULL
       activity = factor()
       while (isLastBlock == FALSE) {
         # 1 - read and extract calibration coefficients
@@ -431,10 +431,12 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
         ts[is.na(ts)] = 0
         # classify sleep and nonwear and add them to ts$activity
         if (do.sleep == TRUE | do.nonwear == TRUE) {
-          # derive timestamp for anglez
-          ts_sleep = deriveTimestamps(from = recording_starttime, length = length(anglez),
-                                      epoch = 5, tz = tz)
-          anglez_df = data.frame(date = ts_sleep[, 1], time = ts_sleep[, 2], anglez = anglez)
+          # derive timestamp for anglez if do.sleep == TRUE
+          if (do.sleep == TRUE) {
+            ts_sleep = deriveTimestamps(from = recording_starttime, length = length(anglez),
+                                        epoch = 5, tz = tz)
+            anglez_df = data.frame(date = ts_sleep[, 1], time = ts_sleep[, 2], anglez = anglez)
+          }
           activity = classifySleep(anglez = anglez_df, starttime = recording_starttime,
                                    classifier = classifier, infoClassifier = infoClassifier,
                                    ts = ts, do.sleep = do.sleep, do.nonwear = do.nonwear)
