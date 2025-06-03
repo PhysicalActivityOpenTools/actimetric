@@ -2,6 +2,7 @@
 
 * Time zone consideration for building the time stamps (new argument: tz). #69
 * Gaps in raw data longer than 90 minutes are now imputed once the data have been aggregated. #69
+* Small fixes to warning messaging related to sleep detection using data collected on hip. 
 
 # actimetric 0.1.4
 
