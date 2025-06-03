@@ -1,7 +1,7 @@
 Package: actimetric
 Type: Package
 Title: Classifies Accelerometer Data Into Physical Activity Types
-Version: 0.1.4.9000
+Version: 0.1.4.9002
 Authors@R: c(person("Jairo H","Migueles", role = c("aut","cre"),
                     email = "jairo@jhmigueles.com",
                     comment = c(ORCID = "0000-0003-0366-6935")),

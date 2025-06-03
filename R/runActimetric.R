@@ -133,29 +133,8 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
   if (grepl("thigh", classifier)) body_attachment_site = "thigh"
   # check on do.sleep and body attachment site
   if (do.sleep == TRUE & body_attachment_site != "wrist") {
-    warning("Sleep detection only available for wrist attachment site for now.\n
-            Setting do.sleep to FALSE and n_valid_hours_nighttime = 0")
-    do.sleep = FALSE
-    n_valid_hours_nighttime = 0
-  }
-  # redefine classes
-  if (do.sleep == TRUE) {
-    classes = c(classes, "nighttime", "sleep")
-  }
-  if (do.nonwear == TRUE) {
-    classes = c(classes, "nonwear")
-  }
-  # Welcome message
-  if (verbose) {
-    cat('\n')
-    cat(paste0(rep('_', options()$width), collapse = ''))
-    cat(paste0("\n\nWelcome to the actimetric R package!\n",
-               "\nIf you experiment any technical issue or wish to contribute to actimetric,",
-               "\nplease contact Jairo at jairo@jhmigueles.com or Matthew at matthew.ahmadi@sydney.edu.au\n\n"))
-    cat(paste0(rep('_', options()$width), collapse = ''))
-    cat(paste0("\n\nClassifier: ", classifier, "\n\n"))
-    cat(paste0(rep('_', options()$width), collapse = ''))
-    cat("\n")
+    warning(paste("The sleep detection method was developed and validated for wrist-worn devices.",
+                  "Accuracy may be compromised when used with other attachment sites."))
   }
   # -------------------------------------------------------------------------
   # Check directories and list files
@@ -201,6 +180,28 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
                                   LSnew[,1]))
   data.table::fwrite(config, file = file.path(output_directory, "configuration.csv"),
                      na = "", row.names = FALSE)
+  # -------------------------------------------------------------------------
+  # redefine classes
+  if (do.sleep == TRUE) {
+    classes = c(classes, "nighttime", "sleep")
+  }
+  if (do.nonwear == TRUE) {
+    classes = c(classes, "nonwear")
+  }
+  # Welcome message
+  if (verbose) {
+    cat('\n')
+    cat(paste0(rep('_', options()$width), collapse = ''))
+    cat(paste0("\n\nWelcome to the actimetric R package!",
+               "\nactimetric version ", actimetricversion,
+               "\nactimetricModels version ", actimetricModelsversion, "\n",
+               "\nIf you experiment any technical issue or wish to contribute to actimetric,",
+               "\nplease contact Jairo at jairo@jhmigueles.com or Matthew at matthew.ahmadi@sydney.edu.au\n\n"))
+    cat(paste0(rep('_', options()$width), collapse = ''))
+    cat(paste0("\n\nClassifier: ", classifier, "\n\n"))
+    cat(paste0(rep('_', options()$width), collapse = ''))
+    cat("\n")
+  }
   # -------------------------------------------------------------------------
   # Load files...
   for (file in files) {
