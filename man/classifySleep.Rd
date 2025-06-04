@@ -15,9 +15,7 @@ classifySleep(
 )
 }
 \arguments{
-\item{anglez}{Angle for the z axis relative to the horizontal plane.}
-
-\item{starttime}{Start time as exported from \link{ReadAndCalibrate}}
+\item{anglez}{Data frame with 3 columns: date, time, and angle for the z axis relative to the horizontal plane.}
 
 \item{classifier}{Character (default = NULL) indicating the classifier to be used
 (available options are:

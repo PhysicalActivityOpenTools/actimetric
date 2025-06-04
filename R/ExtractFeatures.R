@@ -82,5 +82,16 @@ ExtractFeatures = function(data, classifier = NULL, sf = NULL, epoch = NULL, ID 
   }
   # merge basic features with features
   rownames(features) = 1:nrow(features)
+  features = as.data.frame(features)
+  # Lag-lead features if needed
+  if (grepl("lag-lead", classifier, ignore.case = TRUE)) {
+    lagsd1 = c(0, features$vm.sd[1:c(nrow(features) - 1)])
+    lagsd2 = c(0, 0, features$vm.sd[1:c(nrow(features) - 2)])
+    leadsd1 = c(features$vm.sd[2:nrow(features)], 0)
+    leadsd2 = c(features$vm.sd[3:nrow(features)], 0, 0)
+    combsd = apply(cbind(lagsd1, lagsd2, leadsd1, leadsd2), 1, sd)
+    laglead = cbind(lagsd1, lagsd2, leadsd1, leadsd2, combsd)
+    features = as.data.frame(cbind(features, laglead))
+  }
   return(features)
 }

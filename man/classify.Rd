@@ -11,7 +11,9 @@ classify(
   classifier = NULL,
   infoClassifier = NULL,
   ID = NULL,
-  starttime = NULL
+  starttime = NULL,
+  remaining_epochs = NULL,
+  tz = ""
 )
 }
 \arguments{
@@ -37,6 +39,15 @@ Adult women Hip RF Ellis)}
 \item{ID}{ID for this recording}
 
 \item{starttime}{Start time for the recording as extracted from \link{ReadAndCalibrate}}
+
+\item{remaining_epochs}{Vector of lenght nrow(data) with information about the epochs that are to be imputed at epoch level.}
+
+\item{tz}{A character string specifying the time zone to be used for the conversion.
+Examples include `"UTC"`, `"America/New_York"`, or `"Europe/Berlin"`.
+If not specified, the system's default time zone is used. Time zone handling affects
+how character or numeric inputs are interpreted and displayed.
+A full list of time zone identifiers can be found on
+[Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).}
 }
 \value{
 Function does not return anything, it only generates the reports and

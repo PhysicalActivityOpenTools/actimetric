@@ -88,7 +88,6 @@ aggregate_per_date = function(tsDir, epoch, classifier, classes,
       dsnames[ci] = paste("dur", "total", "nighttime", "min", sep = "_")
       ci = ci + 1
     }
-
     # total minutes in classes
     ci2 = ci + length(classes) - 1
     time_in_classes = aggregate(activity ~ date, data = ts, FUN = min_in_class, epoch = epoch)
@@ -105,32 +104,40 @@ aggregate_per_date = function(tsDir, epoch, classifier, classes,
     }
     if ("nighttime.awake" %in% classes) {
       noons = which(ts$time == "12:00:00")
-      start_end_nighttime = find_start_end(ts, column = "activity",
-                                           class = c("nighttime.awake", "nighttime.sleep"))
-      start_end_nighttime_dates = NULL
-      for (ni in 1:length(start_end_nighttime$ends)) {
-        next_noon = which(noons > start_end_nighttime$ends[ni])[1]
-        if (is.na(next_noon)) {
-          # if there is not a next_noon, meaning that recording finished before 12pm
-          # following the last wake up
-          prev_noon = max(which(noons < start_end_nighttime$ends[ni]))
-          start_end_nighttime_dates[ni] = as.character(as.Date(ts$date[noons[prev_noon]]) + 1)
-        } else {
-          start_end_nighttime_dates[ni] = ts$date[noons[next_noon]]
+      if (sum(grepl("nighttime", ts$activity)) > 0) {
+        # if sleep periods have been detected...
+        start_end_nighttime = find_start_end(ts, column = "activity",
+                                             class = c("nighttime.awake", "nighttime.sleep"))
+        start_end_nighttime_dates = NULL
+        for (ni in 1:length(start_end_nighttime$ends)) {
+          next_noon = which(noons > start_end_nighttime$ends[ni])[1]
+          if (is.na(next_noon)) {
+            # if there is not a next_noon, meaning that recording finished before 12pm
+            # following the last wake up
+            prev_noon = max(which(noons < start_end_nighttime$ends[ni]))
+            start_end_nighttime_dates[ni] = as.character(as.Date(ts$date[noons[prev_noon]]) + 1)
+          } else {
+            start_end_nighttime_dates[ni] = ts$date[noons[next_noon]]
+          }
         }
+        # start_end_nighttime_dates = ts$date[start_end_nighttime$ends] # dates based on wakeup
+        rows2fill = which(availableDates %in% start_end_nighttime_dates)
+        ds[rows2fill, ci] = as.character(ts$timestamp[start_end_nighttime$starts])
+        ds[rows2fill, ci + 1] = as.character(ts$timestamp[start_end_nighttime$ends])
+        dsnames[ci:(ci + 1)] = paste("timestamp", c("sleepOnset", "wakeup"), sep = "_")
+        ci = ci + 2
+      } else {
+        # sleep periods have not been detected (e.g., participant removed devices all nights)
+        # only store names to be consistent in columns in the full dataset,
+        # but leave all data as NA
+        dsnames[ci:(ci + 1)] = paste("timestamp", c("sleepOnset", "wakeup"), sep = "_")
+        ci = ci + 2
       }
-      # start_end_nighttime_dates = ts$date[start_end_nighttime$ends] # dates based on wakeup
-      rows2fill = which(availableDates %in% start_end_nighttime_dates)
-      ds[rows2fill, ci] = as.character(ts$timestamp[start_end_nighttime$starts])
-      ds[rows2fill, ci + 1] = as.character(ts$timestamp[start_end_nighttime$ends])
-      dsnames[ci:(ci + 1)] = paste("timestamp", c("sleepOnset", "wakeup"), sep = "_")
-      ci = ci + 2
     }
-
     # bouts of behaviors
     boutdur = sort(boutdur, decreasing = TRUE)
     for (classi in classes) {
-      if (grepl("^nighttime|^nonwear", classes[classi])) break
+      if (grepl("^nighttime|^nonwear", classi)) break
       for (boutduri in 1:length(boutdur)) {
         look4bouts = ifelse(ts$activity == classi, 1, 0)
         # getBout is a copy of GGIR::g.getbout with which we are experimenting
