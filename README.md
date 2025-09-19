@@ -1,4 +1,14 @@
-# actimetric
+# Contact information
+If there are any questions or update requests, please contact:
+
+Stewart Trost (s.trost@uq.edu.au)
+
+Matthew Ahmadi (matthew.ahmadi@sydney.edu.au)
+
+Jairo Migueles (jairo@jhmigueles.com)
+
+
+# Actimetric
 
 <!-- badges: start -->
 
