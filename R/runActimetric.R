@@ -305,7 +305,7 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
           }
           # CALIBRATE CHUNK OF DATA
           if (do.calibration == TRUE) {
-            if (is.list(calCoefs)) {
+            if (is.list(calCoefs) && vm.error.end < vm.error.st) {
               data[, 1] = calCoefs$scale[1]*(data[,1] - calCoefs$offset[1])
               data[, 2] = calCoefs$scale[2]*(data[,2] - calCoefs$offset[2])
               data[, 3] = calCoefs$scale[3]*(data[,3] - calCoefs$offset[3])
