@@ -305,7 +305,6 @@ runActimetric = function(input_directory = NULL, output_directory = NULL, studyn
           }
           # CALIBRATE CHUNK OF DATA
           if (do.calibration == TRUE) {
-            browser()
             if (is.list(calCoefs)) {
               # ensure vm.error.end is lower than start
               if (!is.na(vm.error.end) && !is.na(vm.error.st)) {
