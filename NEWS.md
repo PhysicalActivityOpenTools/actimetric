@@ -1,3 +1,7 @@
+# actimetric 0.1.6
+
+* Now calibration algorithm is only applied if it improves the original error in the data. #71 
+
 # actimetric 0.1.5
 
 * Time zone consideration for building the time stamps (new argument: tz). #69
