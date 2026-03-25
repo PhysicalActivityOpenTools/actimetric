@@ -1,6 +1,7 @@
 # actimetric 0.1.6
 
 * Now calibration algorithm is only applied if it improves the original error in the data. #71 
+* Improved robustness of the data reader to handle files with large gaps in data. #74 
 
 # actimetric 0.1.5
 
