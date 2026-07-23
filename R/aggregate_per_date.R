@@ -24,6 +24,7 @@
 #' @return Data frame with aggregates of time spent in classes per calendar date.
 #'
 #' @importFrom grDevices pdf dev.off
+#' @importFrom purrr list_rbind
 #'
 #' @author Jairo H. Migueles <jairo@jhmigueles.com>
 #' @export
@@ -36,6 +37,9 @@ aggregate_per_date = function(tsDir, epoch, classifier, classes,
     classes = gsub("sleep", "nighttime.sleep", classes)
   }
   files = dir(tsDir, full.names = TRUE)
+  # per-file results, combined into a single table after the loop
+  ds_list = vector("list", length(files))
+  dsnames_list = vector("list", length(files))
   for (fi in 1:length(files)) {
     ts = NULL
     load(files[fi])
@@ -206,12 +210,22 @@ aggregate_per_date = function(tsDir, epoch, classifier, classes,
                      classes = classes, epoch = epoch)
       grDevices::dev.off()
     }
-    # store information in daysummary and next file
-    if (fi == 1) daysummary = ds else daysummary = rbind(daysummary, ds)
+    # store information for this file; combined into daysummary after the loop
+    ds_list[[fi]] = ds
+    dsnames_list[[fi]] = dsnames
   }
 
+  # Combine results across files. Column structure (dsnames/ci) is determined
+  # by the run's parameters (classifier, classes, boutdur), so it is expected
+  # to be identical for every file; we use the *first* file's dsnames as the
+  # canonical column names/count rather than whichever file happened to be
+  # processed *last*, so the combined table does not silently depend on which
+  # file is last in `files`.
+  daysummary = list_rbind(ds_list)
+  dsnames = dsnames_list[[1]]
+
   # keep only calculated columns and insert colnames
-  daysummary = daysummary[, 1:(ci - 1)]
+  daysummary = daysummary[, 1:length(dsnames)]
   colnames(daysummary) = dsnames
   # return
   return(daysummary)

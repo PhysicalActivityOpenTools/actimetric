@@ -20,8 +20,8 @@ LazyData: true
 Suggests: 
     testthat (>= 3.0.0), randomForest, gsignal, rattle
 Config/testthat/edition: 3
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Depends: 
     R (>= 2.10)
 Imports: 
-    caret, data.table, e1071, GGIR, HMM, signal, GGIRread, actilifecounts, actimetricModels
+    caret, data.table, e1071, GGIR, HMM, signal, GGIRread, actilifecounts, actimetricModels, purrr
