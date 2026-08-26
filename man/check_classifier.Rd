@@ -18,5 +18,4 @@ supported options in the package. If not successful returns NULL.
 }
 \author{
 Jairo H. Migueles <jairo@jhmigueles.com>
-check_classifier("Adult wrist Trost")
 }

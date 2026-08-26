@@ -48,9 +48,11 @@ impute_gaps_epoch_level(df, remaining_epochs = c(1, 3, 2))
 impute_gaps_epoch_level(c(5, 6, 7), remaining_epochs = c(2, 1, 3))
 
 # Set-value with a single vector
-impute_gaps_epoch_level(c(1, 2), remaining_epochs = c(3, 1), impute_strategy = "set-value", value = 99)
+impute_gaps_epoch_level(c(1, 2), remaining_epochs = c(3, 1),
+impute_strategy = "set-value", value = 99)
 
 # Set-value with multiple vectors
-impute_gaps_epoch_level(x = c(1, 2), y = c(10, 20), remaining_epochs = c(2, 2),
+impute_gaps_epoch_level(x = c(1, 2), y = c(10, 20),
+remaining_epochs = c(2, 2),
                       impute_strategy = "set-value", value = 0)
 }
