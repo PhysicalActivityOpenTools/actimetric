@@ -37,59 +37,114 @@
 #'
 #' @author Jairo H. Migueles <jairo@jhmigueles.com>
 #' @export
-GetInfoClassifier = function(classifier) {
-  # initiate objects to return
-  epoch = rfmodel = hmmmodel = classes = NULL
+#' @import randomForest
+GetInfoClassifier <- function(classifier) {
+  # Normalize input
+  classifier <- tolower(trimws(classifier))
 
-  # lowercase classifier to facilitate matching
-  classifier = tolower(classifier)
+  # Standard class sets
+  classes_youth            <- c("sedentary", "lightGames", "moderatetovigorousGames", "walk", "run")
+  classes_school_age_wrist <- c("sedentary", "lightGames", "walk", "run", "moderatetovigorousGames")
+  classes_trost            <- c("sedentary", "stationary", "walk", "run")
+  classes_ellis            <- c("biking", "sedentary", "standMoving", "standStill", "vehicle", "walk")
+  classes_thigh            <- c("sit", "stand", "standMove", "walk", "run", "climbStairs", "bike")
 
-  if (grepl(pattern = "preschool|school age", x = classifier)) {
-    classes = c("sedentary", "lightGames", "moderatetovigorousGames",
-                "walk", "run")
-    if (classifier == "school age hip random forest") {
-      epoch = 10
-    } else {
-      epoch = 15
-    }
-    if (grepl("preschool hip", classifier)) {
-      if (classifier == "preschool hip random forest free living") {
-        rfmodel = actimetricModels::preschool_hipfl_15s
-      } else if (classifier == "preschool hip random forest free living lag-lead") {
-        rfmodel = actimetricModels::PS.RF.FL.Hip15.LagLead
-      }
-    } else if (grepl("preschool wrist", classifier)) {
-      if (classifier == "preschool wrist random forest free living") {
-        rfmodel = actimetricModels::preschooltest
-      } else if (classifier == "preschool wrist random forest free living lag-lead") {
-        rfmodel = actimetricModels::PS.RF.FL.Wrist15.LagLead
-      }
-    } else if (classifier == "school age wrist random forest") {
-      rfmodel = actimetricModels::LVAY.RF.Wrist5.1
-    } else if (classifier == "school age hip random forest") {
-     rfmodel = actimetricModels::LVAY.RF.Hip10
-    }
-    # 2 - Adult Trost (Wrist)
-  } else if (classifier == "adult wrist rf trost") {
-    classes = c("sedentary", "stationary", "walk", "run")
-    epoch = 10
-    rfmodel = actimetricModels::trostRF_7112014
-    # 3 - Adult women Ellis
-  } else if (grepl(pattern = "ellis", x = classifier)) {
-    classes = c("biking", "sedentary", "standMoving", "standStill", "vehicle","walk")
-    epoch = 60
-    if (classifier == "adult women wrist rf ellis") {
-      rfmodel = actimetricModels::Ellis.Wrist.RF.HMM$rf
-      hmmmodel = actimetricModels::Ellis.Wrist.RF.HMM$hmm
-    } else if (classifier == "adult women hip rf ellis") {
-     rfmodel = actimetricModels::Ellis.Hip.RF.HMM$rf
-      hmmmodel = actimetricModels::Ellis.Hip.RF.HMM$hmm
-    }
-    # 4 - Thigh
-  } else if (classifier == "thigh decision tree") {
-    classes = c("sit", "stand", "standMove",
-                "walk", "run", "climbStairs", "bike")
-    epoch = 10
-  }
-  return(list(epoch = epoch, rfmodel = rfmodel, hmmmodel = hmmmodel, classes = classes))
+  info <- switch(
+    classifier,
+
+    # -------------------------------------------------------------------------
+    # Preschool Models
+    # -------------------------------------------------------------------------
+    "preschool hip random forest free living" = list(
+      epoch    = 15,
+      rfmodel  = actimetricModels::preschool_hipfl_15s,
+      hmmmodel = NULL,
+      classes  = classes_youth
+    ),
+
+    "preschool hip random forest free living lag-lead" = list(
+      epoch    = 15,
+      rfmodel  = actimetricModels::PS.RF.FL.Hip15.LagLead,
+      hmmmodel = NULL,
+      classes  = classes_youth
+    ),
+
+    "preschool wrist random forest free living" = list(
+      epoch    = 15,
+      rfmodel  = actimetricModels::preschooltest,
+      hmmmodel = NULL,
+      classes  = classes_youth
+    ),
+
+    "preschool wrist random forest free living lag-lead" = list(
+      epoch    = 15,
+      rfmodel  = actimetricModels::PS.RF.FL.Wrist15.LagLead,
+      hmmmodel = NULL,
+      classes  = classes_youth
+    ),
+
+    # -------------------------------------------------------------------------
+    # School-Age Models
+    # -------------------------------------------------------------------------
+    "school age wrist random forest" = list(
+      epoch    = 15,
+      rfmodel  = actimetricModels::LVAY.RF.Wrist5.1,
+      hmmmodel = NULL,
+      classes  = classes_school_age_wrist
+    ),
+
+    "school age hip random forest" = list(
+      epoch    = 10,
+      rfmodel  = actimetricModels::LVAY.RF.Hip10,
+      hmmmodel = NULL,
+      classes  = classes_youth
+    ),
+
+    # -------------------------------------------------------------------------
+    # Adult Trost Models
+    # -------------------------------------------------------------------------
+    "adult wrist rf trost" = list(
+      epoch    = 10,
+      rfmodel  = actimetricModels::trostRF_7112014,
+      hmmmodel = NULL,
+      classes  = classes_trost
+    ),
+
+    # -------------------------------------------------------------------------
+    # Adult Ellis Models
+    # -------------------------------------------------------------------------
+    "adult women wrist rf ellis" = list(
+      epoch    = 60,
+      rfmodel  = actimetricModels::Ellis.Wrist.RF.HMM$rf,
+      hmmmodel = actimetricModels::Ellis.Wrist.RF.HMM$hmm,
+      classes  = classes_ellis
+    ),
+
+    "adult women hip rf ellis" = list(
+      epoch    = 60,
+      rfmodel  = actimetricModels::Ellis.Hip.RF.HMM$rf,
+      hmmmodel = actimetricModels::Ellis.Hip.RF.HMM$hmm,
+      classes  = classes_ellis
+    ),
+
+    # -------------------------------------------------------------------------
+    # Thigh Models
+    # -------------------------------------------------------------------------
+    "thigh decision tree" = list(
+      epoch    = 10,
+      rfmodel  = NULL,
+      hmmmodel = NULL,
+      classes  = classes_thigh
+    ),
+
+    # Default fallback for unrecognized classifiers
+    list(
+      epoch    = NULL,
+      rfmodel  = NULL,
+      hmmmodel = NULL,
+      classes  = NULL
+    )
+  )
+
+  return(info)
 }

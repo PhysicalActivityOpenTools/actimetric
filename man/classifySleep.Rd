@@ -17,6 +17,8 @@ classifySleep(
 \arguments{
 \item{anglez}{Data frame with 3 columns: date, time, and angle for the z axis relative to the horizontal plane.}
 
+\item{starttime}{Start time.}
+
 \item{classifier}{Character (default = NULL) indicating the classifier to be used
 (available options are:
 Preschool Wrist Random Forest Free Living,

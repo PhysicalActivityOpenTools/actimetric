@@ -10,7 +10,7 @@
 #' @return Character with the definitive classifier
 #' @export
 #' @author Jairo H. Migueles <jairo@jhmigueles.com>
-#' check_classifier("Adult wrist Trost")
+#' @import randomForest
 check_classifier = function(classifier) {
   # lowercase classifier to facilitate matching
   user_classifier = tolower(classifier)

@@ -33,8 +33,8 @@ test_that("GetInfoClassifer works", {
   expect_equal(x$epoch, 15)
   expect_equal(class(x$rfmodel)[1], "randomForest.formula")
   expect_equal(class(x$hmmmodel)[1], "NULL")
-  expect_equal(x$classes, c("sedentary", "lightGames", "moderatetovigorousGames",
-                            "walk", "run" ))
+  expect_equal(x$classes, c("sedentary", "lightGames", "walk",
+                            "run", "moderatetovigorousGames" ))
   # School age Hip Random Forest
   x = GetInfoClassifier("School age Hip Random Forest")
   expect_equal(x$epoch, 10)
