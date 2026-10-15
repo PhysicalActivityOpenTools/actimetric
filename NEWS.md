@@ -1,9 +1,7 @@
 # actimetric 0.1.6
 
 * Now calibration algorithm is only applied if it improves the original error in the data. #71 
-
 * Class levels for the classifier School age Wrist Random Forest have been revised. #77
-
 * randomForest package now is in the Imports field in DESCRIPTION. #73
 
 # actimetric 0.1.5
