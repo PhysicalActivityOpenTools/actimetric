@@ -18,6 +18,7 @@
 #' @param infoClassifier Information relative to the selected classifier as exported from \link{GetInfoClassifier}
 #' @param do.sleep Logical (default = TRUE) indicating if sleep should be calculated
 #' @param do.nonwear Logical (default = TRUE) indicating if nonwear should be calculated
+#' @param starttime Start time.
 #'
 #' @return Numeric vector with classified activities including nighttime and sleep.
 #' @export
